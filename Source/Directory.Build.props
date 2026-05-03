@@ -7,10 +7,11 @@
 		<Authors>aweXpect</Authors>
 		<Description>Expectations for reflection types for aweXpect.</Description>
 		<Copyright>Copyright (c) 2025 - $([System.DateTime]::Now.ToString('yyyy')) Valentin Breuß</Copyright>
-		<RepositoryUrl>https://github.com/aweXpect/aweXpect.Reflection.git</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Testably/aweXpect.Reflection.git</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+		<PackageProjectUrl>https://docs.testably.org/Extensions/aweXpect.Reflection</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageIcon>Docs/logo_256x256.png</PackageIcon>
+		<PackageIcon>Docs/logo.png</PackageIcon>
 		<PackageReadmeFile>Docs/README.md</PackageReadmeFile>
 	</PropertyGroup>
 
@@ -45,10 +46,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$([MSBuild]::GetPathOfFileAbove('logo_256x256.png', '$(MSBuildThisFileDirectory)../Docs/'))"
+		<None Include="$([MSBuild]::GetPathOfFileAbove('logo.png', '$(MSBuildThisFileDirectory)../Docs/'))"
 			  Pack="true"
 			  PackagePath="/Docs/"
-			  Link="\Docs\logo_256x256.png"/>
+			  Link="\Docs\logo.png"/>
 		<None Include="$(SolutionDir)/Artifacts/README.md"
 			  Condition="Exists('$(SolutionDir)/Artifacts/README.md')"
 			  Pack="true"

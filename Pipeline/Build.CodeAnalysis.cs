@@ -16,8 +16,8 @@ partial class Build
 		.Executes(() =>
 		{
 			SonarScannerTasks.SonarScannerBegin(s => s
-				.SetOrganization("awexpect")
-				.SetProjectKey("aweXpect_aweXpect.Reflection")
+				.SetOrganization("testably")
+				.SetProjectKey("Testably_aweXpect.Reflection")
 				.AddVSTestReports(TestResultsDirectory / "*.trx")
 				.AddOpenCoverPaths(TestResultsDirectory / "reports" / "OpenCover.xml")
 				.SetPullRequestOrBranchName(GitHubActions, GitVersion)

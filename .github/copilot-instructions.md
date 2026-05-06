@@ -123,7 +123,7 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 3. Ensure you're on a valid branch (not detached HEAD)
 
 ### .NET SDK Version Issues  
-**Symptom**: `A compatible .NET SDK was not found. Requested SDK version: 8.0.403`  
+**Symptom**: `A compatible .NET SDK was not found. Requested SDK version: 10.0.100`  
 **Solution**: Use NUKE-installed SDK:
 - Linux/macOS: `./.nuke/temp/dotnet-unix/dotnet` instead of system `dotnet`
 - Windows: `.\.nuke\temp\dotnet-win\dotnet.exe` instead of system `dotnet`
@@ -152,7 +152,7 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 - `.github/workflows/` - CI/CD pipeline definitions
 
 ### Important Files
-- `global.json` - Specifies required .NET SDK version (8.0.403)
+- `global.json` - Specifies required .NET SDK version (10.0.100)
 - `aweXpect.Reflection.sln` - Main solution file
 - `build.sh` / `build.ps1` - Cross-platform build scripts
 - `Pipeline/Build.cs` - NUKE build configuration
@@ -179,7 +179,8 @@ To communicate intent to the consumers of your library, the title of the pull re
 ### Target Frameworks  
 The library targets:
 - .NET Standard 2.0 (for broad compatibility)
-- .NET 8.0 (for latest features)
+- .NET 8.0
+- .NET 10.0 (for latest features)
 - Tests also target .NET Framework 4.8 (Windows only)
 
 ### Test Categories

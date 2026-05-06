@@ -26,7 +26,9 @@
     <File Path="nuget.config" />
     <File Path="README.md" />
   </Folder>
-  <Folder Name="/_/.github/" />
+  <Folder Name="/_/.github/">
+    <File Path=".github/copilot-instructions.md" />
+  </Folder>
   <Folder Name="/_/.github/workflows/">
     <File Path=".github/workflows/build.yml" />
     <File Path=".github/workflows/ci-analysis.yml" />

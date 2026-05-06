@@ -26,9 +26,9 @@ build.cmd Compile
 ```bash
 # Use NUKE-installed SDK directly to avoid version conflicts
 # Linux/macOS:
-./.nuke/temp/dotnet-unix/dotnet build aweXpect.Reflection.sln
+./.nuke/temp/dotnet-unix/dotnet build aweXpect.Reflection.slnx
 # Windows:
-.\.nuke\temp\dotnet-win\dotnet.exe build aweXpect.Reflection.sln
+.\.nuke\temp\dotnet-win\dotnet.exe build aweXpect.Reflection.slnx
 # Takes ~7 seconds. Set timeout to 120+ seconds.
 ```
 
@@ -43,9 +43,9 @@ build.cmd UnitTests
 
 # Alternative: Direct test execution (faster, .NET 8 only)
 # Linux/macOS:
-./.nuke/temp/dotnet-unix/dotnet test aweXpect.Reflection.sln --framework net8.0 --no-build
+./.nuke/temp/dotnet-unix/dotnet test aweXpect.Reflection.slnx --framework net8.0 --no-build
 # Windows:
-.\.nuke\temp\dotnet-win\dotnet.exe test aweXpect.Reflection.sln --framework net8.0 --no-build
+.\.nuke\temp\dotnet-win\dotnet.exe test aweXpect.Reflection.slnx --framework net8.0 --no-build
 # Takes ~4 seconds for 1067+ tests. Set timeout to 60+ seconds.
 ```
 
@@ -119,11 +119,11 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 **Symptom**: `Could not inject value for Build.GitVersion` error  
 **Solutions**:
 1. Run `git fetch --unshallow` to get full git history (ignore "does not make sense" error if already unshallowed)
-2. Use direct dotnet build: `./.nuke/temp/dotnet-unix/dotnet build aweXpect.Reflection.sln`
+2. Use direct dotnet build: `./.nuke/temp/dotnet-unix/dotnet build aweXpect.Reflection.slnx`
 3. Ensure you're on a valid branch (not detached HEAD)
 
 ### .NET SDK Version Issues  
-**Symptom**: `A compatible .NET SDK was not found. Requested SDK version: 10.0.100`  
+**Symptom**: `A compatible .NET SDK was not found. Requested SDK version: 10.0.201`  
 **Solution**: Use NUKE-installed SDK:
 - Linux/macOS: `./.nuke/temp/dotnet-unix/dotnet` instead of system `dotnet`
 - Windows: `.\.nuke\temp\dotnet-win\dotnet.exe` instead of system `dotnet`
@@ -152,8 +152,8 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 - `.github/workflows/` - CI/CD pipeline definitions
 
 ### Important Files
-- `global.json` - Specifies required .NET SDK version (10.0.100)
-- `aweXpect.Reflection.sln` - Main solution file
+- `global.json` - Specifies required .NET SDK version (10.0.201)
+- `aweXpect.Reflection.slnx` - Main solution file
 - `build.sh` / `build.ps1` - Cross-platform build scripts
 - `Pipeline/Build.cs` - NUKE build configuration
 

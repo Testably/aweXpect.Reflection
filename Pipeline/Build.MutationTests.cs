@@ -40,7 +40,6 @@ partial class Build
 
 			DotNetToolInstall(_ => _
 				.SetPackageName("dotnet-stryker")
-				.SetVersion("4.7.0")
 				.SetToolInstallationPath(toolPath));
 
 			Dictionary<Project, Project[]> projects = new()
@@ -77,7 +76,7 @@ partial class Build
 				                      			{{string.Join(",\n\t\t\t", project.Value.Select(PathForJson))}}
 				                      		],
 				                      		"project": {{PathForJson(project.Key)}},
-				                      		"target-framework": "net8.0",
+				                      		"target-framework": "net10.0",
 				                      		"since": {
 				                      			"target": "main",
 				                      			"enabled": {{(BranchName != "main").ToString().ToLowerInvariant()}},

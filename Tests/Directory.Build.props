@@ -3,7 +3,7 @@
 	<Import Project="$(MSBuildThisFileDirectory)/../Directory.Build.props" Condition="Exists('$(MSBuildThisFileDirectory)/../Directory.Build.props')" />
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0;net48</TargetFrameworks>
+		<TargetFrameworks>net8.0;net10.0;net48</TargetFrameworks>
 	</PropertyGroup>
 
 	<PropertyGroup>

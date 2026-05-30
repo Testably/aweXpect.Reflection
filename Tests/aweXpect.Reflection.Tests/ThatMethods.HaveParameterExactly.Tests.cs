@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit.Sdk;
@@ -9,6 +9,17 @@ public sealed partial class ThatMethods
 {
 	public sealed class HaveParameterExactly
 	{
+#if NET8_0_OR_GREATER
+		private static async IAsyncEnumerable<MethodInfo> ToAsyncEnumerable(params MethodInfo[] items)
+		{
+			foreach (MethodInfo item in items)
+			{
+				yield return item;
+			}
+
+			await Task.CompletedTask;
+		}
+#endif
 		public sealed class Tests
 		{
 			[Fact]
@@ -63,6 +74,53 @@ public sealed partial class ThatMethods
 					             but at least one did not
 					             """);
 			}
+
+#if NET8_0_OR_GREATER
+			[Fact]
+			public async Task AsyncEnumerable_WhenAllHaveExactType_ShouldSucceed()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.FirstMethodWithStream))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.SecondMethodWithStream))!);
+
+				async Task Act()
+				{
+					await That(methods).HaveParameterExactly<Stream>();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_WhenAllHaveExactTypeWithName_ShouldSucceed()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.FirstMethodWithStream))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.SecondMethodWithStream))!);
+
+				async Task Act()
+				{
+					await That(methods).HaveParameterExactly<Stream>("stream");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_WhenNotAllHaveExactType_ShouldFail()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.FirstMethodWithStream))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithMemoryStream))!);
+
+				async Task Act()
+				{
+					await That(methods).HaveParameterExactly<Stream>();
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
+#endif
 		}
 
 		public sealed class NegatedTests

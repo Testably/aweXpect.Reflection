@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit.Sdk;
@@ -9,6 +9,17 @@ public sealed partial class ThatConstructors
 {
 	public sealed class HaveParameterExactly
 	{
+#if NET8_0_OR_GREATER
+		private static async IAsyncEnumerable<ConstructorInfo> ToAsyncEnumerable(params ConstructorInfo[] items)
+		{
+			foreach (ConstructorInfo item in items)
+			{
+				yield return item;
+			}
+
+			await Task.CompletedTask;
+		}
+#endif
 		public sealed class Tests
 		{
 			[Fact]
@@ -63,6 +74,51 @@ public sealed partial class ThatConstructors
 					             but at least one did not
 					             """);
 			}
+
+#if NET8_0_OR_GREATER
+			[Fact]
+			public async Task AsyncEnumerable_WhenAllHaveParameterExactly_ShouldSucceed()
+			{
+				IAsyncEnumerable<ConstructorInfo> constructors = ToAsyncEnumerable(
+					typeof(TestClass).GetConstructor([typeof(Stream),])!,
+					typeof(OtherClass).GetConstructor([typeof(Stream),])!);
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameterExactly<Stream>();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_WhenAllHaveParameterExactlyWithName_ShouldSucceed()
+			{
+				IAsyncEnumerable<ConstructorInfo> constructors = ToAsyncEnumerable(
+					typeof(TestClass).GetConstructor([typeof(Stream),])!);
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameterExactly<Stream>("stream");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_WhenAnyParameterIsSubtype_ShouldFail()
+			{
+				IAsyncEnumerable<ConstructorInfo> constructors = ToAsyncEnumerable(
+					typeof(TestClass).GetConstructor([typeof(Stream),])!);
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameterExactly<IDisposable>();
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
+#endif
 		}
 
 		public sealed class NegatedTests

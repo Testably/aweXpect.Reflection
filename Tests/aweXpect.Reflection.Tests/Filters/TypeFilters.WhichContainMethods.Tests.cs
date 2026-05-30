@@ -134,7 +134,7 @@ public sealed partial class TypeFilters
 		private class TaggedClass
 		{
 			[Marker]
-			public void Tagged()
+			public static void Tagged()
 			{
 			}
 		}
@@ -142,19 +142,19 @@ public sealed partial class TypeFilters
 		private class TwiceTaggedClass
 		{
 			[Marker]
-			public void TaggedOne()
+			public static void TaggedOne()
 			{
 			}
 
 			[Marker]
-			public void TaggedTwo()
+			public static void TaggedTwo()
 			{
 			}
 		}
 
 		private class UntaggedClass
 		{
-			public void Untagged()
+			public static void Untagged()
 			{
 			}
 		}
@@ -172,7 +172,7 @@ public sealed partial class TypeFilters
 			}
 
 			[Marker]
-			public void Method()
+			public static void Method()
 			{
 			}
 		}
@@ -185,7 +185,7 @@ public sealed partial class TypeFilters
 			}
 
 			[Marker]
-			public void Method()
+			public static void Method()
 			{
 			}
 		}
@@ -202,7 +202,7 @@ public sealed partial class TypeFilters
 			{
 			}
 
-			public void Method()
+			public static void Method()
 			{
 			}
 		}

@@ -265,6 +265,7 @@ public static partial class Filtered
 		{
 			Constructors constructors = new(this, "constructors ");
 			IFilter<ConstructorInfo>? filter = _memberState.BuildConstructorFilter();
+			_memberState.Reset();
 			return filter is null ? constructors : constructors.Which(filter);
 		}
 
@@ -275,6 +276,7 @@ public static partial class Filtered
 		{
 			Events events = new(this, "events ");
 			IFilter<EventInfo>? filter = _memberState.BuildEventFilter();
+			_memberState.Reset();
 			return filter is null ? events : events.Which(filter);
 		}
 
@@ -285,6 +287,7 @@ public static partial class Filtered
 		{
 			Fields fields = new(this, "fields ");
 			IFilter<FieldInfo>? filter = _memberState.BuildFieldFilter();
+			_memberState.Reset();
 			return filter is null ? fields : fields.Which(filter);
 		}
 
@@ -295,6 +298,7 @@ public static partial class Filtered
 		{
 			Methods methods = new(this, "methods ");
 			IFilter<MethodInfo>? filter = _memberState.BuildMethodFilter();
+			_memberState.Reset();
 			return filter is null ? methods : methods.Which(filter);
 		}
 
@@ -305,6 +309,7 @@ public static partial class Filtered
 		{
 			Properties properties = new(this, "properties ");
 			IFilter<PropertyInfo>? filter = _memberState.BuildPropertyFilter();
+			_memberState.Reset();
 			return filter is null ? properties : properties.Which(filter);
 		}
 

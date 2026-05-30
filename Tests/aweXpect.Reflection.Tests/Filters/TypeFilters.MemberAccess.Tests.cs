@@ -107,6 +107,22 @@ public sealed partial class TypeFilters
 					.IsEqualTo("public static methods in classes in assembly").AsPrefix();
 			}
 
+			[Fact]
+			public async Task ShouldResetModifierStateAfterSelector()
+			{
+				Filtered.Types types = In.AssemblyContaining<AssemblyFilters>().Classes();
+
+				Filtered.Methods publicMethods = types.Public.Methods();
+				Filtered.Methods anyMethods = types.Methods();
+
+				await That(publicMethods).All().Satisfy(m => m.IsPublic).And.IsNotEmpty();
+				await That(anyMethods).Any().Satisfy(m => !m.IsPublic);
+				await That(publicMethods.GetDescription())
+					.IsEqualTo("public methods in classes in assembly").AsPrefix();
+				await That(anyMethods.GetDescription())
+					.IsEqualTo("methods in classes in assembly").AsPrefix();
+			}
+
 			private abstract class AbstractMemberClass
 			{
 				public abstract int AbstractProperty { get; }

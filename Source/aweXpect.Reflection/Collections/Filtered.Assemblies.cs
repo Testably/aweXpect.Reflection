@@ -147,7 +147,7 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + "abstract ";
 				_typeFilters.Add(type => type.IsReallyAbstract());
 				_memberState.SetAbstract();
-				return this;
+				return new LimitedAbstractSealedAssemblies(this);
 			}
 		}
 
@@ -159,7 +159,7 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + "sealed ";
 				_typeFilters.Add(type => type.IsReallySealed());
 				_memberState.SetSealed();
-				return this;
+				return new LimitedAbstractSealedAssemblies(this);
 			}
 		}
 
@@ -207,6 +207,8 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
 
+			_memberState.Reset();
+
 			if (accessModifier != AccessModifiers.Any)
 			{
 				_typeFilters.Add(type => type.HasAccessModifier(accessModifier));
@@ -235,6 +237,8 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
 
+			_memberState.Reset();
+
 			if (accessModifier != AccessModifiers.Any)
 			{
 				_typeFilters.Add(type => type.HasAccessModifier(accessModifier));
@@ -257,6 +261,8 @@ public static partial class Filtered
 				_typeFilters.Add(type => type.HasAccessModifier(implicitAccess.Value));
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
+
+			_memberState.Reset();
 
 			if (accessModifier != AccessModifiers.Any)
 			{
@@ -281,6 +287,8 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
 
+			_memberState.Reset();
+
 			if (accessModifier != AccessModifiers.Any)
 			{
 				_typeFilters.Add(type => type.HasAccessModifier(accessModifier));
@@ -303,6 +311,8 @@ public static partial class Filtered
 				_typeFilters.Add(type => type.HasAccessModifier(implicitAccess.Value));
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
+
+			_memberState.Reset();
 
 			if (accessModifier != AccessModifiers.Any)
 			{
@@ -327,6 +337,8 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
 
+			_memberState.Reset();
+
 			if (accessModifier != AccessModifiers.Any)
 			{
 				_typeFilters.Add(type => type.HasAccessModifier(accessModifier));
@@ -350,6 +362,8 @@ public static partial class Filtered
 				_typeFilterDescription = (_typeFilterDescription ?? "") + implicitAccess.Value.GetString(" ");
 			}
 
+			_memberState.Reset();
+
 			if (accessModifier != AccessModifiers.Any)
 			{
 				_typeFilters.Add(type => type.HasAccessModifier(accessModifier));
@@ -367,6 +381,7 @@ public static partial class Filtered
 		{
 			Constructors constructors = new(new Types(this, ""), "constructors ");
 			IFilter<ConstructorInfo>? filter = _memberState.BuildConstructorFilter();
+			_memberState.Reset();
 			return filter is null ? constructors : constructors.Which(filter);
 		}
 
@@ -375,6 +390,7 @@ public static partial class Filtered
 		{
 			Events events = new(new Types(this, ""), "events ");
 			IFilter<EventInfo>? filter = _memberState.BuildEventFilter();
+			_memberState.Reset();
 			return filter is null ? events : events.Which(filter);
 		}
 
@@ -383,6 +399,7 @@ public static partial class Filtered
 		{
 			Fields fields = new(new Types(this, ""), "fields ");
 			IFilter<FieldInfo>? filter = _memberState.BuildFieldFilter();
+			_memberState.Reset();
 			return filter is null ? fields : fields.Which(filter);
 		}
 
@@ -391,6 +408,7 @@ public static partial class Filtered
 		{
 			Methods methods = new(new Types(this, ""), "methods ");
 			IFilter<MethodInfo>? filter = _memberState.BuildMethodFilter();
+			_memberState.Reset();
 			return filter is null ? methods : methods.Which(filter);
 		}
 
@@ -399,6 +417,7 @@ public static partial class Filtered
 		{
 			Properties properties = new(new Types(this, ""), "properties ");
 			IFilter<PropertyInfo>? filter = _memberState.BuildPropertyFilter();
+			_memberState.Reset();
 			return filter is null ? properties : properties.Which(filter);
 		}
 
@@ -517,6 +536,48 @@ public static partial class Filtered
 				_options.AsWildcard();
 				return this;
 			}
+		}
+
+		private sealed class LimitedAbstractSealedAssemblies
+			: ILimitedAbstractSealedTypeAssemblies<ILimitedAbstractSealedTypeAssemblies>
+		{
+			private readonly Assemblies _inner;
+
+			public LimitedAbstractSealedAssemblies(Assemblies inner)
+			{
+				_inner = inner;
+			}
+
+			public ILimitedAbstractSealedTypeAssemblies Generic
+			{
+				get
+				{
+					_ = _inner.Generic;
+					return this;
+				}
+			}
+
+			public ILimitedAbstractSealedTypeAssemblies Nested
+			{
+				get
+				{
+					_ = _inner.Nested;
+					return this;
+				}
+			}
+
+			public Types Types(AccessModifiers accessModifier = AccessModifiers.Any)
+				=> _inner.Types(accessModifier);
+
+			public Types Classes(AccessModifiers accessModifier = AccessModifiers.Any)
+				=> _inner.Classes(accessModifier);
+
+			public Types Records(AccessModifiers accessModifier = AccessModifiers.Any)
+				=> _inner.Records(accessModifier);
+
+			public Events Events() => _inner.Events();
+			public Methods Methods() => _inner.Methods();
+			public Properties Properties() => _inner.Properties();
 		}
 	}
 }

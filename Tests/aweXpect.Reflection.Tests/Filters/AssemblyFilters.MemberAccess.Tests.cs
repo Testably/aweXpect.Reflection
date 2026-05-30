@@ -78,6 +78,22 @@ public sealed partial class AssemblyFilters
 				await That(methods.GetDescription())
 					.IsEqualTo("public static methods in assembly").AsPrefix();
 			}
+
+			[Fact]
+			public async Task ShouldResetModifierStateAfterSelector()
+			{
+				Filtered.Assemblies assemblies = In.AssemblyContaining<AssemblyFilters>();
+
+				Filtered.Methods publicMethods = assemblies.Public.Methods();
+				Filtered.Methods anyMethods = assemblies.Methods();
+
+				await That(publicMethods).All().Satisfy(m => m.IsPublic).And.IsNotEmpty();
+				await That(anyMethods).Any().Satisfy(m => !m.IsPublic);
+				await That(publicMethods.GetDescription())
+					.IsEqualTo("public methods in assembly").AsPrefix();
+				await That(anyMethods.GetDescription())
+					.IsEqualTo("methods in assembly").AsPrefix();
+			}
 		}
 	}
 }

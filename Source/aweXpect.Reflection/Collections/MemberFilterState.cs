@@ -13,6 +13,15 @@ internal sealed class MemberFilterState
 
 	public bool HasAnything => AccessModifier is not null || IsStatic || IsAbstract || IsSealed;
 
+	public void Reset()
+	{
+		AccessModifier = null;
+		IsStatic = false;
+		IsAbstract = false;
+		IsSealed = false;
+		_modifierDescription = "";
+	}
+
 	public void SetAccess(AccessModifiers modifier) => AccessModifier = modifier;
 
 	public void SetStatic()

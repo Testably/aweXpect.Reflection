@@ -82,14 +82,15 @@ public sealed partial class ThatAssemblies
 			public async Task ShouldSupportAllComponents()
 			{
 				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
+				Version version = typeof(PublicAbstractClass).Assembly.GetName().Version!;
 
 				async Task Act()
 				{
 					await That(subject).HaveVersion()
-						.WithMajor.GreaterThanOrEqualTo(0)
-						.WithMinor.GreaterThanOrEqualTo(0)
-						.WithBuild.GreaterThanOrEqualTo(0)
-						.WithRevision.GreaterThanOrEqualTo(0);
+						.WithMajor.EqualTo(version.Major)
+						.WithMinor.EqualTo(version.Minor)
+						.WithBuild.EqualTo(version.Build)
+						.WithRevision.EqualTo(version.Revision);
 				}
 
 				await That(Act).DoesNotThrow();
@@ -99,16 +100,17 @@ public sealed partial class ThatAssemblies
 			public async Task WhenAllComparisonsAreSatisfied_ShouldSucceed()
 			{
 				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
+				int major = typeof(PublicAbstractClass).Assembly.GetName().Version!.Major;
 
 				async Task Act()
 				{
 					await That(subject).HaveVersion()
-						.WithMajor.GreaterThan(0)
-						.WithMajor.GreaterThanOrEqualTo(1)
-						.WithMajor.LessThan(2)
-						.WithMajor.LessThanOrEqualTo(1)
-						.WithMajor.EqualTo(1)
-						.WithMajor.NotEqualTo(0);
+						.WithMajor.GreaterThan(major - 1)
+						.WithMajor.GreaterThanOrEqualTo(major)
+						.WithMajor.LessThan(major + 1)
+						.WithMajor.LessThanOrEqualTo(major)
+						.WithMajor.EqualTo(major)
+						.WithMajor.NotEqualTo(major + 1);
 				}
 
 				await That(Act).DoesNotThrow();
@@ -128,18 +130,19 @@ public sealed partial class ThatAssemblies
 			}
 
 			[Theory]
-			[InlineData("GreaterThan", 1)]
-			[InlineData("GreaterThanOrEqualTo", 2)]
-			[InlineData("LessThan", 1)]
-			[InlineData("LessThanOrEqualTo", 0)]
-			[InlineData("EqualTo", 2)]
-			[InlineData("NotEqualTo", 1)]
-			public async Task WhenComparisonIsNotSatisfied_ShouldFail(string comparison, int expected)
+			[InlineData("GreaterThan", 0)]
+			[InlineData("GreaterThanOrEqualTo", 1)]
+			[InlineData("LessThan", 0)]
+			[InlineData("LessThanOrEqualTo", -1)]
+			[InlineData("EqualTo", 1)]
+			[InlineData("NotEqualTo", 0)]
+			public async Task WhenComparisonIsNotSatisfied_ShouldFail(string comparison, int offset)
 			{
 				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
 
 				async Task Act()
 				{
+					int expected = typeof(PublicAbstractClass).Assembly.GetName().Version!.Major + offset;
 					await (comparison switch
 					{
 						"GreaterThan" => That(subject).HaveVersion().WithMajor.GreaterThan(expected),
@@ -176,15 +179,18 @@ public sealed partial class ThatAssemblies
 			public async Task WhenMultipleComponentsAreCombined_ShouldCombineExpectations()
 			{
 				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
+				Version version = typeof(PublicAbstractClass).Assembly.GetName().Version!;
 
 				async Task Act()
 				{
-					await That(subject).HaveVersion().WithMajor.GreaterThan(0).WithMinor.GreaterThan(0);
+					await That(subject).HaveVersion()
+						.WithMajor.EqualTo(version.Major)
+						.WithMinor.GreaterThan(version.Minor);
 				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage(
-						"*all have major version greater than 0 and minor version greater than 0*non-matching version*")
+						$"*all have major version equal to {version.Major} and minor version greater than {version.Minor}*non-matching version*")
 					.AsWildcard();
 			}
 

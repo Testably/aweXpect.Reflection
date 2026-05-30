@@ -82,10 +82,6 @@ public static partial class ThatType
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null) => stringBuilder.Append("does not contain ").Append(memberFilter.MembersDescription).Append(quantifier);
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" contained ").Append(_count)
-				.Append(_count == 1 ? " matching member in " : " matching members in ");
-			Formatter.Format(stringBuilder, Actual);
-		}
+			=> AppendNormalResult(stringBuilder, indentation);
 	}
 }

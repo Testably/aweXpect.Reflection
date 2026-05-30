@@ -94,17 +94,19 @@ public static partial class ThatTypes
 		public async Task<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual,
 			CancellationToken cancellationToken)
 			=> await SetAsyncValue(actual, Matches);
+#endif
 
+		public async Task<ConstraintResult> IsMetBy(IEnumerable<Type?> actual,
+			CancellationToken cancellationToken)
+			=> await SetValue(actual, Matches);
+
+#if NET8_0_OR_GREATER
 		private ValueTask<bool> Matches(Type? type)
 			=> type is null ? new ValueTask<bool>(false) : memberFilter.Applies(type);
 #else
 		private Task<bool> Matches(Type? type)
 			=> type is null ? Task.FromResult(false) : memberFilter.Applies(type);
 #endif
-
-		public async Task<ConstraintResult> IsMetBy(IEnumerable<Type?> actual,
-			CancellationToken cancellationToken)
-			=> await SetValue(actual, Matches);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null) => stringBuilder.Append("all contain ").Append(memberFilter.MembersDescription).Append(quantifier);
 

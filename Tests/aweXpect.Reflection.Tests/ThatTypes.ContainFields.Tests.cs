@@ -61,19 +61,25 @@ public sealed partial class ThatTypes
 
 		private class ClassWithMarkedField
 		{
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			[Marker] public int Value;
+#pragma warning restore CS0649
 		}
 
 		private class ClassWithTwoMarkedFields
 		{
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			[Marker] public int First;
 
 			[Marker] public int Second;
+#pragma warning restore CS0649
 		}
 
 		private class ClassWithoutMarkedField
 		{
+#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 			public int Value;
+#pragma warning restore CS0649
 		}
 	}
 }

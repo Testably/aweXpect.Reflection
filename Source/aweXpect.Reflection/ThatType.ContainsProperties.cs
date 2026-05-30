@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using aweXpect.Core;
-using aweXpect.Options;
 using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Results;
 

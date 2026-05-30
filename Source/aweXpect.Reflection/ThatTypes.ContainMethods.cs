@@ -106,10 +106,7 @@ public static partial class ThatTypes
 			CancellationToken cancellationToken)
 			=> await SetValue(actual, Matches);
 
-		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append("all contain ").Append(memberFilter.MembersDescription).Append(quantifier);
-		}
+		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null) => stringBuilder.Append("all contain ").Append(memberFilter.MembersDescription).Append(quantifier);
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -117,10 +114,7 @@ public static partial class ThatTypes
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation));
 		}
 
-		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append("do not all contain ").Append(memberFilter.MembersDescription).Append(quantifier);
-		}
+		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null) => stringBuilder.Append("do not all contain ").Append(memberFilter.MembersDescription).Append(quantifier);
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{

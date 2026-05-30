@@ -9,12 +9,28 @@ public sealed partial class ThatType
 		public sealed class Tests
 		{
 			[Fact]
+			public async Task Exactly_WhenCountMatches_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithTwoMarkedProperties);
+
+				async Task Act()
+				{
+					await That(subject).ContainsProperties(properties => properties.With<MarkerAttribute>())
+						.Exactly(2);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeContainsMatchingProperty_ShouldSucceed()
 			{
 				Type subject = typeof(ClassWithMarkedProperty);
 
 				async Task Act()
-					=> await That(subject).ContainsProperties(properties => properties.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsProperties(properties => properties.With<MarkerAttribute>());
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -25,7 +41,9 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithoutMarkedProperty);
 
 				async Task Act()
-					=> await That(subject).ContainsProperties(properties => properties.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsProperties(properties => properties.With<MarkerAttribute>());
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -33,18 +51,6 @@ public sealed partial class ThatType
 					             contains properties with ThatType.ContainsProperties.MarkerAttribute at least once,
 					             but it contained 0 matching members in ThatType.ContainsProperties.ClassWithoutMarkedProperty
 					             """);
-			}
-
-			[Fact]
-			public async Task Exactly_WhenCountMatches_ShouldSucceed()
-			{
-				Type subject = typeof(ClassWithTwoMarkedProperties);
-
-				async Task Act()
-					=> await That(subject).ContainsProperties(properties => properties.With<MarkerAttribute>())
-						.Exactly(2);
-
-				await That(Act).DoesNotThrow();
 			}
 		}
 
@@ -56,8 +62,10 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithMarkedProperty);
 
 				async Task Act()
-					=> await That(subject).DoesNotComplyWith(it
+				{
+					await That(subject).DoesNotComplyWith(it
 						=> it.ContainsProperties(properties => properties.With<MarkerAttribute>()));
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""

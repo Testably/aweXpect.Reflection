@@ -70,10 +70,7 @@ public static partial class ThatType
 			return this;
 		}
 
-		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append("contains ").Append(memberFilter.MembersDescription).Append(quantifier);
-		}
+		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null) => stringBuilder.Append("contains ").Append(memberFilter.MembersDescription).Append(quantifier);
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -82,10 +79,7 @@ public static partial class ThatType
 			Formatter.Format(stringBuilder, Actual);
 		}
 
-		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append("does not contain ").Append(memberFilter.MembersDescription).Append(quantifier);
-		}
+		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null) => stringBuilder.Append("does not contain ").Append(memberFilter.MembersDescription).Append(quantifier);
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{

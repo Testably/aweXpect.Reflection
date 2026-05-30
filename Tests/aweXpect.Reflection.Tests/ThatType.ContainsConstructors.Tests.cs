@@ -9,12 +9,28 @@ public sealed partial class ThatType
 		public sealed class Tests
 		{
 			[Fact]
+			public async Task Exactly_WhenCountMatches_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithTwoMarkedConstructors);
+
+				async Task Act()
+				{
+					await That(subject).ContainsConstructors(constructors => constructors.With<MarkerAttribute>())
+						.Exactly(2);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeContainsMatchingConstructor_ShouldSucceed()
 			{
 				Type subject = typeof(ClassWithMarkedConstructor);
 
 				async Task Act()
-					=> await That(subject).ContainsConstructors(constructors => constructors.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsConstructors(constructors => constructors.With<MarkerAttribute>());
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -25,7 +41,9 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithoutMarkedConstructor);
 
 				async Task Act()
-					=> await That(subject).ContainsConstructors(constructors => constructors.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsConstructors(constructors => constructors.With<MarkerAttribute>());
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -33,18 +51,6 @@ public sealed partial class ThatType
 					             contains constructors with ThatType.ContainsConstructors.MarkerAttribute at least once,
 					             but it contained 0 matching members in ThatType.ContainsConstructors.ClassWithoutMarkedConstructor
 					             """);
-			}
-
-			[Fact]
-			public async Task Exactly_WhenCountMatches_ShouldSucceed()
-			{
-				Type subject = typeof(ClassWithTwoMarkedConstructors);
-
-				async Task Act()
-					=> await That(subject).ContainsConstructors(constructors => constructors.With<MarkerAttribute>())
-						.Exactly(2);
-
-				await That(Act).DoesNotThrow();
 			}
 		}
 
@@ -56,8 +62,10 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithMarkedConstructor);
 
 				async Task Act()
-					=> await That(subject).DoesNotComplyWith(it
+				{
+					await That(subject).DoesNotComplyWith(it
 						=> it.ContainsConstructors(constructors => constructors.With<MarkerAttribute>()));
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
@@ -96,9 +104,6 @@ public sealed partial class ThatType
 
 		private class ClassWithoutMarkedConstructor
 		{
-			public ClassWithoutMarkedConstructor()
-			{
-			}
 		}
 	}
 }

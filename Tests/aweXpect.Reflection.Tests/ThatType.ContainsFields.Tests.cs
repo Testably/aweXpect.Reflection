@@ -9,12 +9,27 @@ public sealed partial class ThatType
 		public sealed class Tests
 		{
 			[Fact]
+			public async Task Never_WhenTypeContainsNoMatchingField_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithoutMarkedField);
+
+				async Task Act()
+				{
+					await That(subject).ContainsFields(fields => fields.With<MarkerAttribute>()).Never();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeContainsMatchingField_ShouldSucceed()
 			{
 				Type subject = typeof(ClassWithMarkedField);
 
 				async Task Act()
-					=> await That(subject).ContainsFields(fields => fields.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsFields(fields => fields.With<MarkerAttribute>());
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -25,7 +40,9 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithoutMarkedField);
 
 				async Task Act()
-					=> await That(subject).ContainsFields(fields => fields.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsFields(fields => fields.With<MarkerAttribute>());
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -33,17 +50,6 @@ public sealed partial class ThatType
 					             contains fields with ThatType.ContainsFields.MarkerAttribute at least once,
 					             but it contained 0 matching members in ThatType.ContainsFields.ClassWithoutMarkedField
 					             """);
-			}
-
-			[Fact]
-			public async Task Never_WhenTypeContainsNoMatchingField_ShouldSucceed()
-			{
-				Type subject = typeof(ClassWithoutMarkedField);
-
-				async Task Act()
-					=> await That(subject).ContainsFields(fields => fields.With<MarkerAttribute>()).Never();
-
-				await That(Act).DoesNotThrow();
 			}
 		}
 
@@ -55,8 +61,10 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithMarkedField);
 
 				async Task Act()
-					=> await That(subject).DoesNotComplyWith(it
+				{
+					await That(subject).DoesNotComplyWith(it
 						=> it.ContainsFields(fields => fields.With<MarkerAttribute>()));
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""

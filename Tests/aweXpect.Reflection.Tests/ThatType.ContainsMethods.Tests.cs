@@ -9,12 +9,58 @@ public sealed partial class ThatType
 		public sealed class Tests
 		{
 			[Fact]
+			public async Task Exactly_WhenCountDiffers_ShouldFail()
+			{
+				Type subject = typeof(ClassWithMarkedMethod);
+
+				async Task Act()
+				{
+					await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>()).Exactly(2);
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             contains methods with ThatType.ContainsMethods.MarkerAttribute exactly twice,
+					             but it contained 1 matching member in ThatType.ContainsMethods.ClassWithMarkedMethod
+					             """);
+			}
+
+			[Fact]
+			public async Task Exactly_WhenCountMatches_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithTwoMarkedMethods);
+
+				async Task Act()
+				{
+					await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>()).Exactly(2);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Never_WhenTypeContainsNoMatchingMethod_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithoutMarkedMethod);
+
+				async Task Act()
+				{
+					await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>()).Never();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeContainsMatchingMethod_ShouldSucceed()
 			{
 				Type subject = typeof(ClassWithMarkedMethod);
 
 				async Task Act()
-					=> await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>());
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -25,7 +71,9 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithoutMarkedMethod);
 
 				async Task Act()
-					=> await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>());
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -41,7 +89,9 @@ public sealed partial class ThatType
 				Type? subject = null;
 
 				async Task Act()
-					=> await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>());
+				{
+					await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>());
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -49,44 +99,6 @@ public sealed partial class ThatType
 					             contains methods with ThatType.ContainsMethods.MarkerAttribute at least once,
 					             but it was <null>
 					             """);
-			}
-
-			[Fact]
-			public async Task Exactly_WhenCountMatches_ShouldSucceed()
-			{
-				Type subject = typeof(ClassWithTwoMarkedMethods);
-
-				async Task Act()
-					=> await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>()).Exactly(2);
-
-				await That(Act).DoesNotThrow();
-			}
-
-			[Fact]
-			public async Task Exactly_WhenCountDiffers_ShouldFail()
-			{
-				Type subject = typeof(ClassWithMarkedMethod);
-
-				async Task Act()
-					=> await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>()).Exactly(2);
-
-				await That(Act).ThrowsException()
-					.WithMessage("""
-					             Expected that subject
-					             contains methods with ThatType.ContainsMethods.MarkerAttribute exactly twice,
-					             but it contained 1 matching member in ThatType.ContainsMethods.ClassWithMarkedMethod
-					             """);
-			}
-
-			[Fact]
-			public async Task Never_WhenTypeContainsNoMatchingMethod_ShouldSucceed()
-			{
-				Type subject = typeof(ClassWithoutMarkedMethod);
-
-				async Task Act()
-					=> await That(subject).ContainsMethods(methods => methods.With<MarkerAttribute>()).Never();
-
-				await That(Act).DoesNotThrow();
 			}
 		}
 
@@ -98,8 +110,10 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithMarkedMethod);
 
 				async Task Act()
-					=> await That(subject).DoesNotComplyWith(it
+				{
+					await That(subject).DoesNotComplyWith(it
 						=> it.ContainsMethods(methods => methods.With<MarkerAttribute>()));
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
@@ -115,8 +129,10 @@ public sealed partial class ThatType
 				Type subject = typeof(ClassWithoutMarkedMethod);
 
 				async Task Act()
-					=> await That(subject).DoesNotComplyWith(it
+				{
+					await That(subject).DoesNotComplyWith(it
 						=> it.ContainsMethods(methods => methods.With<MarkerAttribute>()));
+				}
 
 				await That(Act).DoesNotThrow();
 			}

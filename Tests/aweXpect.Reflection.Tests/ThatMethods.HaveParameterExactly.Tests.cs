@@ -7,7 +7,7 @@ namespace aweXpect.Reflection.Tests;
 
 public sealed partial class ThatMethods
 {
-	public sealed class HaveExactParameter
+	public sealed class HaveParameterExactly
 	{
 		public sealed class Tests
 		{
@@ -21,7 +21,7 @@ public sealed partial class ThatMethods
 
 				async Task Act()
 				{
-					await That(methods).HaveExactParameter<Stream>();
+					await That(methods).HaveParameterExactly<Stream>();
 				}
 
 				await That(Act).DoesNotThrow();
@@ -37,7 +37,7 @@ public sealed partial class ThatMethods
 
 				async Task Act()
 				{
-					await That(methods).HaveExactParameter<Stream>("stream");
+					await That(methods).HaveParameterExactly<Stream>("stream");
 				}
 
 				await That(Act).DoesNotThrow();
@@ -53,7 +53,7 @@ public sealed partial class ThatMethods
 
 				async Task Act()
 				{
-					await That(methods).HaveExactParameter<Stream>();
+					await That(methods).HaveParameterExactly<Stream>();
 				}
 
 				await That(Act).Throws<XunitException>()
@@ -77,7 +77,7 @@ public sealed partial class ThatMethods
 
 				async Task Act()
 				{
-					await That(methods).DoesNotComplyWith(they => they.HaveExactParameter<Stream>());
+					await That(methods).DoesNotComplyWith(they => they.HaveParameterExactly<Stream>());
 				}
 
 				await That(Act).Throws<XunitException>()
@@ -98,7 +98,7 @@ public sealed partial class ThatMethods
 
 				async Task Act()
 				{
-					await That(methods).DoesNotComplyWith(they => they.HaveExactParameter<Stream>());
+					await That(methods).DoesNotComplyWith(they => they.HaveParameterExactly<Stream>());
 				}
 
 				await That(Act).DoesNotThrow();

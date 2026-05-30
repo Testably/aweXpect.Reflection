@@ -17,8 +17,6 @@ public static partial class Filtered
 	/// </summary>
 	public class Types : Filtered<Type, Types>,
 		IDescribableSubject,
-		IMemberSelectors,
-		IMembers,
 		IMembers.IPrivate,
 		IMembers.IProtected,
 		ILimitedAbstractSealedMembers

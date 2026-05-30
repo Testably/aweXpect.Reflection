@@ -22,6 +22,15 @@ public sealed partial class MethodFilters
 			}
 
 			[Fact]
+			public async Task ShouldFilterForMethodsWithParamsCollectionParameter()
+			{
+				Filtered.Methods methods = In.AssemblyContaining<AssemblyFilters>()
+					.Methods().WithParamsParameter();
+
+				await That(methods).Contains(ParamsCollectionParameterMethod());
+			}
+
+			[Fact]
 			public async Task ShouldNotIncludeMethodsWithoutParamsParameter()
 			{
 				Filtered.Methods methods = In.AssemblyContaining<AssemblyFilters>()
@@ -35,6 +44,10 @@ public sealed partial class MethodFilters
 			=> typeof(ClassWithParamsParameterMethod)
 				.GetMethod(nameof(ClassWithParamsParameterMethod.MethodWithParamsParameter));
 
+		private static MethodInfo? ParamsCollectionParameterMethod()
+			=> typeof(ClassWithParamsParameterMethod)
+				.GetMethod(nameof(ClassWithParamsParameterMethod.MethodWithParamsCollectionParameter));
+
 		private static MethodInfo? PlainMethod()
 			=> typeof(ClassWithParamsParameterMethod)
 				.GetMethod(nameof(ClassWithParamsParameterMethod.MethodWithoutModifiers));
@@ -45,6 +58,10 @@ public sealed partial class MethodFilters
 		private class ClassWithParamsParameterMethod
 		{
 			public void MethodWithParamsParameter(params int[] values)
+			{
+			}
+
+			public void MethodWithParamsCollectionParameter(params System.Collections.Generic.List<int> values)
 			{
 			}
 

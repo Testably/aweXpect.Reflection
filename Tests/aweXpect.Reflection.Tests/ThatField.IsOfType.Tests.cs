@@ -64,6 +64,7 @@ public sealed partial class ThatField
 			}
 		}
 
+#pragma warning disable CA2263 // tests intentionally exercise the non-generic Type overload
 		public sealed class TypeTests
 		{
 			[Fact]
@@ -123,6 +124,7 @@ public sealed partial class ThatField
 					             """);
 			}
 		}
+#pragma warning restore CA2263
 
 		public sealed class OrOfExactTypeTests
 		{
@@ -164,8 +166,7 @@ public sealed partial class ThatField
 					             Expected that subject
 					             is not of type int,
 					             but it did
-					             """)
-					.AsWildcard();
+					             """);
 			}
 		}
 

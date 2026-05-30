@@ -17,14 +17,14 @@ namespace aweXpect.Reflection;
 public static partial class ThatFields
 {
 	/// <summary>
-	///     Verifies that all fields in the filtered collection are of type <typeparamref name="TField" />.
+	///     Verifies that all fields in the filtered collection are of type <typeparamref name="TField" /> (or a subtype).
 	/// </summary>
 	public static FieldsOfTypeResult<IEnumerable<FieldInfo?>, IThat<IEnumerable<FieldInfo?>>> AreOfType<TField>(
 		this IThat<IEnumerable<FieldInfo?>> subject)
 		=> AreOfType(subject, typeof(TField));
 
 	/// <summary>
-	///     Verifies that all fields in the filtered collection are of type <paramref name="fieldType" />.
+	///     Verifies that all fields in the filtered collection are of type <paramref name="fieldType" /> (or a subtype).
 	/// </summary>
 	public static FieldsOfTypeResult<IEnumerable<FieldInfo?>, IThat<IEnumerable<FieldInfo?>>> AreOfType(
 		this IThat<IEnumerable<FieldInfo?>> subject, Type fieldType)
@@ -40,7 +40,7 @@ public static partial class ThatFields
 
 #if NET8_0_OR_GREATER
 	/// <summary>
-	///     Verifies that all fields in the filtered collection are of type <typeparamref name="TField" />.
+	///     Verifies that all fields in the filtered collection are of type <typeparamref name="TField" /> (or a subtype).
 	/// </summary>
 	public static FieldsOfTypeResult<IAsyncEnumerable<FieldInfo?>, IThat<IAsyncEnumerable<FieldInfo?>>>
 		AreOfType<TField>(
@@ -48,7 +48,7 @@ public static partial class ThatFields
 		=> AreOfType(subject, typeof(TField));
 
 	/// <summary>
-	///     Verifies that all fields in the filtered collection are of type <paramref name="fieldType" />.
+	///     Verifies that all fields in the filtered collection are of type <paramref name="fieldType" /> (or a subtype).
 	/// </summary>
 	public static FieldsOfTypeResult<IAsyncEnumerable<FieldInfo?>, IThat<IAsyncEnumerable<FieldInfo?>>> AreOfType(
 		this IThat<IAsyncEnumerable<FieldInfo?>> subject, Type fieldType)
@@ -78,13 +78,13 @@ public static partial class ThatFields
 		TypeFilterOptions IOptionsProvider<TypeFilterOptions>.Options => typeFilterOptions;
 
 		/// <summary>
-		///     Allow an alternative type <typeparamref name="TField" />.
+		///     Allow an alternative type <typeparamref name="TField" /> (or a subtype).
 		/// </summary>
 		public FieldsOfTypeResult<TValue, TResult> OrOfType<TField>()
 			=> OrOfType(typeof(TField));
 
 		/// <summary>
-		///     Allow an alternative type <paramref name="fieldType" />.
+		///     Allow an alternative type <paramref name="fieldType" /> (or a subtype).
 		/// </summary>
 		public FieldsOfTypeResult<TValue, TResult> OrOfType(Type fieldType)
 		{

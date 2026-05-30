@@ -15,7 +15,9 @@ public sealed partial class ThatField
 				FieldInfo? subject = null;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<int>();
+				{
+					await That(subject).IsOfExactType<int>();
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -31,7 +33,9 @@ public sealed partial class ThatField
 				FieldInfo subject = typeof(TestClass).GetField(nameof(TestClass.DummyBaseField))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<DummyBase>();
+				{
+					await That(subject).IsOfExactType<DummyBase>();
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -42,7 +46,9 @@ public sealed partial class ThatField
 				FieldInfo subject = typeof(TestClass).GetField(nameof(TestClass.DummyField))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<DummyBase>();
+				{
+					await That(subject).IsOfExactType<DummyBase>();
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
@@ -53,29 +59,35 @@ public sealed partial class ThatField
 			}
 		}
 
-		public sealed class TypeTests
+		public sealed class NegatedTests
 		{
 			[Fact]
-			public async Task WhenFieldIsOfExactType_ShouldSucceed()
+			public async Task WhenFieldIsOfExactType_ShouldFail()
 			{
 				FieldInfo subject = typeof(TestClass).GetField(nameof(TestClass.DummyBaseField))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType(typeof(DummyBase));
+				{
+					await That(subject).DoesNotComplyWith(it => it.IsOfExactType<DummyBase>());
+				}
 
-				await That(Act).DoesNotThrow();
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             is not of exact type *DummyBase,
+					             but it did
+					             """).AsWildcard();
 			}
-		}
 
-		public sealed class OrOfExactTypeTests
-		{
 			[Fact]
-			public async Task WithMultipleOrOfExactType_ShouldSupportChaining()
+			public async Task WhenFieldTypeInheritsFromExpectedType_ShouldSucceed()
 			{
 				FieldInfo subject = typeof(TestClass).GetField(nameof(TestClass.DummyField))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<DummyBase>().OrOfType(typeof(bool)).OrOfExactType<Dummy>();
+				{
+					await That(subject).DoesNotComplyWith(it => it.IsOfExactType<DummyBase>());
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -98,5 +110,39 @@ public sealed partial class ThatField
 		private class Dummy : DummyBase
 		{
 		}
+
+#pragma warning disable CA2263 // tests intentionally exercise the non-generic Type overload
+		public sealed class TypeTests
+		{
+			[Fact]
+			public async Task WhenFieldIsOfExactType_ShouldSucceed()
+			{
+				FieldInfo subject = typeof(TestClass).GetField(nameof(TestClass.DummyBaseField))!;
+
+				async Task Act()
+				{
+					await That(subject).IsOfExactType(typeof(DummyBase));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+		}
+
+		public sealed class OrOfExactTypeTests
+		{
+			[Fact]
+			public async Task WithMultipleOrOfExactType_ShouldSupportChaining()
+			{
+				FieldInfo subject = typeof(TestClass).GetField(nameof(TestClass.DummyField))!;
+
+				async Task Act()
+				{
+					await That(subject).IsOfExactType<DummyBase>().OrOfType(typeof(bool)).OrOfExactType<Dummy>();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+		}
+#pragma warning restore CA2263
 	}
 }

@@ -17,7 +17,7 @@ namespace aweXpect.Reflection;
 public static partial class ThatProperties
 {
 	/// <summary>
-	///     Verifies that all properties in the filtered collection are of type <typeparamref name="TProperty" />.
+	///     Verifies that all properties in the filtered collection are of type <typeparamref name="TProperty" /> (or a subtype).
 	/// </summary>
 	public static PropertiesOfTypeResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>>
 		AreOfType<TProperty>(
@@ -25,7 +25,7 @@ public static partial class ThatProperties
 		=> AreOfType(subject, typeof(TProperty));
 
 	/// <summary>
-	///     Verifies that all properties in the filtered collection are of type <paramref name="propertyType" />.
+	///     Verifies that all properties in the filtered collection are of type <paramref name="propertyType" /> (or a subtype).
 	/// </summary>
 	public static PropertiesOfTypeResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>> AreOfType(
 		this IThat<IEnumerable<PropertyInfo?>> subject, Type propertyType)
@@ -41,7 +41,7 @@ public static partial class ThatProperties
 
 #if NET8_0_OR_GREATER
 	/// <summary>
-	///     Verifies that all properties in the filtered collection are of type <typeparamref name="TProperty" />.
+	///     Verifies that all properties in the filtered collection are of type <typeparamref name="TProperty" /> (or a subtype).
 	/// </summary>
 	public static PropertiesOfTypeResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>>
 		AreOfType<TProperty>(
@@ -49,7 +49,7 @@ public static partial class ThatProperties
 		=> AreOfType(subject, typeof(TProperty));
 
 	/// <summary>
-	///     Verifies that all properties in the filtered collection are of type <paramref name="propertyType" />.
+	///     Verifies that all properties in the filtered collection are of type <paramref name="propertyType" /> (or a subtype).
 	/// </summary>
 	public static PropertiesOfTypeResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>>
 		AreOfType(
@@ -80,13 +80,13 @@ public static partial class ThatProperties
 		TypeFilterOptions IOptionsProvider<TypeFilterOptions>.Options => typeFilterOptions;
 
 		/// <summary>
-		///     Allow an alternative type <typeparamref name="TProperty" />.
+		///     Allow an alternative type <typeparamref name="TProperty" /> (or a subtype).
 		/// </summary>
 		public PropertiesOfTypeResult<TValue, TResult> OrOfType<TProperty>()
 			=> OrOfType(typeof(TProperty));
 
 		/// <summary>
-		///     Allow an alternative type <paramref name="propertyType" />.
+		///     Allow an alternative type <paramref name="propertyType" /> (or a subtype).
 		/// </summary>
 		public PropertiesOfTypeResult<TValue, TResult> OrOfType(Type propertyType)
 		{

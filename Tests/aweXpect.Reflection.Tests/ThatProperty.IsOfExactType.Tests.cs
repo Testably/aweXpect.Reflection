@@ -15,7 +15,9 @@ public sealed partial class ThatProperty
 				PropertyInfo? subject = null;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<int>();
+				{
+					await That(subject).IsOfExactType<int>();
+				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
@@ -31,7 +33,9 @@ public sealed partial class ThatProperty
 				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyBaseProperty))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<DummyBase>();
+				{
+					await That(subject).IsOfExactType<DummyBase>();
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -42,7 +46,9 @@ public sealed partial class ThatProperty
 				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyProperty))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<DummyBase>();
+				{
+					await That(subject).IsOfExactType<DummyBase>();
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
@@ -53,45 +59,35 @@ public sealed partial class ThatProperty
 			}
 		}
 
-		public sealed class TypeTests
+		public sealed class NegatedTests
 		{
 			[Fact]
-			public async Task WhenPropertyIsOfExactType_ShouldSucceed()
+			public async Task WhenPropertyIsOfExactType_ShouldFail()
 			{
 				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyBaseProperty))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType(typeof(DummyBase));
-
-				await That(Act).DoesNotThrow();
-			}
-
-			[Fact]
-			public async Task WhenPropertyTypeInheritsFromExpectedType_ShouldFail()
-			{
-				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyProperty))!;
-
-				async Task Act()
-					=> await That(subject).IsOfExactType(typeof(DummyBase));
+				{
+					await That(subject).DoesNotComplyWith(it => it.IsOfExactType<DummyBase>());
+				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             is of exact type *DummyBase,
-					             but it was of type *Dummy
+					             is not of exact type *DummyBase,
+					             but it did
 					             """).AsWildcard();
 			}
-		}
 
-		public sealed class OrOfExactTypeTests
-		{
 			[Fact]
-			public async Task WithMultipleOrOfExactType_ShouldSupportChaining()
+			public async Task WhenPropertyTypeInheritsFromExpectedType_ShouldSucceed()
 			{
 				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyProperty))!;
 
 				async Task Act()
-					=> await That(subject).IsOfExactType<DummyBase>().OrOfType(typeof(bool)).OrOfExactType<Dummy>();
+				{
+					await That(subject).DoesNotComplyWith(it => it.IsOfExactType<DummyBase>());
+				}
 
 				await That(Act).DoesNotThrow();
 			}
@@ -112,5 +108,57 @@ public sealed partial class ThatProperty
 		private class Dummy : DummyBase
 		{
 		}
+
+#pragma warning disable CA2263 // tests intentionally exercise the non-generic Type overload
+		public sealed class TypeTests
+		{
+			[Fact]
+			public async Task WhenPropertyIsOfExactType_ShouldSucceed()
+			{
+				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyBaseProperty))!;
+
+				async Task Act()
+				{
+					await That(subject).IsOfExactType(typeof(DummyBase));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenPropertyTypeInheritsFromExpectedType_ShouldFail()
+			{
+				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyProperty))!;
+
+				async Task Act()
+				{
+					await That(subject).IsOfExactType(typeof(DummyBase));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             is of exact type *DummyBase,
+					             but it was of type *Dummy
+					             """).AsWildcard();
+			}
+		}
+
+		public sealed class OrOfExactTypeTests
+		{
+			[Fact]
+			public async Task WithMultipleOrOfExactType_ShouldSupportChaining()
+			{
+				PropertyInfo subject = typeof(TestClass).GetProperty(nameof(TestClass.DummyProperty))!;
+
+				async Task Act()
+				{
+					await That(subject).IsOfExactType<DummyBase>().OrOfType(typeof(bool)).OrOfExactType<Dummy>();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+		}
+#pragma warning restore CA2263
 	}
 }

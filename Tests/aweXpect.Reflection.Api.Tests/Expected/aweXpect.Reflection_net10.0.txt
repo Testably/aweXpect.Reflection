@@ -1249,7 +1249,7 @@ namespace aweXpect.Reflection.Options
     public class TypeFilterOptions
     {
         public TypeFilterOptions() { }
-        public void AppendDescription(System.Text.StringBuilder stringBuilder, aweXpect.Core.ExpectationGrammars grammar, string singular = "returns ", string plural = "return ", string negatedSingular = "does not return ") { }
+        public void AppendDescription(System.Text.StringBuilder stringBuilder, aweXpect.Core.ExpectationGrammars grammar) { }
         public bool Matches(System.Type? type) { }
         public void RegisterType(System.Type type, bool forceDirect) { }
     }

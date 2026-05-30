@@ -12,14 +12,14 @@ namespace aweXpect.Reflection;
 public static partial class ThatField
 {
 	/// <summary>
-	///     Verifies that the <see cref="FieldInfo" /> is of type <typeparamref name="TField" />.
+	///     Verifies that the <see cref="FieldInfo" /> is of type <typeparamref name="TField" /> (or a subtype).
 	/// </summary>
 	public static FieldOfTypeResult<FieldInfo?, IThat<FieldInfo?>> IsOfType<TField>(
 		this IThat<FieldInfo?> subject)
 		=> IsOfType(subject, typeof(TField));
 
 	/// <summary>
-	///     Verifies that the <see cref="FieldInfo" /> is of type <paramref name="fieldType" />.
+	///     Verifies that the <see cref="FieldInfo" /> is of type <paramref name="fieldType" /> (or a subtype).
 	/// </summary>
 	public static FieldOfTypeResult<FieldInfo?, IThat<FieldInfo?>> IsOfType(
 		this IThat<FieldInfo?> subject, Type fieldType)
@@ -48,13 +48,13 @@ public static partial class ThatField
 		TypeFilterOptions IOptionsProvider<TypeFilterOptions>.Options => typeFilterOptions;
 
 		/// <summary>
-		///     Allow an alternative type <typeparamref name="TField" />.
+		///     Allow an alternative type <typeparamref name="TField" /> (or a subtype).
 		/// </summary>
 		public FieldOfTypeResult<TValue, TResult> OrOfType<TField>()
 			=> OrOfType(typeof(TField));
 
 		/// <summary>
-		///     Allow an alternative type <paramref name="fieldType" />.
+		///     Allow an alternative type <paramref name="fieldType" /> (or a subtype).
 		/// </summary>
 		public FieldOfTypeResult<TValue, TResult> OrOfType(Type fieldType)
 		{

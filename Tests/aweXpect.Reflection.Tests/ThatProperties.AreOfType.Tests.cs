@@ -62,6 +62,7 @@ public sealed partial class ThatProperties
 			}
 		}
 
+#pragma warning disable CA2263 // tests intentionally exercise the non-generic Type overload
 		public sealed class TypeTests
 		{
 			[Fact]
@@ -119,6 +120,7 @@ public sealed partial class ThatProperties
 					             """).AsWildcard();
 			}
 		}
+#pragma warning restore CA2263
 
 		public sealed class NegatedTests
 		{

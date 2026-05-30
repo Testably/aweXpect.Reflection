@@ -12,14 +12,14 @@ namespace aweXpect.Reflection;
 public static partial class ThatProperty
 {
 	/// <summary>
-	///     Verifies that the <see cref="PropertyInfo" /> is of type <typeparamref name="TProperty" />.
+	///     Verifies that the <see cref="PropertyInfo" /> is of type <typeparamref name="TProperty" /> (or a subtype).
 	/// </summary>
 	public static PropertyOfTypeResult<PropertyInfo?, IThat<PropertyInfo?>> IsOfType<TProperty>(
 		this IThat<PropertyInfo?> subject)
 		=> IsOfType(subject, typeof(TProperty));
 
 	/// <summary>
-	///     Verifies that the <see cref="PropertyInfo" /> is of type <paramref name="propertyType" />.
+	///     Verifies that the <see cref="PropertyInfo" /> is of type <paramref name="propertyType" /> (or a subtype).
 	/// </summary>
 	public static PropertyOfTypeResult<PropertyInfo?, IThat<PropertyInfo?>> IsOfType(
 		this IThat<PropertyInfo?> subject, Type propertyType)
@@ -48,13 +48,13 @@ public static partial class ThatProperty
 		TypeFilterOptions IOptionsProvider<TypeFilterOptions>.Options => typeFilterOptions;
 
 		/// <summary>
-		///     Allow an alternative type <typeparamref name="TProperty" />.
+		///     Allow an alternative type <typeparamref name="TProperty" /> (or a subtype).
 		/// </summary>
 		public PropertyOfTypeResult<TValue, TResult> OrOfType<TProperty>()
 			=> OrOfType(typeof(TProperty));
 
 		/// <summary>
-		///     Allow an alternative type <paramref name="propertyType" />.
+		///     Allow an alternative type <paramref name="propertyType" /> (or a subtype).
 		/// </summary>
 		public PropertyOfTypeResult<TValue, TResult> OrOfType(Type propertyType)
 		{

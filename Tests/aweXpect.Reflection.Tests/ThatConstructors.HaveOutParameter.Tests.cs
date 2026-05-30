@@ -49,6 +49,92 @@ public sealed partial class ThatConstructors
 					             but it contained constructors without an out parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task ByType_WhenAllHaveOutParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOutParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOutParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByType_WhenNotAllHaveOutParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOutParameter).GetConstructors().Single(),
+					typeof(ClassWithoutModifiers).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOutParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int with out modifier,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task ByTypeAndName_WhenAllHaveOutParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOutParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOutParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactly_WhenAllHaveOutParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOutParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOutParameterExactly(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactlyAndName_WhenAllHaveOutParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOutParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOutParameterExactly(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 
 		public sealed class NegatedTests

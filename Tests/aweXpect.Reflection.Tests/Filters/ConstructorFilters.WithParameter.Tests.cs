@@ -178,6 +178,49 @@ public sealed partial class ConstructorFilters
 			}
 
 			[Fact]
+			public async Task WithParameterOfType_WithType_ShouldFilterForConstructorsWithParameterOfSpecificType()
+			{
+				Filtered.Constructors constructors = In.Type<TestClassWithConstructorParameters>()
+					.Constructors().WithParameter(typeof(string));
+
+				await That(constructors).IsEqualTo([
+					typeof(TestClassWithConstructorParameters).GetConstructor([typeof(string),])!,
+					typeof(TestClassWithConstructorParameters).GetConstructor([typeof(int), typeof(string),])!,
+					typeof(TestClassWithConstructorParameters).GetConstructor([typeof(string), typeof(int),])!,
+				]).InAnyOrder();
+				await That(constructors.GetDescription())
+					.IsEqualTo("constructors with parameter of type string in").AsPrefix();
+			}
+
+			[Fact]
+			public async Task WithParameterOfType_WithType_ShouldIncludeConstructorsWithParameterOfDerivedType()
+			{
+				Filtered.Constructors constructors = In.Type<TestClassWithInheritedConstructorParameters>()
+					.Constructors().WithParameter(typeof(BaseParameter));
+
+				await That(constructors).IsEqualTo([
+					typeof(TestClassWithInheritedConstructorParameters).GetConstructor([typeof(BaseParameter),])!,
+					typeof(TestClassWithInheritedConstructorParameters).GetConstructor([typeof(DerivedParameter),])!,
+				]).InAnyOrder();
+				await That(constructors.GetDescription())
+					.IsEqualTo("constructors with parameter of type ").AsPrefix();
+			}
+
+			[Fact]
+			public async Task WithParameterOfTypeAndName_WithType_ShouldFilterForConstructorsWithParameterOfSpecificTypeAndName()
+			{
+				Filtered.Constructors constructors = In.Type<TestClassWithConstructorParameters>()
+					.Constructors().WithParameter(typeof(string), "name");
+
+				await That(constructors).IsEqualTo([
+					typeof(TestClassWithConstructorParameters).GetConstructor([typeof(string),])!,
+					typeof(TestClassWithConstructorParameters).GetConstructor([typeof(int), typeof(string),])!,
+				]).InAnyOrder();
+				await That(constructors.GetDescription())
+					.IsEqualTo("constructors with parameter of type string and name equal to \"name\" in").AsPrefix();
+			}
+
+			[Fact]
 			public async Task WithParameterOfType_ShouldIncludeConstructorsWithParameterOfDerivedType()
 			{
 				Filtered.Constructors constructors = In.Type<TestClassWithInheritedConstructorParameters>()

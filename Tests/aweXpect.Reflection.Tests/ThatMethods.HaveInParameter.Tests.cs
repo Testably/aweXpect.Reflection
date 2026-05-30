@@ -48,6 +48,39 @@ public sealed partial class ThatMethods
 					             but it contained methods without an in parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WithType_WhenAllHaveInParameterOfType_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInParameter))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveInParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithType_WhenNotAllHaveInParameterOfType_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInParameter))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithoutModifiers))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveInParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
 		}
 
 		public sealed class NegatedTests

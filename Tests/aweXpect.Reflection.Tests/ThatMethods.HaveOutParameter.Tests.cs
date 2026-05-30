@@ -48,6 +48,39 @@ public sealed partial class ThatMethods
 					             but it contained methods without an out parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WithType_WhenAllHaveOutParameterOfType_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithOutParameter))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveOutParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithType_WhenNotAllHaveOutParameterOfType_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithOutParameter))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithoutModifiers))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveOutParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
 		}
 
 		public sealed class NegatedTests

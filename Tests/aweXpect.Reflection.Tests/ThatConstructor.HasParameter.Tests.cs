@@ -143,6 +143,50 @@ public sealed partial class ThatConstructor
 			}
 
 			[Fact]
+			public async Task HasParameterByTypeArgument_WhenParameterDoesNotExist_ShouldFail()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter of type int,
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgument_WhenParameterExists_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgument_WhenParameterIsSubtype_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(Stream),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(IDisposable));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task HasParameterByTypeAndName_WhenParameterDoesNotExist_ShouldFail()
 			{
 				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
@@ -181,6 +225,55 @@ public sealed partial class ThatConstructor
 				async Task Act()
 				{
 					await That(constructorInfo).HasParameter<string>("value");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter of type string with name "value",
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgumentAndName_WhenParameterDoesNotExist_ShouldFail()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int), "value");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter of type int with name "value",
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgumentAndName_WhenParameterExists_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgumentAndName_WhenWrongType_ShouldFail()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string), "value");
 				}
 
 				await That(Act).Throws<XunitException>()
@@ -310,6 +403,37 @@ public sealed partial class ThatConstructor
 			}
 
 			[Fact]
+			public async Task HasParameterByTypeArgument_WhenParameterDoesNotExist_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).DoesNotComplyWith(it => it.HasParameter(typeof(int)));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgument_WhenParameterExists_ShouldFail()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).DoesNotComplyWith(it => it.HasParameter(typeof(int)));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             does not have parameter of type int,
+					             but it did
+					             """);
+			}
+
+			[Fact]
 			public async Task HasParameterByTypeAndName_WhenParameterDoesNotExist_ShouldSucceed()
 			{
 				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
@@ -330,6 +454,37 @@ public sealed partial class ThatConstructor
 				async Task Act()
 				{
 					await That(constructorInfo).DoesNotComplyWith(it => it.HasParameter<int>("value"));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             does not have parameter of type int with name "value",
+					             but it did
+					             """);
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgumentAndName_WhenParameterDoesNotExist_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).DoesNotComplyWith(it => it.HasParameter(typeof(int), "value"));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HasParameterByTypeArgumentAndName_WhenParameterExists_ShouldFail()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).DoesNotComplyWith(it => it.HasParameter(typeof(int), "value"));
 				}
 
 				await That(Act).Throws<XunitException>()

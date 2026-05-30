@@ -140,6 +140,97 @@ public sealed partial class ThatMethods
 					             """);
 			}
 
+			[Fact]
+			public async Task HaveParameterByTypeParameter_WhenAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameter_WhenAllHaveSubtypeParameter_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithStream))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithMemoryStream))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(IDisposable));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameter_WhenNotAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // No int parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter of type int,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameterAndName_WhenAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameterAndName_WhenNotAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(
+						nameof(TestClass.MethodWithString))!, // Has string "name", not int "value"
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int), "value");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter of type int with name "value",
+					             but at least one did not
+					             """);
+			}
+
 #pragma warning disable CA1822
 			// ReSharper disable UnusedParameter.Local
 			// ReSharper disable UnusedMember.Local
@@ -266,6 +357,81 @@ public sealed partial class ThatMethods
 				async Task Act()
 				{
 					await That(methods).DoesNotComplyWith(they => they.HaveParameter<int>("value"));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameter_WhenAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).DoesNotComplyWith(they => they.HaveParameter(typeof(int)));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             not all have parameter of type int,
+					             but all did
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameter_WhenNotAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // No int parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).DoesNotComplyWith(they => they.HaveParameter(typeof(int)));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameterAndName_WhenAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).DoesNotComplyWith(they => they.HaveParameter(typeof(int), "value"));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             not all have parameter of type int with name "value",
+					             but all did
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeParameterAndName_WhenNotAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, typeof(TestClass).GetMethod(
+						nameof(TestClass.MethodWithString))!, // Has string "name", not int "value"
+				};
+
+				async Task Act()
+				{
+					await That(methods).DoesNotComplyWith(they => they.HaveParameter(typeof(int), "value"));
 				}
 
 				await That(Act).DoesNotThrow();

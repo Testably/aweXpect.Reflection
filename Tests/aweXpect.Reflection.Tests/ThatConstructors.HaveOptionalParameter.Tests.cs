@@ -49,6 +49,92 @@ public sealed partial class ThatConstructors
 					             but it contained constructors without an optional parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task ByType_WhenAllHaveOptionalParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOptionalParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOptionalParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByType_WhenNotAllHaveOptionalParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOptionalParameter).GetConstructors().Single(),
+					typeof(ClassWithoutModifiers).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOptionalParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int with optional modifier,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task ByTypeAndName_WhenAllHaveOptionalParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOptionalParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOptionalParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactly_WhenAllHaveOptionalParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOptionalParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOptionalParameterExactly(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactlyAndName_WhenAllHaveOptionalParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithOptionalParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveOptionalParameterExactly(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 
 		public sealed class NegatedTests

@@ -48,6 +48,39 @@ public sealed partial class ThatMethods
 					             but it contained methods without a ref parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WithType_WhenAllHaveRefParameterOfType_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithRefParameter))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveRefParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithType_WhenNotAllHaveRefParameterOfType_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithRefParameter))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithoutModifiers))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveRefParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
 		}
 
 		public sealed class NegatedTests

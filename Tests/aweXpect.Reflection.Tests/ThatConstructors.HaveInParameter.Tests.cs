@@ -49,6 +49,92 @@ public sealed partial class ThatConstructors
 					             but it contained constructors without an in parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task ByType_WhenAllHaveInParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithInParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveInParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByType_WhenNotAllHaveInParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithInParameter).GetConstructors().Single(),
+					typeof(ClassWithoutModifiers).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveInParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int with in modifier,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task ByTypeAndName_WhenAllHaveInParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithInParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveInParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactly_WhenAllHaveInParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithInParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveInParameterExactly(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactlyAndName_WhenAllHaveInParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithInParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveInParameterExactly(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 
 		public sealed class NegatedTests

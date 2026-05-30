@@ -49,6 +49,92 @@ public sealed partial class ThatConstructors
 					             but it contained constructors without a ref parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task ByType_WhenAllHaveRefParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithRefParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveRefParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByType_WhenNotAllHaveRefParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithRefParameter).GetConstructors().Single(),
+					typeof(ClassWithoutModifiers).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveRefParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int with ref modifier,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task ByTypeAndName_WhenAllHaveRefParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithRefParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveRefParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactly_WhenAllHaveRefParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithRefParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveRefParameterExactly(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task ByTypeExactlyAndName_WhenAllHaveRefParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(ClassWithRefParameter).GetConstructors().Single(),
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveRefParameterExactly(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 
 		public sealed class NegatedTests

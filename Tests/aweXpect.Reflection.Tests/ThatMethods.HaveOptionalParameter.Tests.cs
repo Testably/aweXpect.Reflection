@@ -48,6 +48,39 @@ public sealed partial class ThatMethods
 					             but it contained methods without an optional parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WithType_WhenAllHaveOptionalParameterOfType_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithOptionalParameter))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveOptionalParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithType_WhenNotAllHaveOptionalParameterOfType_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithOptionalParameter))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithoutModifiers))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveOptionalParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
 		}
 
 		public sealed class NegatedTests

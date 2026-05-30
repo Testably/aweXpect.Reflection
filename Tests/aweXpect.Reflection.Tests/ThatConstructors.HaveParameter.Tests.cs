@@ -138,6 +138,96 @@ public sealed partial class ThatConstructors
 					             """);
 			}
 
+			[Fact]
+			public async Task HaveParameterByTypeInstance_WhenAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(int),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstance_WhenAllHaveSubtypeParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(Stream),])!, typeof(TestClass).GetConstructor([typeof(MemoryStream),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameter(typeof(IDisposable));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstance_WhenNotAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(string),])!, // No int parameter
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstanceAndName_WhenAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(int),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstanceAndName_WhenNotAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(string),])!, // Has string "name", not int "value"
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameter(typeof(int), "value");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int with name "value",
+					             but at least one did not
+					             """);
+			}
+
 			// ReSharper disable UnusedParameter.Local
 			// ReSharper disable UnusedMember.Local
 			private class TestClass
@@ -260,6 +350,80 @@ public sealed partial class ThatConstructors
 				async Task Act()
 				{
 					await That(constructors).DoesNotComplyWith(they => they.HaveParameter<int>("value"));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstance_WhenAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(int),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).DoesNotComplyWith(they => they.HaveParameter(typeof(int)));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             not all have parameter of type int,
+					             but all did
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstance_WhenNotAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(string),])!, // No int parameter
+				};
+
+				async Task Act()
+				{
+					await That(constructors).DoesNotComplyWith(they => they.HaveParameter(typeof(int)));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstanceAndName_WhenAllHaveParameter_ShouldFail()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(int),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).DoesNotComplyWith(they => they.HaveParameter(typeof(int), "value"));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             not all have parameter of type int with name "value",
+					             but all did
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByTypeInstanceAndName_WhenNotAllHaveParameter_ShouldSucceed()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!, typeof(TestClass).GetConstructor([typeof(string),])!, // Has string "name", not int "value"
+				};
+
+				async Task Act()
+				{
+					await That(constructors).DoesNotComplyWith(they => they.HaveParameter(typeof(int), "value"));
 				}
 
 				await That(Act).DoesNotThrow();

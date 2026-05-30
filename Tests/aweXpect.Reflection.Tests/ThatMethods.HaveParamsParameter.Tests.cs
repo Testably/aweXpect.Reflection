@@ -48,6 +48,39 @@ public sealed partial class ThatMethods
 					             but it contained methods without a params parameter *
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WithType_WhenAllHaveParamsParameterOfType_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithParamsParameter))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParamsParameter(typeof(int[]));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithType_WhenNotAllHaveParamsParameterOfType_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithParamsParameter))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithoutModifiers))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParamsParameter(typeof(int[]));
+				}
+
+				await That(Act).Throws<XunitException>();
+			}
 		}
 
 		public sealed class NegatedTests

@@ -5,6 +5,9 @@ using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
 
+// The System.Type overloads are deliberately exercised here alongside the generic ones.
+#pragma warning disable CA2263 // Prefer generic overload when type is known
+
 public sealed partial class ThatConstructors
 {
 	public sealed class HaveParameterExactly

@@ -237,9 +237,3 @@ dotnet_diagnostic.MA0048.severity = none
 dotnet_diagnostic.MA0051.severity = none
 dotnet_diagnostic.MA0099.severity = none
 dotnet_diagnostic.MA0144.severity = none
-
-# Test projects
-[Tests/**.cs]
-
-# Tests deliberately exercise the System.Type overloads alongside the generic ones
-dotnet_diagnostic.CA2263.severity = none

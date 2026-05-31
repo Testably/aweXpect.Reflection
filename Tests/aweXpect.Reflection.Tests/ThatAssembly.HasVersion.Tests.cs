@@ -284,6 +284,25 @@ public sealed partial class ThatAssembly
 			}
 
 			[Fact]
+			public async Task WhenComponentMatches_MessageShouldIncludeResult()
+			{
+				Assembly assembly = typeof(PublicAbstractClass).Assembly;
+				Version version = typeof(PublicAbstractClass).Assembly.GetName().Version!;
+
+				async Task Act()
+				{
+					await That(assembly).DoesNotComplyWith(it => it.HasVersion().WithMajor.GreaterThanOrEqualTo(0));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					             Expected that assembly
+					             does not have major version greater than or equal to 0,
+					             but it had version {version}
+					             """);
+			}
+
+			[Fact]
 			public async Task WhenComponentMatches_ShouldFail()
 			{
 				Assembly assembly = typeof(PublicAbstractClass).Assembly;

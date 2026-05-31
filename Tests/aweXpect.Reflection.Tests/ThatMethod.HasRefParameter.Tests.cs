@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -84,7 +84,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of type int with name "value" with ref modifier,
+					             has parameter of type int with name equal to "value" with ref modifier,
 					             but it did not
 					             """);
 			}
@@ -102,7 +102,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter with name "value" with ref modifier,
+					             has parameter with name equal to "value" with ref modifier,
 					             but it did not
 					             """);
 			}
@@ -138,7 +138,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of exact type int with name "value" with ref modifier,
+					             has parameter of exact type int with name equal to "value" with ref modifier,
 					             but it did not
 					             """);
 			}

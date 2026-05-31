@@ -53,7 +53,8 @@ public static partial class ThatMethod
 				.AddConstraint((it, grammars)
 					=> new HasParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -96,7 +97,8 @@ public static partial class ThatMethod
 				.AddConstraint((it, grammars)
 					=> new HasParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -118,7 +120,8 @@ public static partial class ThatMethod
 				.AddConstraint((it, grammars)
 					=> new HasParameterConstraint(it, grammars, null, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -132,6 +135,7 @@ public static partial class ThatMethod
 		string? expectedName,
 		CollectionIndexOptions collectionIndexOptions,
 		ParameterFilterOptions parameterFilterOptions,
+		StringEqualityOptions? stringEqualityOptions = null,
 		bool exactType = false)
 		: ConstraintResult.WithNotNullValue<MethodInfo?>(it, grammars),
 			IAsyncConstraint<MethodInfo?>
@@ -171,7 +175,9 @@ public static partial class ThatMethod
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ")
+					.Append((stringEqualityOptions ?? new StringEqualityOptions())
+						.GetExpectation(expectedName, ExpectationGrammars.None));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());
@@ -196,7 +202,9 @@ public static partial class ThatMethod
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ")
+					.Append((stringEqualityOptions ?? new StringEqualityOptions())
+						.GetExpectation(expectedName, ExpectationGrammars.None));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());

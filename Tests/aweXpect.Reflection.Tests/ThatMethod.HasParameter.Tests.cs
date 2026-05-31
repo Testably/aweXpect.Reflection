@@ -84,7 +84,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter with name "value",
+					             has parameter with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -100,6 +100,24 @@ public sealed partial class ThatMethod
 				}
 
 				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task HasParameterByName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				MethodInfo methodInfo = typeof(TestClass).GetMethod(nameof(TestClass.MethodWithoutParameters))!;
+
+				async Task Act()
+				{
+					await That(methodInfo).HasParameter("value").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methodInfo
+					             has parameter with name equal to "value" ignoring case,
+					             but it did not
+					             """);
 			}
 
 			[Fact]
@@ -159,7 +177,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of type int with name "value",
+					             has parameter of type int with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -190,7 +208,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of type string with name "value",
+					             has parameter of type string with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -375,7 +393,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of type int with name "value",
+					             has parameter of type int with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -406,7 +424,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of type string with name "value",
+					             has parameter of type string with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -623,7 +641,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             does not have parameter with name "value",
+					             does not have parameter with name equal to "value",
 					             but it did
 					             """);
 			}
@@ -685,7 +703,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             does not have parameter of type int with name "value",
+					             does not have parameter of type int with name equal to "value",
 					             but it did
 					             """);
 			}
@@ -747,7 +765,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             does not have parameter of type int with name "value",
+					             does not have parameter of type int with name equal to "value",
 					             but it did
 					             """);
 			}

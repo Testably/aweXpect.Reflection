@@ -77,7 +77,8 @@ public static partial class ThatMethods
 				.AddConstraint<IEnumerable<MethodInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -101,7 +102,8 @@ public static partial class ThatMethods
 				.AddConstraint<IEnumerable<MethodInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -124,7 +126,8 @@ public static partial class ThatMethods
 				.AddConstraint<IEnumerable<MethodInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, null, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -195,7 +198,8 @@ public static partial class ThatMethods
 				.AddConstraint<IAsyncEnumerable<MethodInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -221,7 +225,8 @@ public static partial class ThatMethods
 				.AddConstraint<IAsyncEnumerable<MethodInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -246,7 +251,8 @@ public static partial class ThatMethods
 				.AddConstraint<IAsyncEnumerable<MethodInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, null, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -260,6 +266,7 @@ public static partial class ThatMethods
 		string? expectedName,
 		CollectionIndexOptions collectionIndexOptions,
 		ParameterFilterOptions parameterFilterOptions,
+		StringEqualityOptions? stringEqualityOptions = null,
 		bool exactType = false)
 		: CollectionConstraintResult<MethodInfo?>(grammars),
 			IAsyncConstraint<IEnumerable<MethodInfo?>>
@@ -323,7 +330,9 @@ public static partial class ThatMethods
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ")
+					.Append((stringEqualityOptions ?? new StringEqualityOptions())
+						.GetExpectation(expectedName, ExpectationGrammars.None));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());
@@ -348,7 +357,9 @@ public static partial class ThatMethods
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ")
+					.Append((stringEqualityOptions ?? new StringEqualityOptions())
+						.GetExpectation(expectedName, ExpectationGrammars.None));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());

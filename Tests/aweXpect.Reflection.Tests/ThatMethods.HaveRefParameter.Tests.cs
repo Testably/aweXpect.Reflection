@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Xunit.Sdk;
 
@@ -304,7 +304,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "value" with ref modifier,
+					             all have parameter of type int with name equal to "value" with ref modifier,
 					             but at least one did not
 					             """);
 			}
@@ -326,7 +326,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "value" with ref modifier,
+					             all have parameter of type int with name equal to "value" with ref modifier,
 					             but at least one did not
 					             """);
 			}
@@ -348,7 +348,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter with name "value" with ref modifier,
+					             all have parameter with name equal to "value" with ref modifier,
 					             but at least one did not
 					             """);
 			}
@@ -414,7 +414,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type int with name "value" with ref modifier,
+					             all have parameter of exact type int with name equal to "value" with ref modifier,
 					             but at least one did not
 					             """);
 			}
@@ -436,7 +436,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type int with name "value" with ref modifier,
+					             all have parameter of exact type int with name equal to "value" with ref modifier,
 					             but at least one did not
 					             """);
 			}

@@ -77,7 +77,8 @@ public static partial class ThatConstructors
 				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -101,7 +102,8 @@ public static partial class ThatConstructors
 				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -124,7 +126,8 @@ public static partial class ThatConstructors
 				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, null, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -195,7 +198,8 @@ public static partial class ThatConstructors
 				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -221,7 +225,8 @@ public static partial class ThatConstructors
 				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, parameterType, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -246,7 +251,8 @@ public static partial class ThatConstructors
 				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
 					=> new HaveParameterConstraint(grammars, null, expected,
 						collectionIndexOptions,
-						parameterFilterOptions)),
+						parameterFilterOptions,
+						stringEqualityOptions)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions,
@@ -260,6 +266,7 @@ public static partial class ThatConstructors
 		string? expectedName,
 		CollectionIndexOptions collectionIndexOptions,
 		ParameterFilterOptions parameterFilterOptions,
+		StringEqualityOptions? stringEqualityOptions = null,
 		bool exactType = false)
 		: CollectionConstraintResult<ConstructorInfo?>(grammars),
 			IAsyncConstraint<IEnumerable<ConstructorInfo?>>
@@ -324,7 +331,9 @@ public static partial class ThatConstructors
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ")
+					.Append((stringEqualityOptions ?? new StringEqualityOptions())
+						.GetExpectation(expectedName, ExpectationGrammars.None));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());
@@ -349,7 +358,9 @@ public static partial class ThatConstructors
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ")
+					.Append((stringEqualityOptions ?? new StringEqualityOptions())
+						.GetExpectation(expectedName, ExpectationGrammars.None));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());

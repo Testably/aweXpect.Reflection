@@ -88,7 +88,25 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of exact type IDisposable with name "stream",
+					             has parameter of exact type IDisposable with name equal to "stream",
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task WithName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(Stream),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameterExactly<Stream>("doesNotExist").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter of exact type Stream with name equal to "doesNotExist" ignoring case,
 					             but it did not
 					             """);
 			}
@@ -106,7 +124,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of exact type IDisposable with name "stream",
+					             has parameter of exact type IDisposable with name equal to "stream",
 					             but it did not
 					             """);
 			}
@@ -124,7 +142,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of exact type Stream with name "other",
+					             has parameter of exact type Stream with name equal to "other",
 					             but it did not
 					             """);
 			}
@@ -204,7 +222,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of exact type Stream with name "other",
+					             has parameter of exact type Stream with name equal to "other",
 					             but it did not
 					             """);
 			}

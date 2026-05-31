@@ -84,7 +84,25 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter with name "value",
+					             has parameter with name equal to "value",
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HasParameterByName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter("doesNotExist").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter with name equal to "doesNotExist" ignoring case,
 					             but it did not
 					             """);
 			}
@@ -203,7 +221,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of type int with name "value",
+					             has parameter of type int with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -234,7 +252,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of type string with name "value",
+					             has parameter of type string with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -252,7 +270,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of type int with name "value",
+					             has parameter of type int with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -283,7 +301,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of type string with name "value",
+					             has parameter of type string with name equal to "value",
 					             but it did not
 					             """);
 			}
@@ -520,7 +538,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             does not have parameter with name "value",
+					             does not have parameter with name equal to "value",
 					             but it did
 					             """);
 			}
@@ -613,7 +631,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             does not have parameter of type int with name "value",
+					             does not have parameter of type int with name equal to "value",
 					             but it did
 					             """);
 			}
@@ -644,7 +662,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             does not have parameter of type int with name "value",
+					             does not have parameter of type int with name equal to "value",
 					             but it did
 					             """);
 			}

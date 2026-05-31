@@ -26,7 +26,7 @@ public static partial class ThatConstructor
 					=> new HasParameterConstraint(it, grammars, parameterType, null,
 						collectionIndexOptions,
 						parameterFilterOptions,
-						true)),
+						exactType: true)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions);
@@ -50,6 +50,7 @@ public static partial class ThatConstructor
 					=> new HasParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
 						parameterFilterOptions,
+						stringEqualityOptions,
 						true)),
 			subject,
 			collectionIndexOptions,
@@ -72,7 +73,7 @@ public static partial class ThatConstructor
 					=> new HasParameterConstraint(it, grammars, parameterType, null,
 						collectionIndexOptions,
 						parameterFilterOptions,
-						true)),
+						exactType: true)),
 			subject,
 			collectionIndexOptions,
 			parameterFilterOptions);
@@ -95,6 +96,7 @@ public static partial class ThatConstructor
 					=> new HasParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
 						parameterFilterOptions,
+						stringEqualityOptions,
 						true)),
 			subject,
 			collectionIndexOptions,

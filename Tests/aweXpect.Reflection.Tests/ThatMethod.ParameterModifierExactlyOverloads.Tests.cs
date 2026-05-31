@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using Xunit.Sdk;
 
@@ -323,7 +323,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of exact type int with name "other" with ref modifier,
+					             has parameter of exact type int with name equal to "other" with ref modifier,
 					             but it did not
 					             """);
 			}

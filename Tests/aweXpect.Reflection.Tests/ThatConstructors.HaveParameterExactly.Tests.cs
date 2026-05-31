@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit.Sdk;
@@ -147,7 +147,28 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type IDisposable with name "stream",
+					             all have parameter of exact type IDisposable with name equal to "stream",
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task WithName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(Stream),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameterExactly<Stream>("doesNotExist").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of exact type Stream with name equal to "doesNotExist" ignoring case,
 					             but at least one did not
 					             """);
 			}
@@ -168,7 +189,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type IDisposable with name "stream",
+					             all have parameter of exact type IDisposable with name equal to "stream",
 					             but at least one did not
 					             """);
 			}
@@ -189,7 +210,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}
@@ -210,7 +231,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}
@@ -326,7 +347,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type IDisposable with name "stream",
+					             all have parameter of exact type IDisposable with name equal to "stream",
 					             but at least one did not
 					             """);
 			}
@@ -345,7 +366,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type IDisposable with name "stream",
+					             all have parameter of exact type IDisposable with name equal to "stream",
 					             but at least one did not
 					             """);
 			}
@@ -364,7 +385,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}
@@ -383,7 +404,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}

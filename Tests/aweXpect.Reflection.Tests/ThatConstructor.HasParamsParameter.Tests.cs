@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using Xunit.Sdk;
 
@@ -93,7 +93,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of type int[] with name "values" with params modifier,
+					             has parameter of type int[] with name equal to "values" with params modifier,
 					             but it did not
 					             """);
 			}
@@ -111,7 +111,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter with name "values" with params modifier,
+					             has parameter with name equal to "values" with params modifier,
 					             but it did not
 					             """);
 			}
@@ -147,7 +147,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of exact type int[] with name "values" with params modifier,
+					             has parameter of exact type int[] with name equal to "values" with params modifier,
 					             but it did not
 					             """);
 			}
@@ -184,7 +184,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of type int[] with name "values" with params modifier,
+					             has parameter of type int[] with name equal to "values" with params modifier,
 					             but it did not
 					             """);
 			}
@@ -220,7 +220,7 @@ public sealed partial class ThatConstructor
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructorInfo
-					             has parameter of exact type int[] with name "values" with params modifier,
+					             has parameter of exact type int[] with name equal to "values" with params modifier,
 					             but it did not
 					             """);
 			}

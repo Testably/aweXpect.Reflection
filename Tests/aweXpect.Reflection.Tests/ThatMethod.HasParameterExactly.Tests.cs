@@ -88,7 +88,25 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of exact type Stream with name "other",
+					             has parameter of exact type Stream with name equal to "other",
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task WithName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				MethodInfo methodInfo = typeof(TestClass).GetMethod(nameof(TestClass.MethodWithStream))!;
+
+				async Task Act()
+				{
+					await That(methodInfo).HasParameterExactly<Stream>("other").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methodInfo
+					             has parameter of exact type Stream with name equal to "other" ignoring case,
 					             but it did not
 					             """);
 			}
@@ -106,7 +124,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of exact type IDisposable with name "stream",
+					             has parameter of exact type IDisposable with name equal to "stream",
 					             but it did not
 					             """);
 			}
@@ -186,7 +204,7 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methodInfo
-					             has parameter of exact type Stream with name "other",
+					             has parameter of exact type Stream with name equal to "other",
 					             but it did not
 					             """);
 			}

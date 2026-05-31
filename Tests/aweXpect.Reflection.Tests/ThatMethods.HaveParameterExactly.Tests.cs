@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Xunit.Sdk;
@@ -94,7 +94,28 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "stream",
+					             all have parameter of exact type Stream with name equal to "stream",
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task WithName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.FirstMethodWithStream))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameterExactly<Stream>("doesNotExist").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter of exact type Stream with name equal to "doesNotExist" ignoring case,
 					             but at least one did not
 					             """);
 			}
@@ -115,7 +136,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}
@@ -136,7 +157,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "stream",
+					             all have parameter of exact type Stream with name equal to "stream",
 					             but at least one did not
 					             """);
 			}
@@ -157,7 +178,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}
@@ -281,7 +302,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "stream",
+					             all have parameter of exact type Stream with name equal to "stream",
 					             but at least one did not
 					             """);
 			}
@@ -301,7 +322,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}
@@ -371,7 +392,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "stream",
+					             all have parameter of exact type Stream with name equal to "stream",
 					             but at least one did not
 					             """);
 			}
@@ -391,7 +412,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of exact type Stream with name "other",
+					             all have parameter of exact type Stream with name equal to "other",
 					             but at least one did not
 					             """);
 			}

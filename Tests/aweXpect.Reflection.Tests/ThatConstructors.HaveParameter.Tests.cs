@@ -72,7 +72,28 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "count",
+					             all have parameter of type int with name equal to "count",
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				IEnumerable<ConstructorInfo> constructors = new[]
+				{
+					typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!,
+				};
+
+				async Task Act()
+				{
+					await That(constructors).HaveParameter<int>("count").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructors
+					             all have parameter of type int with name equal to "count" ignoring case,
 					             but at least one did not
 					             """);
 			}
@@ -93,7 +114,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "count",
+					             all have parameter of type int with name equal to "count",
 					             but at least one did not
 					             """);
 			}
@@ -146,7 +167,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter with name "value",
+					             all have parameter with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -236,7 +257,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "value",
+					             all have parameter of type int with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -326,7 +347,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "value",
+					             all have parameter of type int with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -364,7 +385,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "count",
+					             all have parameter of type int with name equal to "count",
 					             but at least one did not
 					             """);
 			}
@@ -383,7 +404,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "count",
+					             all have parameter of type int with name equal to "count",
 					             but at least one did not
 					             """);
 			}
@@ -467,7 +488,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             all have parameter of type int with name "value",
+					             all have parameter of type int with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -548,7 +569,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             not all have parameter with name "value",
+					             not all have parameter with name equal to "value",
 					             but all did
 					             """);
 			}
@@ -622,7 +643,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             not all have parameter of type int with name "value",
+					             not all have parameter of type int with name equal to "value",
 					             but all did
 					             """);
 			}
@@ -696,7 +717,7 @@ public sealed partial class ThatConstructors
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that constructors
-					             not all have parameter of type int with name "value",
+					             not all have parameter of type int with name equal to "value",
 					             but all did
 					             """);
 			}

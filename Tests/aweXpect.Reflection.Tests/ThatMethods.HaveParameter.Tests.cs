@@ -68,7 +68,28 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter with name "value",
+					             all have parameter with name equal to "value",
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task HaveParameterByName_WithIgnoringCase_ShouldIncludeModifierInMessage()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!,
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter("value").IgnoringCase();
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter with name equal to "value" ignoring case,
 					             but at least one did not
 					             """);
 			}
@@ -159,7 +180,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "value",
+					             all have parameter of type int with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -181,7 +202,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "name",
+					             all have parameter of type int with name equal to "name",
 					             but at least one did not
 					             """);
 			}
@@ -203,7 +224,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "name",
+					             all have parameter of type int with name equal to "name",
 					             but at least one did not
 					             """);
 			}
@@ -315,7 +336,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "value",
+					             all have parameter of type int with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -386,7 +407,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "value",
+					             all have parameter of type int with name equal to "value",
 					             but at least one did not
 					             """);
 			}
@@ -406,7 +427,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             all have parameter of type int with name "name",
+					             all have parameter of type int with name equal to "name",
 					             but at least one did not
 					             """);
 			}
@@ -465,7 +486,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             not all have parameter with name "value",
+					             not all have parameter with name equal to "value",
 					             but all did
 					             """);
 			}
@@ -540,7 +561,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             not all have parameter of type int with name "value",
+					             not all have parameter of type int with name equal to "value",
 					             but all did
 					             """);
 			}
@@ -615,7 +636,7 @@ public sealed partial class ThatMethods
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that methods
-					             not all have parameter of type int with name "value",
+					             not all have parameter of type int with name equal to "value",
 					             but all did
 					             """);
 			}

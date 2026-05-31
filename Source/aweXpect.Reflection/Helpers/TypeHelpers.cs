@@ -561,13 +561,8 @@ internal static class TypeHelpers
 	{
 		try
 		{
-			foreach (CustomAttributeData data in type.GetCustomAttributesData())
-			{
-				if (string.Equals(data.AttributeType.FullName, attributeFullName, StringComparison.Ordinal))
-				{
-					return true;
-				}
-			}
+			return type.GetCustomAttributesData()
+				.Any(data => string.Equals(data.AttributeType.FullName, attributeFullName, StringComparison.Ordinal));
 		}
 		catch (Exception exception) when (exception
 			                                  is TypeLoadException
@@ -575,9 +570,8 @@ internal static class TypeHelpers
 			                                  or FileLoadException)
 		{
 			// Ignore types that cannot be loaded.
+			return false;
 		}
-
-		return false;
 	}
 
 	private static bool HasAccessModifierForNestedClass(Type type, AccessModifiers accessModifiers)

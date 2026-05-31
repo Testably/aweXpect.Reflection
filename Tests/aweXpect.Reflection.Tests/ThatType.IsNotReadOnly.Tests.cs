@@ -87,15 +87,14 @@ public sealed partial class ThatType
 				await That(Act).DoesNotThrow();
 			}
 
-			public static TheoryData<Type> NonReadOnlyTypes()
-				=>
-				[
-					typeof(PublicStruct),
-					typeof(PublicRefStruct),
-					typeof(PublicClass),
-					typeof(IPublicInterface),
-					typeof(PublicEnum),
-				];
+			public static TheoryData<Type> NonReadOnlyTypes() => new()
+			{
+				typeof(PublicStruct),
+				typeof(PublicRefStruct),
+				typeof(PublicClass),
+				typeof(IPublicInterface),
+				typeof(PublicEnum),
+			};
 		}
 	}
 }

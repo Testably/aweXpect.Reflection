@@ -57,15 +57,14 @@ public sealed partial class ThatType
 					             """);
 			}
 
-			public static TheoryData<Type> NonReadOnlyTypes()
-				=>
-				[
-					typeof(PublicStruct),
-					typeof(PublicRefStruct),
-					typeof(PublicClass),
-					typeof(IPublicInterface),
-					typeof(PublicEnum),
-				];
+			public static TheoryData<Type> NonReadOnlyTypes() => new()
+			{
+				typeof(PublicStruct),
+				typeof(PublicRefStruct),
+				typeof(PublicClass),
+				typeof(IPublicInterface),
+				typeof(PublicEnum),
+			};
 		}
 
 		public sealed class NegatedTests
@@ -100,15 +99,14 @@ public sealed partial class ThatType
 					              """);
 			}
 
-			public static TheoryData<Type> NonReadOnlyTypes()
-				=>
-				[
-					typeof(PublicStruct),
-					typeof(PublicRefStruct),
-					typeof(PublicClass),
-					typeof(IPublicInterface),
-					typeof(PublicEnum),
-				];
+			public static TheoryData<Type> NonReadOnlyTypes() => new()
+			{
+				typeof(PublicStruct),
+				typeof(PublicRefStruct),
+				typeof(PublicClass),
+				typeof(IPublicInterface),
+				typeof(PublicEnum),
+			};
 		}
 	}
 }

@@ -92,16 +92,15 @@ public sealed partial class ThatType
 				typeof(PublicRefStruct),
 			};
 
-			public static TheoryData<Type> NonRefStructTypes()
-				=>
-				[
-					typeof(PublicStruct),
-					typeof(PublicReadOnlyStruct),
-					typeof(IPublicInterface),
-					typeof(PublicEnum),
-					typeof(PublicClass),
-					typeof(PublicRecordStruct),
-				];
+			public static TheoryData<Type> NonRefStructTypes() => new()
+			{
+				typeof(PublicStruct),
+				typeof(PublicReadOnlyStruct),
+				typeof(IPublicInterface),
+				typeof(PublicEnum),
+				typeof(PublicClass),
+				typeof(PublicRecordStruct),
+			};
 		}
 	}
 }

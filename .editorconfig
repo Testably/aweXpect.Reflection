@@ -242,4 +242,4 @@ dotnet_diagnostic.MA0144.severity = none
 [Tests/**.cs]
 
 # Tests deliberately exercise the System.Type overloads alongside the generic ones
-dotnet_diagnostic.S6618.severity = none
+dotnet_diagnostic.CA2263.severity = none

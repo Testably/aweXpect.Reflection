@@ -130,17 +130,17 @@ internal static class PropertyInfoHelpers
 	///     Checks if the <paramref name="propertyInfo" /> is read-only (can be read but not written).
 	/// </summary>
 	public static bool IsReadOnly(this PropertyInfo? propertyInfo)
-		=> propertyInfo?.CanRead == true && propertyInfo.CanWrite == false;
+		=> propertyInfo is { CanRead: true, CanWrite: false, };
 
 	/// <summary>
 	///     Checks if the <paramref name="propertyInfo" /> is write-only (can be written but not read).
 	/// </summary>
 	public static bool IsWriteOnly(this PropertyInfo? propertyInfo)
-		=> propertyInfo?.CanWrite == true && propertyInfo.CanRead == false;
+		=> propertyInfo is { CanRead: false, CanWrite: true, };
 
 	/// <summary>
 	///     Checks if the <paramref name="propertyInfo" /> is read-write (can be both read and written).
 	/// </summary>
 	public static bool IsReadWrite(this PropertyInfo? propertyInfo)
-		=> propertyInfo?.CanRead == true && propertyInfo.CanWrite == true;
+		=> propertyInfo is { CanRead: true, CanWrite: true, };
 }

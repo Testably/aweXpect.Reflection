@@ -1340,6 +1340,7 @@ namespace aweXpect.Reflection
         public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsNotStatic(this aweXpect.Core.IThat<System.Type?> subject) { }
         public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsSealed(this aweXpect.Core.IThat<System.Type?> subject) { }
         public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsStatic(this aweXpect.Core.IThat<System.Type?> subject) { }
+        public static aweXpect.Results.StringEqualityResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsWithinNamespace(this aweXpect.Core.IThat<System.Type?> subject, string expected) { }
     }
     public static class ThatTypes
     {
@@ -1387,6 +1388,8 @@ namespace aweXpect.Reflection
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> AreStatic(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject) { }
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IAsyncEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<System.Type?>>> AreStructs(this aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<System.Type?>> subject) { }
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> AreStructs(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject) { }
+        public static aweXpect.Results.StringEqualityResult<System.Collections.Generic.IAsyncEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<System.Type?>>> AreWithinNamespace(this aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<System.Type?>> subject, string expected) { }
+        public static aweXpect.Results.StringEqualityResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> AreWithinNamespace(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, string expected) { }
         public static aweXpect.Reflection.Results.TypeContainingMembersResult<System.Collections.Generic.IAsyncEnumerable<System.Type?>> ContainConstructors(this aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<System.Type?>> subject, System.Func<aweXpect.Reflection.Collections.Filtered.Constructors, aweXpect.Reflection.Collections.Filtered.Constructors> filter) { }
         public static aweXpect.Reflection.Results.TypeContainingMembersResult<System.Collections.Generic.IEnumerable<System.Type?>> ContainConstructors(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, System.Func<aweXpect.Reflection.Collections.Filtered.Constructors, aweXpect.Reflection.Collections.Filtered.Constructors> filter) { }
         public static aweXpect.Reflection.Results.TypeContainingMembersResult<System.Collections.Generic.IAsyncEnumerable<System.Type?>> ContainEvents(this aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<System.Type?>> subject, System.Func<aweXpect.Reflection.Collections.Filtered.Events, aweXpect.Reflection.Collections.Filtered.Events> filter) { }
@@ -1468,6 +1471,7 @@ namespace aweXpect.Reflection
             where TAttribute : System.Attribute { }
         public static aweXpect.Reflection.Collections.Filtered.Types.StringEqualityResultType WithName(this aweXpect.Reflection.Collections.Filtered.Types @this, string expected) { }
         public static aweXpect.Reflection.Collections.Filtered.Types.StringEqualityResultType WithNamespace(this aweXpect.Reflection.Collections.Filtered.Types @this, string expected) { }
+        public static aweXpect.Reflection.Collections.Filtered.Types.StringEqualityResult WithinNamespace(this aweXpect.Reflection.Collections.Filtered.Types @this, string expected) { }
         public class GenericTypes : aweXpect.Reflection.Collections.Filtered.Types
         {
             public GenericTypes(aweXpect.Reflection.Collections.Filtered.Types inner) { }

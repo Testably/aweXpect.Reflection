@@ -180,10 +180,11 @@ await Expect.That(methods).Have<FactAttribute>();
 
 Shared by all types and members.
 
-|                             | Filter                | Assert (single)      | Assert (many)         |
-|-----------------------------|-----------------------|----------------------|-----------------------|
-| by name                     | `.WithName("x")`      | `.HasName("x")`      | `.HaveName("x")`      |
-| by namespace *(types only)* | `.WithNamespace("x")` | `.HasNamespace("x")` | `.HaveNamespace("x")` |
+|                                 | Filter                  | Assert (single)           | Assert (many)              |
+|---------------------------------|-------------------------|---------------------------|----------------------------|
+| by name                         | `.WithName("x")`        | `.HasName("x")`           | `.HaveName("x")`           |
+| by namespace *(types only)*     | `.WithNamespace("x")`   | `.HasNamespace("x")`      | `.HaveNamespace("x")`      |
+| within namespace *(types only)* | `.WithinNamespace("x")` | `.IsWithinNamespace("x")` | `.AreWithinNamespace("x")` |
 
 All name/namespace filters and assertions accept the
 [string matching options](#string-matching-options) (`AsPrefix`, `AsSuffix`, `AsWildcard`, `AsRegex`,
@@ -193,6 +194,11 @@ All name/namespace filters and assertions accept the
 await Expect.That(types).HaveName("Service").AsSuffix();
 await Expect.That(methods).HaveName(m => "On" + m.GetParameters()[0].ParameterType.Name);
 ```
+
+The `WithinNamespace`/`IsWithinNamespace`/`AreWithinNamespace` variants match a namespace and all its
+sub-namespaces (so `Foo.Bar` includes `Foo.Bar.Baz` but not `Foo.BarBaz`). They accept the case and
+white-space options (`IgnoringCase`, …) but not the pattern options (`AsPrefix`, `AsSuffix`, `AsWildcard`,
+`AsRegex`).
 
 ### Types
 

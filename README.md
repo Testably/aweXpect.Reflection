@@ -186,7 +186,8 @@ Shared by all types and members.
 | by namespace *(types only)*     | `.WithNamespace("x")`   | `.HasNamespace("x")`      | `.HaveNamespace("x")`      |
 | within namespace *(types only)* | `.WithinNamespace("x")` | `.IsWithinNamespace("x")` | `.AreWithinNamespace("x")` |
 
-All name/namespace filters and assertions accept the
+The name/namespace *equality* filters and assertions (`WithName`, `WithNamespace`, and their
+`Has`/`Have` counterparts) accept the
 [string matching options](#string-matching-options) (`AsPrefix`, `AsSuffix`, `AsWildcard`, `AsRegex`,
 `IgnoringCase`, …). Collection assertions also accept a selector to derive the expected name per item:
 

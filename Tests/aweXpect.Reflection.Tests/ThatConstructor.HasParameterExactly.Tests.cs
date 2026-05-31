@@ -91,6 +91,24 @@ public sealed partial class ThatConstructor
 			}
 
 			[Fact]
+			public async Task WithType_WhenConstructorIsNull_ShouldFail()
+			{
+				ConstructorInfo? constructorInfo = null;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameterExactly(typeof(Stream));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter of exact type Stream,
+					             but it was <null>
+					             """);
+			}
+
+			[Fact]
 			public async Task WithType_WhenParameterIsExactType_ShouldSucceed()
 			{
 				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(Stream),])!;

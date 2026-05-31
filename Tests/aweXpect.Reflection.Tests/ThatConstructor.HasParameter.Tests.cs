@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using aweXpect.Reflection.Tests.TestHelpers;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -319,6 +320,156 @@ public sealed partial class ThatConstructor
 				async Task Act()
 				{
 					await That(constructorInfo).HasParameter<int>().WithoutDefaultValue();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsPrefix_WhenParameterNameStartsWithPrefix_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int), "val").AsPrefix();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsSuffix_WhenParameterNameEndsWithSuffix_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string), "ame").AsSuffix();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsRegex_WhenParameterNameMatchesRegex_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string), "n[a-z]*e").AsRegex();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsWildcard_WhenParameterNameMatchesWildcard_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string), "n??e").AsWildcard();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AtIndex_WhenParameterDoesNotExistAtSpecificIndex_ShouldFail()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string)).AtIndex(0);
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that constructorInfo
+					             has parameter of type string at index 0,
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task Type_AtIndex_WhenParameterExistsAtSpecificIndex_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int)).AtIndex(0);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AtIndexFromEnd_WhenParameterExistsAtSpecificIndexFromEnd_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string)).AtIndex(0).FromEnd();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_IgnoringCase_WhenParameterNameDiffersInCase_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int), "VALUE").IgnoringCase();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_Using_WhenParameterNameMatchesWithCustomComparer_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string), "nAmE")
+						.Using(new IgnoreCaseForVocalsComparer());
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_WithDefaultValue_WhenParameterHasDefault_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo =
+					typeof(TestClass).GetConstructor([typeof(int), typeof(bool), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(string)).WithDefaultValue();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_WithoutDefaultValue_WhenParameterHasNoDefault_ShouldSucceed()
+			{
+				ConstructorInfo constructorInfo = typeof(TestClass).GetConstructor([typeof(int), typeof(string),])!;
+
+				async Task Act()
+				{
+					await That(constructorInfo).HasParameter(typeof(int)).WithoutDefaultValue();
 				}
 
 				await That(Act).DoesNotThrow();

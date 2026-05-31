@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using aweXpect.Reflection.Tests.TestHelpers;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -256,6 +257,59 @@ public sealed partial class ThatMethod
 				async Task Act()
 				{
 					await That(methodInfo).HasParameter(typeof(int), "val").AsPrefix();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsSuffix_WhenParameterNameEndsWithSuffix_ShouldSucceed()
+			{
+				MethodInfo methodInfo = typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!;
+
+				async Task Act()
+				{
+					await That(methodInfo).HasParameter(typeof(string), "ame").AsSuffix();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsRegex_WhenParameterNameMatchesRegex_ShouldSucceed()
+			{
+				MethodInfo methodInfo = typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!;
+
+				async Task Act()
+				{
+					await That(methodInfo).HasParameter(typeof(string), "n[a-z]*e").AsRegex();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsWildcard_WhenParameterNameMatchesWildcard_ShouldSucceed()
+			{
+				MethodInfo methodInfo = typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!;
+
+				async Task Act()
+				{
+					await That(methodInfo).HasParameter(typeof(string), "n??e").AsWildcard();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_Using_WhenParameterNameMatchesWithCustomComparer_ShouldSucceed()
+			{
+				MethodInfo methodInfo = typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!;
+
+				async Task Act()
+				{
+					await That(methodInfo).HasParameter(typeof(string), "nAmE")
+						.Using(new IgnoreCaseForVocalsComparer());
 				}
 
 				await That(Act).DoesNotThrow();

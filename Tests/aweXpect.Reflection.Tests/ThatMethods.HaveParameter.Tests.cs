@@ -9,6 +9,17 @@ public sealed partial class ThatMethods
 {
 	public sealed class HaveParameter
 	{
+#if NET8_0_OR_GREATER
+		private static async IAsyncEnumerable<MethodInfo> ToAsyncEnumerable(params MethodInfo[] items)
+		{
+			foreach (MethodInfo item in items)
+			{
+				yield return item;
+			}
+
+			await Task.CompletedTask;
+		}
+#endif
 		public sealed class Tests
 		{
 			[Fact]
@@ -230,6 +241,78 @@ public sealed partial class ThatMethods
 					             but at least one did not
 					             """);
 			}
+
+#if NET8_0_OR_GREATER
+			[Fact]
+			public async Task AsyncEnumerable_ByType_WhenAllHaveParameter_ShouldSucceed()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!);
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_ByType_WhenNotAllHaveParameter_ShouldFail()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!); // No int parameter
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int));
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter of type int,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_ByTypeAndName_WhenAllHaveParameter_ShouldSucceed()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!);
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int), "value");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task AsyncEnumerable_ByTypeAndName_WhenNotAllHaveParameter_ShouldFail()
+			{
+				IAsyncEnumerable<MethodInfo> methods = ToAsyncEnumerable(
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!,
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!); // Has string "name", not int "value"
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int), "value");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter of type int with name "value",
+					             but at least one did not
+					             """);
+			}
+#endif
 
 #pragma warning disable CA1822
 			// ReSharper disable UnusedParameter.Local
@@ -627,6 +710,183 @@ public sealed partial class ThatMethods
 				async Task Act()
 				{
 					await That(methods).HaveParameter<int>().WithoutDefaultValue();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsPrefix_WhenAllHaveParameterWithPrefix_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // has "name" parameter
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // has "name" parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(string), "na").AsPrefix();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsRegex_WhenAllHaveParameterMatchingRegex_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // has "name" parameter
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // has "name" parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(string), "n.*e").AsRegex();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsSuffix_WhenAllHaveParameterWithSuffix_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // has "name" parameter
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // has "name" parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(string), "me").AsSuffix();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AsWildcard_WhenAllHaveParameterWithWildcard_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // has "name" parameter
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // has "name" parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(string), "n*e").AsWildcard();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AtIndex_WhenAllHaveParameterAtSpecificIndex_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // int at index 0
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!, // int at index 0
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int)).AtIndex(0);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_AtIndex_WhenNotAllHaveParameterAtSpecificIndex_ShouldFail()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithStringAndInt))!, // int at index 1
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!, // int at index 0
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int)).AtIndex(0);
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter of type int at index 0,
+					             but at least one did not
+					             """);
+			}
+
+			[Fact]
+			public async Task Type_AtIndexFromEnd_WhenAllHaveParameterAtSpecificIndexFromEnd_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(
+						nameof(TestClass.MethodWithIntAndString))!, // string at index 0 from end (last)
+					typeof(TestClass).GetMethod(
+						nameof(TestClass.MethodWithString))!, // string at index 0 from end (last)
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(string)).AtIndex(0).FromEnd();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_IgnoringCase_WhenAllHaveParameterIgnoringCase_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // has "name" parameter
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!, // has "name" parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(string), "NAME").IgnoringCase();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_WithDefaultValue_WhenAllHaveParameterWithDefault_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithDefaults))!, // bool has default
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithDefaultBool))!, // bool has default
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(bool)).WithDefaultValue();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task Type_WithoutDefaultValue_WhenAllHaveParameterWithoutDefault_ShouldSucceed()
+			{
+				IEnumerable<MethodInfo> methods = new[]
+				{
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithIntAndString))!, // Required parameters
+					typeof(TestClass).GetMethod(nameof(TestClass.MethodWithInt))!, // Required parameter
+				};
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter(typeof(int)).WithoutDefaultValue();
 				}
 
 				await That(Act).DoesNotThrow();

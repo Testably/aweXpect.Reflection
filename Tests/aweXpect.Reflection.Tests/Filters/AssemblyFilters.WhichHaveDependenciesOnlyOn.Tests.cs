@@ -12,7 +12,7 @@ public sealed partial class AssemblyFilters
 		///     Excludes the framework facade assemblies that differ between target frameworks (e.g. <c>netstandard</c> on
 		///     <c>net48</c>), so that the tests only have to whitelist the actual non-framework dependencies.
 		/// </summary>
-		private static IDisposable ExcludeFrameworkAssemblies()
+		private static CustomizationLifetime ExcludeFrameworkAssemblies()
 			=> Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes
 				.Set([
 					.. Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get(), "netstandard", "WindowsBase",
@@ -45,7 +45,7 @@ public sealed partial class AssemblyFilters
 			[Fact]
 			public async Task ShouldFilterForAssembliesDependingOnlyOnAllowed()
 			{
-				using IDisposable _ = ExcludeFrameworkAssemblies();
+				using CustomizationLifetime _ = ExcludeFrameworkAssemblies();
 
 				Filtered.Assemblies assemblies = In.Assemblies(typeof(In).Assembly)
 					.WhichHaveDependenciesOnlyOn("aweXpect.Core");
@@ -56,7 +56,7 @@ public sealed partial class AssemblyFilters
 			[Fact]
 			public async Task ShouldSupportAsWildcard()
 			{
-				using IDisposable _ = ExcludeFrameworkAssemblies();
+				using CustomizationLifetime _ = ExcludeFrameworkAssemblies();
 
 				Filtered.Assemblies assemblies = In.Assemblies(typeof(In).Assembly)
 					.WhichHaveDependenciesOnlyOn("aweXpect.*").AsWildcard();
@@ -67,7 +67,7 @@ public sealed partial class AssemblyFilters
 			[Fact]
 			public async Task ShouldSupportIgnoringCase()
 			{
-				using IDisposable _ = ExcludeFrameworkAssemblies();
+				using CustomizationLifetime _ = ExcludeFrameworkAssemblies();
 
 				Filtered.Assemblies assemblies = In.Assemblies(typeof(In).Assembly)
 					.WhichHaveDependenciesOnlyOn("awexpect.core").IgnoringCase();

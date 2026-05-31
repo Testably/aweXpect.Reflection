@@ -1,3 +1,4 @@
+using aweXpect.Customization;
 using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Tests.TestHelpers.Types;
 using Xunit.Sdk;
@@ -8,11 +9,23 @@ public sealed partial class ThatAssemblies
 {
 	public sealed class HaveDependenciesOnlyOn
 	{
+		/// <summary>
+		///     Excludes the framework facade assemblies that differ between target frameworks (e.g. <c>netstandard</c> on
+		///     <c>net48</c>), so that the tests only have to whitelist the actual non-framework dependencies.
+		/// </summary>
+		private static IDisposable ExcludeFrameworkAssemblies()
+			=> Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes
+				.Set([
+					.. Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get(), "netstandard", "WindowsBase",
+				]);
+
 		public sealed class Tests
 		{
 			[Fact]
 			public async Task WhenAllAssembliesDependOnlyOnAllowed_ShouldSucceed()
 			{
+				using IDisposable _ = ExcludeFrameworkAssemblies();
+
 				Filtered.Assemblies subject = In.Assemblies(typeof(In).Assembly);
 
 				async Task Act()
@@ -26,6 +39,8 @@ public sealed partial class ThatAssemblies
 			[Fact]
 			public async Task WhenAllowedMatchesAsWildcard_ShouldSucceed()
 			{
+				using IDisposable _ = ExcludeFrameworkAssemblies();
+
 				Filtered.Assemblies subject = In.Assemblies(typeof(In).Assembly);
 
 				async Task Act()
@@ -39,6 +54,8 @@ public sealed partial class ThatAssemblies
 			[Fact]
 			public async Task WhenAnAssemblyDependsOnDisallowedAssembly_ShouldFail()
 			{
+				using IDisposable _ = ExcludeFrameworkAssemblies();
+
 				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
 
 				async Task Act()
@@ -62,6 +79,8 @@ public sealed partial class ThatAssemblies
 			[Fact]
 			public async Task WhenAllAssembliesDependOnlyOnAllowed_ShouldFail()
 			{
+				using IDisposable _ = ExcludeFrameworkAssemblies();
+
 				Filtered.Assemblies subject = In.Assemblies(typeof(In).Assembly);
 
 				async Task Act()

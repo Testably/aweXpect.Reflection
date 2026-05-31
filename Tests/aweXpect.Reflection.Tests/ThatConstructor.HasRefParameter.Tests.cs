@@ -60,7 +60,7 @@ public sealed partial class ThatConstructor
 			}
 		}
 
-		public sealed class TypedOverloads
+		public sealed class TypedOverloadsTests
 		{
 			[Fact]
 			public async Task GenericType_WhenParameterIsNotRef_ShouldFail()

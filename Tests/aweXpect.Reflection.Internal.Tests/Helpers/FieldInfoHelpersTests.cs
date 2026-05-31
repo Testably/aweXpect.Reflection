@@ -154,3 +154,5 @@ public sealed class FieldInfoHelpersTests
 	}
 #pragma warning restore CS0649
 }
+
+#pragma warning restore CA2263 // Prefer generic overload when type is known

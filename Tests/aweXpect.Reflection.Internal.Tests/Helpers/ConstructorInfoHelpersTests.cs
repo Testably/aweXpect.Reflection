@@ -160,3 +160,5 @@ public sealed class ConstructorInfoHelpersTests
 		}
 	}
 }
+
+#pragma warning restore CA2263 // Prefer generic overload when type is known

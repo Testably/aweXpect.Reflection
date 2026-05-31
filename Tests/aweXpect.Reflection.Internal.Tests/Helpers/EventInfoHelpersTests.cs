@@ -102,3 +102,5 @@ public sealed class EventInfoHelpersTests
 #pragma warning restore CS0067
 #pragma warning restore CS8618
 }
+
+#pragma warning restore CA2263 // Prefer generic overload when type is known

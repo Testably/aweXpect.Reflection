@@ -177,3 +177,5 @@ public sealed class MethodInfoHelpersTests
 #pragma warning restore CA1822
 	}
 }
+
+#pragma warning restore CA2263 // Prefer generic overload when type is known

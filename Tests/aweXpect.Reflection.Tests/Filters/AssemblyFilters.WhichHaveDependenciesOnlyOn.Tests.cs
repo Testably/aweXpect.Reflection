@@ -10,6 +10,28 @@ public sealed partial class AssemblyFilters
 		public sealed class Tests
 		{
 			[Fact]
+			public async Task ShouldDescribeTheFilterForASingleAllowedAssembly()
+			{
+				Filtered.Assemblies assemblies = In.AssemblyContaining<PublicAbstractClass>()
+					.WhichHaveDependenciesOnlyOn("aweXpect.Core");
+
+				await That(assemblies.GetDescription())
+					.IsEqualTo(
+						"in assembly containing type PublicAbstractClass which have dependencies only on assemblies equal to \"aweXpect.Core\"");
+			}
+
+			[Fact]
+			public async Task ShouldDescribeTheFilterForMultipleAllowedAssemblies()
+			{
+				Filtered.Assemblies assemblies = In.AssemblyContaining<PublicAbstractClass>()
+					.WhichHaveDependenciesOnlyOn("aweXpect.Core", "aweXpect");
+
+				await That(assemblies.GetDescription())
+					.IsEqualTo(
+						"in assembly containing type PublicAbstractClass which have dependencies only on assemblies equal to \"aweXpect.Core\" or equal to \"aweXpect\"");
+			}
+
+			[Fact]
 			public async Task ShouldFilterForAssembliesDependingOnlyOnAllowed()
 			{
 				Filtered.Assemblies assemblies = In.Assemblies(typeof(In).Assembly)
@@ -34,28 +56,6 @@ public sealed partial class AssemblyFilters
 					.WhichHaveDependenciesOnlyOn("awexpect.core").IgnoringCase();
 
 				await That(assemblies).HasSingle().Which.IsEqualTo(typeof(In).Assembly);
-			}
-
-			[Fact]
-			public async Task ShouldDescribeTheFilterForASingleAllowedAssembly()
-			{
-				Filtered.Assemblies assemblies = In.AssemblyContaining<PublicAbstractClass>()
-					.WhichHaveDependenciesOnlyOn("aweXpect.Core");
-
-				await That(assemblies.GetDescription())
-					.IsEqualTo(
-						"in assembly containing type PublicAbstractClass which have dependencies only on assemblies equal to \"aweXpect.Core\"");
-			}
-
-			[Fact]
-			public async Task ShouldDescribeTheFilterForMultipleAllowedAssemblies()
-			{
-				Filtered.Assemblies assemblies = In.AssemblyContaining<PublicAbstractClass>()
-					.WhichHaveDependenciesOnlyOn("aweXpect.Core", "aweXpect");
-
-				await That(assemblies.GetDescription())
-					.IsEqualTo(
-						"in assembly containing type PublicAbstractClass which have dependencies only on assemblies equal to \"aweXpect.Core\" or equal to \"aweXpect\"");
 			}
 
 			[Fact]

@@ -24,6 +24,19 @@ public sealed partial class ThatAssemblies
 			}
 
 			[Fact]
+			public async Task WhenAllowedMatchesAsWildcard_ShouldSucceed()
+			{
+				Filtered.Assemblies subject = In.Assemblies(typeof(In).Assembly);
+
+				async Task Act()
+				{
+					await That(subject).HaveDependenciesOnlyOn("aweXpect.*").AsWildcard();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenAnAssemblyDependsOnDisallowedAssembly_ShouldFail()
 			{
 				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
@@ -42,36 +55,10 @@ public sealed partial class ThatAssemblies
 					             ]
 					             """).AsWildcard();
 			}
-
-			[Fact]
-			public async Task WhenAllowedMatchesAsWildcard_ShouldSucceed()
-			{
-				Filtered.Assemblies subject = In.Assemblies(typeof(In).Assembly);
-
-				async Task Act()
-				{
-					await That(subject).HaveDependenciesOnlyOn("aweXpect.*").AsWildcard();
-				}
-
-				await That(Act).DoesNotThrow();
-			}
 		}
 
 		public sealed class NegatedTests
 		{
-			[Fact]
-			public async Task WhenAnAssemblyDependsOnDisallowedAssembly_ShouldSucceed()
-			{
-				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
-
-				async Task Act()
-				{
-					await That(subject).DoesNotComplyWith(they => they.HaveDependenciesOnlyOn("aweXpect.Core"));
-				}
-
-				await That(Act).DoesNotThrow();
-			}
-
 			[Fact]
 			public async Task WhenAllAssembliesDependOnlyOnAllowed_ShouldFail()
 			{
@@ -90,6 +77,19 @@ public sealed partial class ThatAssemblies
 					               aweXpect.Reflection, Version=*, Culture=neutral, PublicKeyToken=*
 					             ]
 					             """).AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenAnAssemblyDependsOnDisallowedAssembly_ShouldSucceed()
+			{
+				Filtered.Assemblies subject = In.AssemblyContaining<PublicAbstractClass>();
+
+				async Task Act()
+				{
+					await That(subject).DoesNotComplyWith(they => they.HaveDependenciesOnlyOn("aweXpect.Core"));
+				}
+
+				await That(Act).DoesNotThrow();
 			}
 		}
 	}

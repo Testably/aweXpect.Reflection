@@ -11,13 +11,26 @@ public sealed partial class ThatAssembly
 		public sealed class Tests
 		{
 			[Fact]
-			public async Task WhenAssemblyDependsOnlyOnAllowed_ShouldSucceed()
+			public async Task WhenAllowedMatchesAsWildcard_ShouldSucceed()
 			{
 				Assembly subject = typeof(In).Assembly;
 
 				async Task Act()
 				{
-					await That(subject).HasDependenciesOnlyOn("aweXpect.Core");
+					await That(subject).HasDependenciesOnlyOn("aweXpect.*").AsWildcard();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenAllowedMatchesIgnoringCase_ShouldSucceed()
+			{
+				Assembly subject = typeof(In).Assembly;
+
+				async Task Act()
+				{
+					await That(subject).HasDependenciesOnlyOn("AWExPECT.cORE").IgnoringCase();
 				}
 
 				await That(Act).DoesNotThrow();
@@ -42,6 +55,19 @@ public sealed partial class ThatAssembly
 			}
 
 			[Fact]
+			public async Task WhenAssemblyDependsOnlyOnAllowed_ShouldSucceed()
+			{
+				Assembly subject = typeof(In).Assembly;
+
+				async Task Act()
+				{
+					await That(subject).HasDependenciesOnlyOn("aweXpect.Core");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenAssemblyIsNull_ShouldFail()
 			{
 				Assembly? subject = null;
@@ -57,32 +83,6 @@ public sealed partial class ThatAssembly
 					             has dependencies only on assemblies equal to "aweXpect.Core",
 					             but it was <null>
 					             """);
-			}
-
-			[Fact]
-			public async Task WhenAllowedMatchesAsWildcard_ShouldSucceed()
-			{
-				Assembly subject = typeof(In).Assembly;
-
-				async Task Act()
-				{
-					await That(subject).HasDependenciesOnlyOn("aweXpect.*").AsWildcard();
-				}
-
-				await That(Act).DoesNotThrow();
-			}
-
-			[Fact]
-			public async Task WhenAllowedMatchesIgnoringCase_ShouldSucceed()
-			{
-				Assembly subject = typeof(In).Assembly;
-
-				async Task Act()
-				{
-					await That(subject).HasDependenciesOnlyOn("AWExPECT.cORE").IgnoringCase();
-				}
-
-				await That(Act).DoesNotThrow();
 			}
 		}
 

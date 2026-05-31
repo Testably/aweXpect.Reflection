@@ -76,11 +76,11 @@ public sealed partial class ThatAssemblies
 				}
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("""
-					             Expected that in assembly containing type PublicAbstractClass
-					             not all target *,
-					             but it only contained matching assemblies *
-					             """).AsWildcard();
+					.WithMessage($"""
+					              Expected that in assembly containing type PublicAbstractClass
+					              not all target equal to "{CurrentTarget}",
+					              but it only contained matching assemblies *
+					              """).AsWildcard();
 			}
 
 			[Fact]

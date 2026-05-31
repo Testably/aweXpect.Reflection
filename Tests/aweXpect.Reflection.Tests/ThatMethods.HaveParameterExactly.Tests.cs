@@ -5,6 +5,9 @@ using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
 
+// The System.Type overloads are deliberately exercised here alongside the generic ones.
+#pragma warning disable S6618 // "Generic" overloads should be used
+
 public sealed partial class ThatMethods
 {
 	public sealed class HaveParameterExactly

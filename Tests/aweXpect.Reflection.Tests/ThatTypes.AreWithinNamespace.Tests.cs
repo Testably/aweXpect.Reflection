@@ -1,4 +1,8 @@
+﻿using System.Collections.Generic;
 using aweXpect.Reflection.Collections;
+using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope;
+using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope.Nested;
+using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScopeSibling;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -40,11 +44,49 @@ public sealed partial class ThatTypes
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that types with namespace starting with "aweXpect.Reflection.Tests.Test…" in assembly containing type ThatTypes.AreWithinNamespace.Tests
-					             all are within namespace "aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope",
+					             are all within namespace "aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope",
 					             but it contained not matching types [
 					               *ClassInSiblingNamespaceScope*
 					             ]
 					             """).AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenEnumerableTypesAreWithinNamespace_ShouldSucceed()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(ClassInNamespaceScope),
+					typeof(ClassInNestedNamespaceScope),
+				];
+
+				async Task Act()
+				{
+					await That(subject)
+						.AreWithinNamespace("aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenEnumerableContainsTypeInOtherNamespace_ShouldFail()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(ClassInNamespaceScope),
+					typeof(ClassInSiblingNamespaceScope),
+				];
+
+				async Task Act()
+				{
+					await That(subject)
+						.AreWithinNamespace("aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("*are all within namespace*but it contained not matching types*ClassInSiblingNamespaceScope*")
+					.AsWildcard();
 			}
 		}
 
@@ -63,7 +105,7 @@ public sealed partial class ThatTypes
 				}
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("*not all are within namespace*NamespaceScope*").AsWildcard();
+					.WithMessage("*are not all within namespace*NamespaceScope*").AsWildcard();
 			}
 		}
 	}

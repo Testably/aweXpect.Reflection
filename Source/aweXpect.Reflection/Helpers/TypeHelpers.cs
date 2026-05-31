@@ -4,9 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using aweXpect.Customization;
-using aweXpect.Options;
 using aweXpect.Reflection.Collections;
 
 namespace aweXpect.Reflection.Helpers;
@@ -441,16 +439,12 @@ internal static class TypeHelpers
 	///     Unlike a prefix match, <c>Foo.Bar</c> does not consider <c>Foo.BarBaz</c> to be within it, because the next
 	///     character after the match must be a namespace separator (<c>.</c>) or the end of the namespace.
 	/// </remarks>
-#if NET8_0_OR_GREATER
-	public static async ValueTask<bool> IsWithinNamespace(this Type? type, string expected, StringEqualityOptions options)
-#else
-	public static async Task<bool> IsWithinNamespace(this Type? type, string expected, StringEqualityOptions options)
-#endif
+	public static bool IsWithinNamespace(this Type? type, string expected)
 	{
 		string? current = type?.Namespace;
 		while (current is not null)
 		{
-			if (await options.AreConsideredEqual(current, expected))
+			if (string.Equals(current, expected, StringComparison.Ordinal))
 			{
 				return true;
 			}

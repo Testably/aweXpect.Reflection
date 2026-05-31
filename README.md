@@ -196,9 +196,10 @@ await Expect.That(methods).HaveName(m => "On" + m.GetParameters()[0].ParameterTy
 ```
 
 The `WithinNamespace`/`IsWithinNamespace`/`AreWithinNamespace` variants match a namespace and all its
-sub-namespaces (so `Foo.Bar` includes `Foo.Bar.Baz` but not `Foo.BarBaz`). They accept the case and
-white-space options (`IgnoringCase`, …) but not the pattern options (`AsPrefix`, `AsSuffix`, `AsWildcard`,
-`AsRegex`).
+sub-namespaces (so `Foo.Bar` includes `Foo.Bar.Baz` but not `Foo.BarBaz`). They compare the namespace
+exactly and case-sensitively and do not support any of the string matching options. Each has a negated
+form — `NotWithinNamespace`, `IsNotWithinNamespace` and `AreNotWithinNamespace` — that matches types
+outside the namespace.
 
 ### Types
 

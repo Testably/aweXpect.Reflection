@@ -1,4 +1,4 @@
-using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope;
+﻿using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope;
 using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope.Nested;
 using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScopeSibling;
 using Xunit.Sdk;
@@ -58,18 +58,22 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
-			public async Task WhenTypeMatchesIgnoringCase_ShouldSucceed()
+			public async Task WhenNamespaceDiffersOnlyByCase_ShouldFail()
 			{
 				Type subject = typeof(ClassInNestedNamespaceScope);
 
 				async Task Act()
 				{
 					await That(subject)
-						.IsWithinNamespace("AWEXPECT.REFLECTION.TESTS.TESTHELPERS.TYPES.NAMESPACESCOPE")
-						.IgnoringCase();
+						.IsWithinNamespace("AWEXPECT.REFLECTION.TESTS.TESTHELPERS.TYPES.NAMESPACESCOPE");
 				}
 
-				await That(Act).DoesNotThrow();
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             is within namespace "AWEXPECT.REFLECTION.TESTS.TESTHELPERS.TYPES.NAMESPACESCOPE",
+					             but it was in namespace "aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope.Nested"
+					             """);
 			}
 
 			[Fact]

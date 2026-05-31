@@ -1,14 +1,9 @@
-using System;
+﻿using System;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
-using aweXpect.Options;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
-
-// ReSharper disable PossibleMultipleEnumeration
 
 namespace aweXpect.Reflection;
 
@@ -18,40 +13,44 @@ public static partial class ThatType
 	///     Verifies that the <see cref="Type" /> is within the <paramref name="expected" /> namespace
 	///     (including sub-namespaces).
 	/// </summary>
-	public static StringEqualityResult<Type?, IThat<Type?>> IsWithinNamespace(
+	public static AndOrResult<Type?, IThat<Type?>> IsWithinNamespace(
 		this IThat<Type?> subject, string expected)
-	{
-		StringEqualityOptions options = new();
-		return new StringEqualityResult<Type?, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint(
-				(it, grammars)
-					=> new IsWithinNamespaceConstraint(it, grammars, expected, options)),
-			subject,
-			options);
-	}
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+				=> new IsWithinNamespaceConstraint(it, grammars, expected)),
+			subject);
+
+	/// <summary>
+	///     Verifies that the <see cref="Type" /> is not within the <paramref name="expected" /> namespace
+	///     (including sub-namespaces).
+	/// </summary>
+	public static AndOrResult<Type?, IThat<Type?>> IsNotWithinNamespace(
+		this IThat<Type?> subject, string expected)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+				=> new IsWithinNamespaceConstraint(it, grammars, expected).Invert()),
+			subject);
 
 	private sealed class IsWithinNamespaceConstraint(
 		string it,
 		ExpectationGrammars grammars,
-		string expected,
-		StringEqualityOptions options)
+		string expected)
 		: ConstraintResult.WithNotNullValue<Type?>(it, grammars),
-			IAsyncConstraint<Type?>
+			IValueConstraint<Type?>
 	{
-		public async Task<ConstraintResult> IsMetBy(Type? actual, CancellationToken cancellationToken)
+		public ConstraintResult IsMetBy(Type? actual)
 		{
 			Actual = actual;
-			Outcome = await actual.IsWithinNamespace(expected, options) ? Outcome.Success : Outcome.Failure;
+			Outcome = actual.IsWithinNamespace(expected) ? Outcome.Success : Outcome.Failure;
 			return this;
 		}
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
-			=> stringBuilder.Append("is within namespace ").Append(Formatter.Format(expected)).Append(options);
+			=> stringBuilder.Append("is within namespace ").Append(Formatter.Format(expected));
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> stringBuilder.Append(It).Append(" was in namespace ").Append(Formatter.Format(Actual?.Namespace));
+			=> stringBuilder.Append(It).Append(" was in namespace ").Append(Formatter.Format(Actual!.Namespace));
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
-			=> stringBuilder.Append("is not within namespace ").Append(Formatter.Format(expected)).Append(options);
+			=> stringBuilder.Append("is not within namespace ").Append(Formatter.Format(expected));
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 			=> AppendNormalResult(stringBuilder, indentation);

@@ -1,4 +1,4 @@
-using aweXpect.Reflection.Collections;
+﻿using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope;
 using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope.Nested;
 using aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScopeSibling;
@@ -34,22 +34,6 @@ public sealed partial class TypeFilters
 				await That(types.GetDescription())
 					.IsEqualTo(
 						"types within namespace \"aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope\" in assembly")
-					.AsPrefix();
-			}
-
-			[Fact]
-			public async Task ShouldSupportIgnoringCase()
-			{
-				Filtered.Types types = In.AssemblyContaining<AssemblyFilters>()
-					.Types().WithinNamespace(
-						"aweXpect.Reflection.Tests.TestHelpers.Types.NamespaceScope".ToLowerInvariant())
-					.IgnoringCase();
-
-				await That(types).Contains(typeof(ClassInNamespaceScope));
-				await That(types).Contains(typeof(ClassInNestedNamespaceScope));
-				await That(types.GetDescription())
-					.IsEqualTo(
-						"types within namespace \"awexpect.reflection.tests.testhelpers.types.namespacescope\" ignoring case in assembly")
 					.AsPrefix();
 			}
 		}

@@ -19,6 +19,24 @@ public class BaseClassWithMembers
 	// ReSharper disable once UnusedMember.Global
 	public void BaseMethod() { }
 #pragma warning restore CA1822
+
+	// ReSharper disable once UnusedMember.Local
+	private int BasePrivateProperty { get; set; }
+
+#pragma warning disable CS0169 // Field is never used
+	// ReSharper disable once UnusedMember.Local
+	private int _basePrivateField;
+#pragma warning restore CS0169
+
+#pragma warning disable CS0067 // Event is never used
+	// ReSharper disable once UnusedMember.Local
+	private event EventHandler? BasePrivateEvent;
+#pragma warning restore CS0067
+
+#pragma warning disable CA1822 // Mark members as static
+	// ReSharper disable once UnusedMember.Local
+	private void BasePrivateMethod() { }
+#pragma warning restore CA1822
 }
 
 public class DerivedClassWithMembers : BaseClassWithMembers

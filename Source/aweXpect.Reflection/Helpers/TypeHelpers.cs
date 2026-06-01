@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -53,11 +54,22 @@ internal static class TypeHelpers
 		try
 		{
 			CompilerGeneratedMembers included = IncludedCompilerGeneratedMembers;
-			return type
+			IEnumerable<EventInfo> events = type
 				.GetEvents(memberScope.ToBindingFlags() |
 				           BindingFlags.NonPublic |
 				           BindingFlags.Public |
-				           BindingFlags.Instance)
+				           BindingFlags.Instance);
+			if (memberScope == MemberScope.IncludingInherited)
+			{
+				events = events.Concat(type.GetInheritedPrivateMembers(
+					baseType => baseType.GetEvents(BindingFlags.DeclaredOnly |
+					                               BindingFlags.NonPublic |
+					                               BindingFlags.Instance),
+					@event => @event.AddMethod is not { IsPrivate: false, } &&
+					          @event.RemoveMethod is not { IsPrivate: false, }));
+			}
+
+			return events
 				.Where(m => !m.IsCompilerGenerated() ||
 				            included.HasFlag(CompilerGeneratedMembers.Events))
 				.ToArray();
@@ -82,12 +94,23 @@ internal static class TypeHelpers
 		try
 		{
 			CompilerGeneratedMembers included = IncludedCompilerGeneratedMembers;
-			return type
+			IEnumerable<FieldInfo> fields = type
 				.GetFields(memberScope.ToBindingFlags() |
 				           BindingFlags.NonPublic |
 				           BindingFlags.Public |
 				           BindingFlags.Instance |
-				           BindingFlags.Static)
+				           BindingFlags.Static);
+			if (memberScope == MemberScope.IncludingInherited)
+			{
+				fields = fields.Concat(type.GetInheritedPrivateMembers(
+					baseType => baseType.GetFields(BindingFlags.DeclaredOnly |
+					                               BindingFlags.NonPublic |
+					                               BindingFlags.Instance |
+					                               BindingFlags.Static),
+					field => field.IsPrivate));
+			}
+
+			return fields
 				.Where(m => !m.IsSpecialName)
 				.Where(m => !m.IsCompilerGenerated() ||
 				            included.HasFlag(CompilerGeneratedMembers.Fields))
@@ -114,13 +137,23 @@ internal static class TypeHelpers
 		{
 			CompilerGeneratedMembers includedCompilerGenerated = IncludedCompilerGeneratedMembers;
 			SpecialNameMembers includedSpecialName = IncludedSpecialNameMembers;
-			return type
+			IEnumerable<MethodInfo> methods = type
 				.GetMethods(memberScope.ToBindingFlags() |
 				            BindingFlags.NonPublic |
 				            BindingFlags.Public |
 				            BindingFlags.Static |
-				            BindingFlags.Instance |
-				            BindingFlags.Static)
+				            BindingFlags.Instance);
+			if (memberScope == MemberScope.IncludingInherited)
+			{
+				methods = methods.Concat(type.GetInheritedPrivateMembers(
+					baseType => baseType.GetMethods(BindingFlags.DeclaredOnly |
+					                                BindingFlags.NonPublic |
+					                                BindingFlags.Instance |
+					                                BindingFlags.Static),
+					method => method.IsPrivate));
+			}
+
+			return methods
 				.Where(m => IncludeMethod(m, includedCompilerGenerated, includedSpecialName))
 				.ToArray();
 		}
@@ -144,13 +177,24 @@ internal static class TypeHelpers
 		try
 		{
 			CompilerGeneratedMembers included = IncludedCompilerGeneratedMembers;
-			return type
+			IEnumerable<PropertyInfo> properties = type
 				.GetProperties(memberScope.ToBindingFlags() |
 				               BindingFlags.NonPublic |
 				               BindingFlags.Public |
 				               BindingFlags.Static |
-				               BindingFlags.Instance |
-				               BindingFlags.Static)
+				               BindingFlags.Instance);
+			if (memberScope == MemberScope.IncludingInherited)
+			{
+				properties = properties.Concat(type.GetInheritedPrivateMembers(
+					baseType => baseType.GetProperties(BindingFlags.DeclaredOnly |
+					                                   BindingFlags.NonPublic |
+					                                   BindingFlags.Instance |
+					                                   BindingFlags.Static),
+					property => property.GetMethod is not { IsPrivate: false, } &&
+					            property.SetMethod is not { IsPrivate: false, }));
+			}
+
+			return properties
 				.Where(m => !m.IsSpecialName)
 				.Where(m => !m.IsCompilerGenerated() ||
 				            included.HasFlag(CompilerGeneratedMembers.Properties))
@@ -171,12 +215,39 @@ internal static class TypeHelpers
 	/// <remarks>
 	///     <see cref="MemberScope.DeclaredOnly" /> restricts the search to members declared directly on the type, while
 	///     <see cref="MemberScope.IncludingInherited" /> also returns inherited members (including inherited static members
-	///     via <see cref="BindingFlags.FlattenHierarchy" />).
+	///     via <see cref="BindingFlags.FlattenHierarchy" />). Inherited <see langword="private" /> members are not covered
+	///     by <see cref="BindingFlags.FlattenHierarchy" /> and are collected separately via
+	///     <see cref="GetInheritedPrivateMembers{T}" />.
 	/// </remarks>
 	private static BindingFlags ToBindingFlags(this MemberScope memberScope)
 		=> memberScope == MemberScope.DeclaredOnly
 			? BindingFlags.DeclaredOnly
 			: BindingFlags.FlattenHierarchy;
+
+	/// <summary>
+	///     Collects the <see langword="private" /> members declared on the base types of the <paramref name="type" />.
+	/// </summary>
+	/// <remarks>
+	///     <see cref="BindingFlags.FlattenHierarchy" /> does not return <see langword="private" /> members of base types,
+	///     so they are gathered here by walking the base type chain and keeping only those members that reflection
+	///     excludes from the derived type (i.e. members without any non-private accessor).
+	/// </remarks>
+	private static IEnumerable<T> GetInheritedPrivateMembers<T>(
+		this Type type,
+		Func<Type, IEnumerable<T>> getDeclaredMembers,
+		Func<T, bool> isPrivate)
+	{
+		for (Type? baseType = type.BaseType; baseType is not null; baseType = baseType.BaseType)
+		{
+			foreach (T member in getDeclaredMembers(baseType))
+			{
+				if (isPrivate(member))
+				{
+					yield return member;
+				}
+			}
+		}
+	}
 
 	/// <summary>
 	///     The compiler-generated members that are currently included via customization.

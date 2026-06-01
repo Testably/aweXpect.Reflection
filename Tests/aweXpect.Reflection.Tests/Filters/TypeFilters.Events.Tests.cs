@@ -38,6 +38,26 @@ public sealed partial class TypeFilters
 				await That(events).Contains(e => e.Name == nameof(DerivedClassWithMembers.DerivedEvent));
 				await That(events).Contains(e => e.Name == nameof(BaseClassWithMembers.BaseEvent));
 			}
+
+			[Fact]
+			public async Task WithIncludingInherited_ShouldIncludeInheritedPrivateMembers()
+			{
+				Filtered.Events events =
+					In.Type<DerivedClassWithMembers>().Events(MemberScope.IncludingInherited)
+						.WhichArePrivate();
+
+				await That(events).Contains(e => e.Name == "BasePrivateEvent");
+			}
+
+			[Fact]
+			public async Task WithDeclaredOnly_ShouldNotIncludeInheritedPrivateMembers()
+			{
+				Filtered.Events events =
+					In.Type<DerivedClassWithMembers>().Events(MemberScope.DeclaredOnly)
+						.WhichArePrivate();
+
+				await That(events).None().Satisfy(e => e.Name == "BasePrivateEvent");
+			}
 		}
 	}
 }

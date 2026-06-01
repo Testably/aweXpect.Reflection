@@ -49,6 +49,26 @@ public sealed partial class TypeFilters
 				await That(properties).Contains(p => p.Name == nameof(BaseClassWithMembers.BaseProperty));
 				await That(properties).All().Satisfy(p => p.GetMethod?.IsPublic == true).And.IsNotEmpty();
 			}
+
+			[Fact]
+			public async Task WithIncludingInherited_ShouldIncludeInheritedPrivateMembers()
+			{
+				Filtered.Properties properties =
+					In.Type<DerivedClassWithMembers>().Properties(MemberScope.IncludingInherited)
+						.WhichArePrivate();
+
+				await That(properties).Contains(p => p.Name == "BasePrivateProperty");
+			}
+
+			[Fact]
+			public async Task WithDeclaredOnly_ShouldNotIncludeInheritedPrivateMembers()
+			{
+				Filtered.Properties properties =
+					In.Type<DerivedClassWithMembers>().Properties(MemberScope.DeclaredOnly)
+						.WhichArePrivate();
+
+				await That(properties).None().Satisfy(p => p.Name == "BasePrivateProperty");
+			}
 		}
 	}
 }

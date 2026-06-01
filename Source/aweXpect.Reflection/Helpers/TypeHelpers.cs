@@ -43,16 +43,18 @@ internal static class TypeHelpers
 	}
 
 	/// <summary>
-	///     Searches for events in the <paramref name="type" /> that were directly declared there.
+	///     Searches for events in the <paramref name="type" />, optionally including inherited ones according to the
+	///     <paramref name="memberScope" />.
 	/// </summary>
 	public static EventInfo[] GetDeclaredEvents(
-		this Type type)
+		this Type type,
+		MemberScope memberScope = MemberScope.DeclaredOnly)
 	{
 		try
 		{
 			CompilerGeneratedMembers included = IncludedCompilerGeneratedMembers;
 			return type
-				.GetEvents(BindingFlags.DeclaredOnly |
+				.GetEvents(memberScope.ToBindingFlags() |
 				           BindingFlags.NonPublic |
 				           BindingFlags.Public |
 				           BindingFlags.Instance)
@@ -70,16 +72,18 @@ internal static class TypeHelpers
 	}
 
 	/// <summary>
-	///     Searches for fields in the <paramref name="type" /> that were directly declared there.
+	///     Searches for fields in the <paramref name="type" />, optionally including inherited ones according to the
+	///     <paramref name="memberScope" />.
 	/// </summary>
 	public static FieldInfo[] GetDeclaredFields(
-		this Type type)
+		this Type type,
+		MemberScope memberScope = MemberScope.DeclaredOnly)
 	{
 		try
 		{
 			CompilerGeneratedMembers included = IncludedCompilerGeneratedMembers;
 			return type
-				.GetFields(BindingFlags.DeclaredOnly |
+				.GetFields(memberScope.ToBindingFlags() |
 				           BindingFlags.NonPublic |
 				           BindingFlags.Public |
 				           BindingFlags.Instance |
@@ -99,17 +103,19 @@ internal static class TypeHelpers
 	}
 
 	/// <summary>
-	///     Searches for methods in the <paramref name="type" /> that were directly declared there.
+	///     Searches for methods in the <paramref name="type" />, optionally including inherited ones according to the
+	///     <paramref name="memberScope" />.
 	/// </summary>
 	public static MethodInfo[] GetDeclaredMethods(
-		this Type type)
+		this Type type,
+		MemberScope memberScope = MemberScope.DeclaredOnly)
 	{
 		try
 		{
 			CompilerGeneratedMembers includedCompilerGenerated = IncludedCompilerGeneratedMembers;
 			SpecialNameMembers includedSpecialName = IncludedSpecialNameMembers;
 			return type
-				.GetMethods(BindingFlags.DeclaredOnly |
+				.GetMethods(memberScope.ToBindingFlags() |
 				            BindingFlags.NonPublic |
 				            BindingFlags.Public |
 				            BindingFlags.Static |
@@ -128,16 +134,18 @@ internal static class TypeHelpers
 	}
 
 	/// <summary>
-	///     Searches for properties in the <paramref name="type" /> that were directly declared there.
+	///     Searches for properties in the <paramref name="type" />, optionally including inherited ones according to the
+	///     <paramref name="memberScope" />.
 	/// </summary>
 	public static PropertyInfo[] GetDeclaredProperties(
-		this Type type)
+		this Type type,
+		MemberScope memberScope = MemberScope.DeclaredOnly)
 	{
 		try
 		{
 			CompilerGeneratedMembers included = IncludedCompilerGeneratedMembers;
 			return type
-				.GetProperties(BindingFlags.DeclaredOnly |
+				.GetProperties(memberScope.ToBindingFlags() |
 				               BindingFlags.NonPublic |
 				               BindingFlags.Public |
 				               BindingFlags.Static |
@@ -156,6 +164,19 @@ internal static class TypeHelpers
 			return [];
 		}
 	}
+
+	/// <summary>
+	///     Maps the <paramref name="memberScope" /> to the corresponding <see cref="BindingFlags" />.
+	/// </summary>
+	/// <remarks>
+	///     <see cref="MemberScope.DeclaredOnly" /> restricts the search to members declared directly on the type, while
+	///     <see cref="MemberScope.IncludingInherited" /> also returns inherited members (including inherited static members
+	///     via <see cref="BindingFlags.FlattenHierarchy" />).
+	/// </remarks>
+	private static BindingFlags ToBindingFlags(this MemberScope memberScope)
+		=> memberScope == MemberScope.DeclaredOnly
+			? BindingFlags.DeclaredOnly
+			: BindingFlags.FlattenHierarchy;
 
 	/// <summary>
 	///     The compiler-generated members that are currently included via customization.

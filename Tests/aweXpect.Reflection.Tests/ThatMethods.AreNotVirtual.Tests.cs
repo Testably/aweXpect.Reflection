@@ -10,41 +10,41 @@ namespace aweXpect.Reflection.Tests;
 
 public sealed partial class ThatMethods
 {
-	public sealed class Override
+	public sealed class AreNotVirtual
 	{
 		public sealed class Tests
 		{
 			[Fact]
-			public async Task WhenFilteringOnlyOverridingMethods_ShouldSucceed()
+			public async Task WhenFilteringOnlyNonVirtualMethods_ShouldSucceed()
 			{
-				IEnumerable<MethodInfo> subject = typeof(ClassWithSealedMembers)
+				IEnumerable<MethodInfo> subject = typeof(AbstractClassWithMembers)
 					.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-					.Where(m => m.GetBaseDefinition().DeclaringType != m.DeclaringType);
+					.Where(m => !m.IsVirtual);
 
 				async Task Act()
 				{
-					await That(subject).Override();
+					await That(subject).AreNotVirtual();
 				}
 
 				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]
-			public async Task WhenMethodsContainNonOverridingMethods_ShouldFail()
+			public async Task WhenMethodsContainVirtualMethods_ShouldFail()
 			{
 				IEnumerable<MethodInfo> subject = typeof(AbstractClassWithMembers)
 					.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
 				async Task Act()
 				{
-					await That(subject).Override();
+					await That(subject).AreNotVirtual();
 				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             all override a base method,
-					             but it contained methods which do not override a base method [
+					             are all not virtual,
+					             but it contained virtual methods [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -54,36 +54,36 @@ public sealed partial class ThatMethods
 		public sealed class NegatedTests
 		{
 			[Fact]
-			public async Task WhenFilteringOnlyOverridingMethods_ShouldFail()
+			public async Task WhenFilteringOnlyNonVirtualMethods_ShouldFail()
 			{
-				IEnumerable<MethodInfo> subject = typeof(ClassWithSealedMembers)
+				IEnumerable<MethodInfo> subject = typeof(AbstractClassWithMembers)
 					.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-					.Where(m => m.GetBaseDefinition().DeclaringType != m.DeclaringType);
+					.Where(m => !m.IsVirtual);
 
 				async Task Act()
 				{
-					await That(subject).DoesNotComplyWith(they => they.Override());
+					await That(subject).DoesNotComplyWith(they => they.AreNotVirtual());
 				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             do not all override a base method,
-					             but it only contained methods which override a base method [
+					             also contain a virtual method,
+					             but it only contained non-virtual methods [
 					               *
 					             ]
 					             """).AsWildcard();
 			}
 
 			[Fact]
-			public async Task WhenMethodsContainNonOverridingMethods_ShouldSucceed()
+			public async Task WhenMethodsContainVirtualMethods_ShouldSucceed()
 			{
 				IEnumerable<MethodInfo> subject = typeof(AbstractClassWithMembers)
 					.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
 				async Task Act()
 				{
-					await That(subject).DoesNotComplyWith(they => they.Override());
+					await That(subject).DoesNotComplyWith(they => they.AreNotVirtual());
 				}
 
 				await That(Act).DoesNotThrow();
@@ -94,23 +94,23 @@ public sealed partial class ThatMethods
 		public sealed class AsyncEnumerableTests
 		{
 			[Fact]
-			public async Task WhenFilteringOnlyOverridingMethods_ShouldSucceed()
+			public async Task WhenFilteringOnlyNonVirtualMethods_ShouldSucceed()
 			{
-				IAsyncEnumerable<MethodInfo?> subject = typeof(ClassWithSealedMembers)
+				IAsyncEnumerable<MethodInfo?> subject = typeof(AbstractClassWithMembers)
 					.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-					.Where(m => m.GetBaseDefinition().DeclaringType != m.DeclaringType)
+					.Where(m => !m.IsVirtual)
 					.ToTestAsyncEnumerable<MethodInfo?>();
 
 				async Task Act()
 				{
-					await That(subject).Override();
+					await That(subject).AreNotVirtual();
 				}
 
 				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]
-			public async Task WhenMethodsContainNonOverridingMethods_ShouldFail()
+			public async Task WhenMethodsContainVirtualMethods_ShouldFail()
 			{
 				IAsyncEnumerable<MethodInfo?> subject = typeof(AbstractClassWithMembers)
 					.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
@@ -118,14 +118,14 @@ public sealed partial class ThatMethods
 
 				async Task Act()
 				{
-					await That(subject).Override();
+					await That(subject).AreNotVirtual();
 				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             all override a base method,
-					             but it contained methods which do not override a base method [
+					             are all not virtual,
+					             but it contained virtual methods [
 					               *
 					             ]
 					             """).AsWildcard();

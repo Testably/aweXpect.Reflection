@@ -57,14 +57,13 @@ public sealed partial class ThatType
 					             """);
 			}
 
-			public static TheoryData<Type> NonDelegateTypes()
-				=>
-				[
-					typeof(PublicClass),
-					typeof(PublicStruct),
-					typeof(IPublicInterface),
-					typeof(PublicEnum),
-				];
+			public static TheoryData<Type> NonDelegateTypes() => new()
+			{
+				typeof(PublicClass),
+				typeof(PublicStruct),
+				typeof(IPublicInterface),
+				typeof(PublicEnum),
+			};
 		}
 
 		public sealed class NegatedTests
@@ -95,14 +94,13 @@ public sealed partial class ThatType
 					.WithMessage("*is a delegate*but it was*").AsWildcard();
 			}
 
-			public static TheoryData<Type> NonDelegateTypes()
-				=>
-				[
-					typeof(PublicClass),
-					typeof(PublicStruct),
-					typeof(IPublicInterface),
-					typeof(PublicEnum),
-				];
+			public static TheoryData<Type> NonDelegateTypes() => new()
+			{
+				typeof(PublicClass),
+				typeof(PublicStruct),
+				typeof(IPublicInterface),
+				typeof(PublicEnum),
+			};
 		}
 	}
 }

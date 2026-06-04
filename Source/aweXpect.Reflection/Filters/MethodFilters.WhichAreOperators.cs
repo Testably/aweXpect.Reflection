@@ -43,8 +43,12 @@ public static partial class MethodFilters
 	///     Filters for methods that are not the specific <paramref name="operator" />
 	///     (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
 	/// </summary>
+	/// <remarks>
+	///     This filter implicitly re-includes operator special-name members for the query, so that the other operators
+	///     remain in the result without prior configuration of <c>IncludedSpecialNameMembers</c>.
+	/// </remarks>
 	public static Filtered.Methods WhichAreNotOperators(this Filtered.Methods @this, Operator @operator)
-		=> @this.Which(Filter.Prefix<MethodInfo>(
+		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
 			method => !method.IsOperator(@operator),
 			$"non-{OperatorNames.Of(@operator)} operator "));
 }

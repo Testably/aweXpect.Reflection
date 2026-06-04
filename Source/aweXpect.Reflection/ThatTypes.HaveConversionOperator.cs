@@ -116,6 +116,11 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
 	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveExplicitConversionOperator<TSource,
 		TTarget>(
 		this IThat<IEnumerable<Type?>> subject,
@@ -126,6 +131,11 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
 	///     operator from <paramref name="source" /> to <paramref name="target" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveExplicitConversionOperator(
 		this IThat<IEnumerable<Type?>> subject,
 		Type source,
@@ -140,6 +150,11 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
 	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
 		HaveExplicitConversionOperator<TSource, TTarget>(
 			this IThat<IAsyncEnumerable<Type?>> subject,
@@ -150,6 +165,11 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
 	///     operator from <paramref name="source" /> to <paramref name="target" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveExplicitConversionOperator(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Type source,
@@ -164,6 +184,11 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an explicit
 	///     conversion operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveExplicitConversionOperator<TSource,
 		TTarget>(
 		this IThat<IEnumerable<Type?>> subject,
@@ -174,6 +199,11 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an explicit
 	///     conversion operator from <paramref name="source" /> to <paramref name="target" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveExplicitConversionOperator(
 		this IThat<IEnumerable<Type?>> subject,
 		Type source,
@@ -188,6 +218,11 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an explicit
 	///     conversion operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
 		DoNotHaveExplicitConversionOperator<TSource, TTarget>(
 			this IThat<IAsyncEnumerable<Type?>> subject,
@@ -198,6 +233,11 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an explicit
 	///     conversion operator from <paramref name="source" /> to <paramref name="target" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveExplicitConversionOperator(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Type source,

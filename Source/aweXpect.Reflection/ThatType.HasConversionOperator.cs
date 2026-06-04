@@ -57,6 +57,11 @@ public static partial class ThatType
 	///     Verifies that the <see cref="Type" /> declares an explicit conversion operator from
 	///     <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<Type?, IThat<Type?>> HasExplicitConversionOperator<TSource, TTarget>(
 		this IThat<Type?> subject,
 		bool inherit = false)
@@ -66,6 +71,11 @@ public static partial class ThatType
 	///     Verifies that the <see cref="Type" /> declares an explicit conversion operator from
 	///     <paramref name="source" /> to <paramref name="target" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<Type?, IThat<Type?>> HasExplicitConversionOperator(
 		this IThat<Type?> subject,
 		Type source,
@@ -79,6 +89,11 @@ public static partial class ThatType
 	///     Verifies that the <see cref="Type" /> does not declare an explicit conversion operator from
 	///     <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<Type?, IThat<Type?>> DoesNotHaveExplicitConversionOperator<TSource, TTarget>(
 		this IThat<Type?> subject,
 		bool inherit = false)
@@ -88,6 +103,11 @@ public static partial class ThatType
 	///     Verifies that the <see cref="Type" /> does not declare an explicit conversion operator from
 	///     <paramref name="source" /> to <paramref name="target" />.
 	/// </summary>
+	/// <remarks>
+	///     Matches the non-checked <c>op_Explicit</c> conversion. Because C# requires a <c>checked</c> explicit
+	///     conversion to be declared alongside its non-checked counterpart, this also holds for types that additionally
+	///     declare a <c>checked</c> conversion with the same signature.
+	/// </remarks>
 	public static AndOrResult<Type?, IThat<Type?>> DoesNotHaveExplicitConversionOperator(
 		this IThat<Type?> subject,
 		Type source,

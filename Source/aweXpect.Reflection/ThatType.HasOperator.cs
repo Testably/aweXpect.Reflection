@@ -82,6 +82,43 @@ public static partial class ThatType
 				=> new HasOperatorConstraint(it, grammars, @operator, null, inherit).Invert()),
 			subject);
 
+	/// <summary>
+	///     Verifies that the <see cref="Type" /> does not declare the <paramref name="operator" /> with an overload that
+	///     takes the operand <typeparamref name="TOperand" /> as one of its parameters.
+	/// </summary>
+	/// <typeparam name="TOperand">The operand type that one of the operator's parameters must match exactly.</typeparam>
+	/// <param name="subject">The type subject.</param>
+	/// <param name="operator">The <see cref="Operator" /> to look for.</param>
+	/// <param name="inherit">
+	///     <see langword="true" /> to also consider operators inherited from base types; otherwise,
+	///     <see langword="false" /> (the default).
+	/// </param>
+	public static AndOrResult<Type?, IThat<Type?>> DoesNotHaveOperator<TOperand>(
+		this IThat<Type?> subject,
+		Operator @operator,
+		bool inherit = false)
+		=> subject.DoesNotHaveOperator(@operator, typeof(TOperand), inherit);
+
+	/// <summary>
+	///     Verifies that the <see cref="Type" /> does not declare the <paramref name="operator" /> with an overload that
+	///     takes the <paramref name="operand" /> as one of its parameters.
+	/// </summary>
+	/// <param name="subject">The type subject.</param>
+	/// <param name="operator">The <see cref="Operator" /> to look for.</param>
+	/// <param name="operand">The operand type that one of the operator's parameters must match exactly.</param>
+	/// <param name="inherit">
+	///     <see langword="true" /> to also consider operators inherited from base types; otherwise,
+	///     <see langword="false" /> (the default).
+	/// </param>
+	public static AndOrResult<Type?, IThat<Type?>> DoesNotHaveOperator(
+		this IThat<Type?> subject,
+		Operator @operator,
+		Type operand,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+				=> new HasOperatorConstraint(it, grammars, @operator, operand, inherit).Invert()),
+			subject);
+
 	private sealed class HasOperatorConstraint(
 		string it,
 		ExpectationGrammars grammars,

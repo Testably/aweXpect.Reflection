@@ -170,6 +170,58 @@ public sealed partial class ThatType
 			}
 		}
 
+		public sealed class DoesNotHaveOperatorWithOperandTests
+		{
+			[Fact]
+			public async Task WhenTypeDoesNotHaveTheOperatorWithOperand_ShouldSucceed()
+			{
+				Type subject = typeof(Money);
+
+				async Task Act()
+				{
+					await That(subject).DoesNotHaveOperator<string>(Operator.Addition);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeHasTheOperatorWithGenericOperand_ShouldFail()
+			{
+				Type subject = typeof(Money);
+
+				async Task Act()
+				{
+					await That(subject).DoesNotHaveOperator<int>(Operator.Addition);
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              does not have the operator op_Addition with operand {Formatter.Format(typeof(int))},
+					              but it had the operator op_Addition with operand {Formatter.Format(typeof(int))} {Formatter.Format(subject)}
+					              """);
+			}
+
+			[Fact]
+			public async Task WhenTypeHasTheOperatorWithTypeOperand_ShouldFail()
+			{
+				Type subject = typeof(Money);
+
+				async Task Act()
+				{
+					await That(subject).DoesNotHaveOperator(Operator.Addition, typeof(Money));
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              does not have the operator op_Addition with operand {Formatter.Format(typeof(Money))},
+					              but it had the operator op_Addition with operand {Formatter.Format(typeof(Money))} {Formatter.Format(subject)}
+					              """);
+			}
+		}
+
 		public sealed class NegatedTests
 		{
 			[Fact]

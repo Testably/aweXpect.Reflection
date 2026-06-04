@@ -474,9 +474,13 @@ consider operators inherited from base types. Conversion source/target types are
 Operators are special-name members that are [hidden by default](#compiler-generated-members), so the
 plain `.Methods()` collection excludes them unless opted in via `IncludedSpecialNameMembers`. The
 `.WhichAreOperators(Operator)` filter implicitly re-includes operators for its query, so it works without
-that configuration.
+that configuration. The negative `.WhichAreNotOperators(Operator)` filter deliberately does **not** re-include
+operators: a "not this operator" filter over `.Methods()` is meant to narrow regular methods, and force-including
+every *other* operator would surprise more than help. If you want the other operators in that result, opt in via
+`IncludedSpecialNameMembers`.
 
-> **Negation:** `IsNotAnOperator(Operator)`, `DoesNotHaveOperator(Operator)` / `DoNotHaveOperator(Operator)`,
+> **Negation:** `IsNotAnOperator(Operator)`, `DoesNotHaveOperator(Operator)` / `DoNotHaveOperator(Operator)`
+> (including the operand overloads, e.g. `DoesNotHaveOperator<int>(Operator)`),
 > `DoesNotHave…ConversionOperator…` / `DoNotHave…ConversionOperator…` and `WhichAreNotOperators(Operator)`.
 
 ### Properties & Fields

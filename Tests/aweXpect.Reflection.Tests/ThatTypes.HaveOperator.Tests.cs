@@ -136,6 +136,48 @@ public sealed partial class ThatTypes
 			}
 		}
 
+		public sealed class DoNotHaveOperatorWithOperandTests
+		{
+			[Fact]
+			public async Task WhenNoTypeHasTheOperatorWithOperand_ShouldSucceed()
+			{
+				IEnumerable<Type?> subject = new[]
+				{
+					typeof(Money),
+				};
+
+				async Task Act()
+				{
+					await That(subject).DoNotHaveOperator<string>(Operator.Addition);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenSomeTypeHasTheOperatorWithOperand_ShouldFail()
+			{
+				IEnumerable<Type?> subject = new[]
+				{
+					typeof(Money), typeof(ClassWithoutOperators),
+				};
+
+				async Task Act()
+				{
+					await That(subject).DoNotHaveOperator<int>(Operator.Addition);
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              all do not have the operator op_Addition with operand {Formatter.Format(typeof(int))},
+					              but it contained types with the operator op_Addition with operand {Formatter.Format(typeof(int))} [
+					                *
+					              ]
+					              """).AsWildcard();
+			}
+		}
+
 		public sealed class NegatedTests
 		{
 			[Fact]
@@ -257,6 +299,22 @@ public sealed partial class ThatTypes
 					               *
 					             ]
 					             """).AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenNoTypeHasTheOperatorWithOperand_ShouldSucceed()
+			{
+				IAsyncEnumerable<Type?> subject = new[]
+				{
+					typeof(Money),
+				}.ToTestAsyncEnumerable<Type?>();
+
+				async Task Act()
+				{
+					await That(subject).DoNotHaveOperator<string>(Operator.Addition);
+				}
+
+				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]

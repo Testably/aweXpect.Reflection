@@ -98,6 +98,21 @@ public sealed partial class ThatProperty
 			}
 
 			[Fact]
+			public async Task WhenPropertyIsASettableStaticExtensionProperty_ShouldSucceed()
+			{
+				PropertyInfo subject =
+					typeof(StaticClassWithNewExtensionProperties).GetExtensionProperty("MutableDefault");
+
+				async Task Act()
+				{
+					await That(subject).IsAnExtensionProperty();
+				}
+
+				await That(Act).DoesNotThrow();
+				await That(subject.CanWrite).IsTrue();
+			}
+
+			[Fact]
 			public async Task WhenPropertyIsAGenericStaticExtensionProperty_ShouldSucceed()
 			{
 				PropertyInfo subject =

@@ -54,6 +54,41 @@ public sealed class ExtensionPropertyDiscoveryTests
 		}
 	}
 
+	[Fact]
+	public async Task Methods_ShouldExcludeSettableExtensionPropertyAccessorsByDefault()
+	{
+		IReadOnlyList<MethodInfo> methods = await GetMethods();
+
+		await That(methods).None().Satisfy(m =>
+			m.DeclaringType == typeof(StaticClassWithNewExtensionProperties) &&
+			(m.Name == "get_MutableDefault" || m.Name == "set_MutableDefault"));
+	}
+
+	[Fact]
+	public async Task Methods_WhenIncludingAccessors_ShouldContainSettableExtensionPropertyAccessors()
+	{
+		using (Customize.aweXpect.Reflection().IncludedSpecialNameMembers().Set(SpecialNameMembers.Accessors))
+		{
+			IReadOnlyList<MethodInfo> methods = await GetMethods();
+
+			await That(methods).Contains(m => m.DeclaringType == typeof(StaticClassWithNewExtensionProperties) &&
+			                                  m.Name == "get_MutableDefault");
+			await That(methods).Contains(m => m.DeclaringType == typeof(StaticClassWithNewExtensionProperties) &&
+			                                  m.Name == "set_MutableDefault");
+		}
+	}
+
+	[Fact]
+	public async Task Properties_ShouldSurfaceSettableExtensionProperty()
+	{
+		IReadOnlyList<PropertyInfo> properties = await GetProperties();
+
+		await That(properties).Contains(p => p.DeclaringType?.DeclaringType ==
+		                                     typeof(StaticClassWithNewExtensionProperties) &&
+		                                     p.Name == "MutableDefault" &&
+		                                     p.CanRead && p.CanWrite);
+	}
+
 	private static async Task<IReadOnlyList<PropertyInfo>> GetProperties()
 		=> await ToList(In.AssemblyContaining<ExtensionPropertyDiscoveryTests>().Types().Properties());
 

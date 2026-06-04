@@ -23,7 +23,17 @@ public static class StaticClassWithNewExtensionProperties
 	{
 		// Static extension property - emitted as a (special-name) accessor in the grouping type.
 		public static string DefaultValue => "default";
+
+		// Settable static extension property - emits both a get_ and a set_ accessor implementation onto the public
+		// class, so accessor detection must suppress the set_ accessor as well as the get_ accessor.
+		public static string MutableDefault
+		{
+			get => _mutableDefault;
+			set => _mutableDefault = value;
+		}
 	}
+
+	private static string _mutableDefault = "default";
 
 	// Regular static property in an extension-bearing class - not an extension property.
 	public static int RegularProperty => 42;

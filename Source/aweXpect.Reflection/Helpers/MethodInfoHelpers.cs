@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -162,12 +163,22 @@ internal static class MethodInfoHelpers
 	///     Gets a value indicating whether the <see cref="MethodInfo" /> is an extension method.
 	/// </summary>
 	/// <remarks>
-	///     Detection is based on the <see cref="ExtensionAttribute" /> which the compiler emits for methods whose first
-	///     parameter is declared with the <see langword="this" /> modifier.
+	///     Classic extension methods and instance extension methods declared with the C# extension block syntax are
+	///     marked with the <see cref="ExtensionAttribute" /> on their public implementation. Static extension methods
+	///     declared with the extension block syntax are not, so they are detected by correlating the implementation with
+	///     the <c>&lt;G&gt;$…</c> grouping type that the compiler emits for the extension block.
 	/// </remarks>
 	/// <param name="methodInfo">The <see cref="MethodInfo" />.</param>
 	public static bool IsExtensionMethod(this MethodInfo? methodInfo)
-		=> methodInfo?.IsDefined(typeof(ExtensionAttribute), false) == true;
+	{
+		if (methodInfo is null)
+		{
+			return false;
+		}
+
+		return methodInfo.IsDefined(typeof(ExtensionAttribute), false) ||
+		       methodInfo.IsStaticExtensionMethod();
+	}
 
 	/// <summary>
 	///     Gets a value indicating whether the <see cref="MethodInfo" /> is an operator (e.g. <c>op_Addition</c>,
@@ -181,4 +192,79 @@ internal static class MethodInfoHelpers
 	public static bool IsOperator(this MethodInfo? methodInfo)
 		=> methodInfo is { IsSpecialName: true, }
 		   && methodInfo.Name.StartsWith("op_", StringComparison.Ordinal);
+
+	/// <summary>
+	///     Detects static extension methods declared with the C# extension block syntax. Unlike instance extension
+	///     methods, their public implementation is not marked with the <see cref="ExtensionAttribute" />, so the
+	///     implementation is correlated with the matching skeleton in the <c>&lt;G&gt;$…</c> grouping type that the
+	///     compiler emits for the surrounding extension block.
+	/// </summary>
+	private static bool IsStaticExtensionMethod(this MethodInfo methodInfo)
+	{
+		Type? declaringType = methodInfo.DeclaringType;
+		if (declaringType?.IsDefined(typeof(ExtensionAttribute), false) != true)
+		{
+			return false;
+		}
+
+		foreach (Type nestedType in declaringType.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic))
+		{
+			if (!nestedType.IsExtensionGroupingType())
+			{
+				continue;
+			}
+
+			foreach (MethodInfo skeleton in nestedType.GetMethods(BindingFlags.Public |
+			                                                      BindingFlags.NonPublic |
+			                                                      BindingFlags.Static |
+			                                                      BindingFlags.DeclaredOnly))
+			{
+				if (!skeleton.IsSpecialName &&
+				    string.Equals(skeleton.Name, methodInfo.Name, StringComparison.Ordinal) &&
+				    ParametersMatch(skeleton, methodInfo))
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private static bool ParametersMatch(MethodInfo skeleton, MethodInfo implementation)
+	{
+		ParameterInfo[] skeletonParameters = skeleton.GetParameters();
+		ParameterInfo[] implementationParameters = implementation.GetParameters();
+		if (skeletonParameters.Length != implementationParameters.Length)
+		{
+			return false;
+		}
+
+		for (int i = 0; i < skeletonParameters.Length; i++)
+		{
+			if (!string.Equals(ParameterTypeKey(skeletonParameters[i].ParameterType),
+				    ParameterTypeKey(implementationParameters[i].ParameterType), StringComparison.Ordinal))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	///     Builds the comparison key for a parameter type when correlating a public implementation with its
+	///     grouping-type skeleton.
+	/// </summary>
+	/// <remarks>
+	///     Generic type parameters are named differently on the grouping type (<c>$T0</c>, <c>$T1</c>, …) than on the
+	///     public implementation (the source names), so they are keyed by their position. All other types are keyed by
+	///     their full name (avoiding false matches between unrelated types that share a simple name), falling back to the
+	///     simple name when the full name is unavailable (e.g. for a constructed generic type such as
+	///     <c>List&lt;T&gt;</c>).
+	/// </remarks>
+	private static string ParameterTypeKey(Type type)
+		=> type.IsGenericParameter
+			? "!" + type.GenericParameterPosition.ToString(CultureInfo.InvariantCulture)
+			: type.FullName ?? type.Name;
 }

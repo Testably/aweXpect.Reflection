@@ -143,8 +143,8 @@ public sealed partial class TypeFilters
 			// ReSharper disable once ClassNeverInstantiated.Local
 			private sealed class SealedMemberClass : ConcreteForSealed
 			{
-				public override string ToString() => "Sealed";
-				public override void VirtualMethod() { }
+				public sealed override string ToString() => "Sealed";
+				public sealed override void VirtualMethod() { }
 			}
 		}
 	}

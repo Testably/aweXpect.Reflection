@@ -48,7 +48,7 @@ public sealed partial class MethodFilters
 
 				await That(methods).All().Satisfy(x => x!.Name == "op_Addition").And.IsNotEmpty();
 				await That(methods.GetDescription())
-					.IsEqualTo("op_Addition operator methods in").AsPrefix();
+					.IsEqualTo("Addition operator methods in").AsPrefix();
 			}
 
 			[Fact]

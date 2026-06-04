@@ -863,7 +863,7 @@ internal static class TypeHelpers
 	public static bool HasOperator(this Type? type, Operator @operator, Type operand, bool inherit = false)
 		=> type?.GetMethods(OperatorFlags(inherit))
 			.Any(m => m.IsOperator(@operator) &&
-			          m.GetParameters().Any(p => p.ParameterType == operand)) == true;
+			          m.GetParameters().Any(p => p.ParameterType.IsEqualTo(operand))) == true;
 
 	/// <summary>
 	///     Gets the conversion operator on the <paramref name="type" /> that converts from <paramref name="source" /> to

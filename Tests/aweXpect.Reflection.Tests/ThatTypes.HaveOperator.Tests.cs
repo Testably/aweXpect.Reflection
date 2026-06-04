@@ -44,8 +44,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             all have the operator op_Addition,
-					             but it contained types without the operator op_Addition [
+					             all have the operator Addition,
+					             but it contained types without the operator Addition [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -71,6 +71,22 @@ public sealed partial class ThatTypes
 			}
 
 			[Fact]
+			public async Task WhenAllTypesHaveTheOperatorWithTypeOperand_ShouldSucceed()
+			{
+				IEnumerable<Type?> subject = new[]
+				{
+					typeof(Money),
+				};
+
+				async Task Act()
+				{
+					await That(subject).HaveOperator(Operator.Addition, typeof(Money));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenSomeTypeDoesNotHaveTheOperatorWithOperand_ShouldFail()
 			{
 				IEnumerable<Type?> subject = new[]
@@ -86,8 +102,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              all have the operator op_Addition with operand {Formatter.Format(typeof(string))},
-					              but it contained types without the operator op_Addition with operand {Formatter.Format(typeof(string))} [
+					              all have the operator Addition with operand {Formatter.Format(typeof(string))},
+					              but it contained types without the operator Addition with operand {Formatter.Format(typeof(string))} [
 					                *
 					              ]
 					              """).AsWildcard();
@@ -128,8 +144,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             all do not have the operator op_Addition,
-					             but it contained types with the operator op_Addition [
+					             all do not have the operator Addition,
+					             but it contained types with the operator Addition [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -155,6 +171,29 @@ public sealed partial class ThatTypes
 			}
 
 			[Fact]
+			public async Task WhenSomeTypeHasTheOperatorWithTypeOperand_ShouldFail()
+			{
+				IEnumerable<Type?> subject = new[]
+				{
+					typeof(Money), typeof(ClassWithoutOperators),
+				};
+
+				async Task Act()
+				{
+					await That(subject).DoNotHaveOperator(Operator.Addition, typeof(Money));
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              all do not have the operator Addition with operand {Formatter.Format(typeof(Money))},
+					              but it contained types with the operator Addition with operand {Formatter.Format(typeof(Money))} [
+					                *
+					              ]
+					              """).AsWildcard();
+			}
+
+			[Fact]
 			public async Task WhenSomeTypeHasTheOperatorWithOperand_ShouldFail()
 			{
 				IEnumerable<Type?> subject = new[]
@@ -170,8 +209,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              all do not have the operator op_Addition with operand {Formatter.Format(typeof(int))},
-					              but it contained types with the operator op_Addition with operand {Formatter.Format(typeof(int))} [
+					              all do not have the operator Addition with operand {Formatter.Format(typeof(int))},
+					              but it contained types with the operator Addition with operand {Formatter.Format(typeof(int))} [
 					                *
 					              ]
 					              """).AsWildcard();
@@ -196,8 +235,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             not all have the operator op_Addition,
-					             but it only contained types with the operator op_Addition [
+					             not all have the operator Addition,
+					             but it only contained types with the operator Addition [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -219,8 +258,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             also contain a type with the operator op_Addition,
-					             but it only contained types without the operator op_Addition [
+					             also contain a type with the operator Addition,
+					             but it only contained types without the operator Addition [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -294,8 +333,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             all have the operator op_Addition,
-					             but it contained types without the operator op_Addition [
+					             all have the operator Addition,
+					             but it contained types without the operator Addition [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -333,8 +372,8 @@ public sealed partial class ThatTypes
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             all do not have the operator op_Addition,
-					             but it contained types with the operator op_Addition [
+					             all do not have the operator Addition,
+					             but it contained types with the operator Addition [
 					               *
 					             ]
 					             """).AsWildcard();

@@ -29,7 +29,7 @@ public static partial class MethodFilters
 	public static Filtered.Methods WhichAreOperators(this Filtered.Methods @this, Operator @operator)
 		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
 			method => method.IsOperator(@operator),
-			$"{OperatorNames.Of(@operator)} operator "));
+			$"{OperatorNames.Display(@operator)} operator "));
 
 	/// <summary>
 	///     Filters for methods that are not operators (e.g. <c>op_Addition</c>, <c>op_Equality</c>, …).
@@ -50,5 +50,5 @@ public static partial class MethodFilters
 	public static Filtered.Methods WhichAreNotOperators(this Filtered.Methods @this, Operator @operator)
 		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
 			method => !method.IsOperator(@operator),
-			$"non-{OperatorNames.Of(@operator)} operator "));
+			$"non-{OperatorNames.Display(@operator)} operator "));
 }

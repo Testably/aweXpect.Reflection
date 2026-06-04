@@ -36,8 +36,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              has the operator op_Subtraction,
-					              but it did not have the operator op_Subtraction {Formatter.Format(subject)}
+					              has the operator Subtraction,
+					              but it did not have the operator Subtraction {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -54,8 +54,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              has the operator op_Modulus,
-					              but it did not have the operator op_Modulus {Formatter.Format(subject)}
+					              has the operator Modulus,
+					              but it did not have the operator Modulus {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -85,7 +85,7 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             has the operator op_Addition,
+					             has the operator Addition,
 					             but it was <null>
 					             """);
 			}
@@ -106,8 +106,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              has the operator op_Addition with operand {Formatter.Format(typeof(string))},
-					              but it did not have the operator op_Addition with operand {Formatter.Format(typeof(string))} {Formatter.Format(subject)}
+					              has the operator Addition with operand {Formatter.Format(typeof(string))},
+					              but it did not have the operator Addition with operand {Formatter.Format(typeof(string))} {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -132,6 +132,19 @@ public sealed partial class ThatType
 				async Task Act()
 				{
 					await That(subject).HasOperator(Operator.Addition, typeof(Money));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeHasTheOperatorWithOpenGenericOperand_ShouldSucceed()
+			{
+				Type subject = typeof(GenericBox<int>);
+
+				async Task Act()
+				{
+					await That(subject).HasOperator(Operator.Addition, typeof(GenericBox<>));
 				}
 
 				await That(Act).DoesNotThrow();
@@ -166,8 +179,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              does not have the operator op_Addition,
-					              but it had the operator op_Addition {Formatter.Format(subject)}
+					              does not have the operator Addition,
+					              but it had the operator Addition {Formatter.Format(subject)}
 					              """);
 			}
 		}
@@ -200,8 +213,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              does not have the operator op_Addition with operand {Formatter.Format(typeof(int))},
-					              but it had the operator op_Addition with operand {Formatter.Format(typeof(int))} {Formatter.Format(subject)}
+					              does not have the operator Addition with operand {Formatter.Format(typeof(int))},
+					              but it had the operator Addition with operand {Formatter.Format(typeof(int))} {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -218,8 +231,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              does not have the operator op_Addition with operand {Formatter.Format(typeof(Money))},
-					              but it had the operator op_Addition with operand {Formatter.Format(typeof(Money))} {Formatter.Format(subject)}
+					              does not have the operator Addition with operand {Formatter.Format(typeof(Money))},
+					              but it had the operator Addition with operand {Formatter.Format(typeof(Money))} {Formatter.Format(subject)}
 					              """);
 			}
 		}
@@ -252,8 +265,8 @@ public sealed partial class ThatType
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              does not have the operator op_Addition,
-					              but it had the operator op_Addition {Formatter.Format(subject)}
+					              does not have the operator Addition,
+					              but it had the operator Addition {Formatter.Format(subject)}
 					              """);
 			}
 		}

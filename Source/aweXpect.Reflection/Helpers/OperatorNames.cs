@@ -55,6 +55,19 @@ internal static class OperatorNames
 		};
 
 	/// <summary>
+	///     Gets a human-readable name for the <paramref name="operator" /> for use in assertion messages and
+	///     descriptions (e.g. <see cref="Operator.Addition" /> is displayed as <c>Addition</c> rather than its
+	///     <c>op_Addition</c> metadata name).
+	/// </summary>
+	/// <remarks>
+	///     Unlike <see cref="Of" />, this is only used while building messages (on assertion failure or when describing a
+	///     filter), never per candidate member, so the (reflection-based) enum <see cref="System.Enum.ToString()" /> is
+	///     acceptable here.
+	/// </remarks>
+	public static string Display(Operator @operator)
+		=> @operator.ToString();
+
+	/// <summary>
 	///     Gets the compiler-emitted metadata name of an implicit (<c>op_Implicit</c>) or explicit
 	///     (<c>op_Explicit</c>) conversion operator.
 	/// </summary>

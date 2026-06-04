@@ -24,8 +24,8 @@ public sealed partial class ThatMethod
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              is the operator op_Addition,
-					              but it was not the operator op_Addition {Formatter.Format(subject)}
+					              is the operator Addition,
+					              but it was not the operator Addition {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -44,8 +44,8 @@ public sealed partial class ThatMethod
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              is the operator op_Addition,
-					              but it was not the operator op_Addition {Formatter.Format(subject)}
+					              is the operator Addition,
+					              but it was not the operator Addition {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -62,7 +62,7 @@ public sealed partial class ThatMethod
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             is the operator op_Addition,
+					             is the operator Addition,
 					             but it was <null>
 					             """);
 			}
@@ -112,8 +112,8 @@ public sealed partial class ThatMethod
 				await That(Act).Throws<XunitException>()
 					.WithMessage($"""
 					              Expected that subject
-					              is not the operator op_Addition,
-					              but it was the operator op_Addition {Formatter.Format(subject)}
+					              is not the operator Addition,
+					              but it was the operator Addition {Formatter.Format(subject)}
 					              """);
 			}
 		}

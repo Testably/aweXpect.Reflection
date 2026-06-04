@@ -128,7 +128,7 @@ public static partial class ThatType
 		: ConstraintResult.WithNotNullValue<Type?>(it, grammars),
 			IValueConstraint<Type?>
 	{
-		private readonly string _name = OperatorNames.Of(@operator);
+		private readonly string _name = OperatorNames.Display(@operator);
 
 		public ConstraintResult IsMetBy(Type? actual)
 		{

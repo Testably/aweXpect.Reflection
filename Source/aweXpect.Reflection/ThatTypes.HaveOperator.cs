@@ -30,15 +30,26 @@ public static partial class ThatTypes
 
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
+	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
+	/// </summary>
+	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveOperator(
+		this IThat<IEnumerable<Type?>> subject,
+		Operator @operator,
+		Type operand,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+				=> new HaveOperatorConstraint(it, grammars, @operator, operand, inherit)),
+			subject);
+
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveOperator<TOperand>(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new HaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
-			subject);
+		=> subject.HaveOperator(@operator, typeof(TOperand), inherit);
 
 #if NET8_0_OR_GREATER
 	/// <summary>
@@ -55,15 +66,26 @@ public static partial class ThatTypes
 
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
+	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Operator @operator,
+		Type operand,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new HaveOperatorConstraint(it, grammars, @operator, operand, inherit)),
+			subject);
+
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator<TOperand>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
-			subject);
+		=> subject.HaveOperator(@operator, typeof(TOperand), inherit);
 #endif
 
 	/// <summary>
@@ -80,15 +102,26 @@ public static partial class ThatTypes
 
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
+	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
+	/// </summary>
+	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveOperator(
+		this IThat<IEnumerable<Type?>> subject,
+		Operator @operator,
+		Type operand,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+				=> new DoNotHaveOperatorConstraint(it, grammars, @operator, operand, inherit)),
+			subject);
+
+	/// <summary>
+	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveOperator<TOperand>(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new DoNotHaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
-			subject);
+		=> subject.DoNotHaveOperator(@operator, typeof(TOperand), inherit);
 
 #if NET8_0_OR_GREATER
 	/// <summary>
@@ -105,15 +138,26 @@ public static partial class ThatTypes
 
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
+	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveOperator(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Operator @operator,
+		Type operand,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new DoNotHaveOperatorConstraint(it, grammars, @operator, operand, inherit)),
+			subject);
+
+	/// <summary>
+	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveOperator<TOperand>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new DoNotHaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
-			subject);
+		=> subject.DoNotHaveOperator(@operator, typeof(TOperand), inherit);
 #endif
 
 	private sealed class HaveOperatorConstraint(
@@ -215,7 +259,7 @@ public static partial class ThatTypes
 
 	private static string OperatorText(Operator @operator, Type? operand)
 	{
-		string name = OperatorNames.Of(@operator);
+		string name = OperatorNames.Display(@operator);
 		return operand is null ? name : $"{name} with operand {Formatter.Format(operand)}";
 	}
 }

@@ -82,5 +82,24 @@ public class ClassWithoutOperators
 	public int Value { get; set; }
 }
 
+/// <summary>
+///     A generic value type with an operator, used to verify that operand matching is generic-aware (an open generic
+///     operand matches a closed generic parameter, consistent with the rest of the library).
+/// </summary>
+public readonly struct GenericBox<T>
+{
+	public GenericBox(T value)
+	{
+		Value = value;
+	}
+
+	public T Value { get; }
+
+	public static GenericBox<T> operator +(GenericBox<T> left, GenericBox<T> right)
+	{
+		return left;
+	}
+}
+
 #pragma warning restore CA2225
 #pragma warning restore CA1815

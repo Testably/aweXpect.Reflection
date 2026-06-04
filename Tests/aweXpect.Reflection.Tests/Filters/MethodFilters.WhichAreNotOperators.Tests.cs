@@ -34,7 +34,7 @@ public sealed partial class MethodFilters
 				await That(methods).All().Satisfy(x => x!.Name != "op_Addition").And.IsNotEmpty();
 				await That(methods).Contains(x => x.Name == "op_Subtraction");
 				await That(methods.GetDescription())
-					.IsEqualTo("non-op_Addition operator methods in").AsPrefix();
+					.IsEqualTo("non-Addition operator methods in").AsPrefix();
 			}
 
 			[Fact]
@@ -49,7 +49,7 @@ public sealed partial class MethodFilters
 					await That(methods).All().Satisfy(x => x!.Name != "op_Addition").And.IsNotEmpty();
 					await That(methods).Contains(x => x.Name == "op_Subtraction");
 					await That(methods.GetDescription())
-						.IsEqualTo("non-op_Addition operator methods in").AsPrefix();
+						.IsEqualTo("non-Addition operator methods in").AsPrefix();
 				}
 			}
 		}

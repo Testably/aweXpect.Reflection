@@ -83,7 +83,7 @@ public static partial class ThatMethod
 		: ConstraintResult.WithNotNullValue<MethodInfo?>(it, grammars),
 			IValueConstraint<MethodInfo?>
 	{
-		private readonly string _name = OperatorNames.Of(@operator);
+		private readonly string _name = OperatorNames.Display(@operator);
 
 		public ConstraintResult IsMetBy(MethodInfo? actual)
 		{

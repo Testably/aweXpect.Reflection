@@ -271,7 +271,8 @@ accept a generic argument or a `Type`, plus an optional `forceDirect` flag to re
 Passing an interface throws — use `Implements` for that.
 
 `WhichImplement` / `Implements` consider only implemented **interfaces** (also with an optional `forceDirect`
-flag); passing a non-interface throws.
+flag); passing a non-interface throws. With `forceDirect`, an interface reached only through a base class or
+through another implemented interface does not count as *directly* implemented.
 
 `IsAssignableTo` / `IsAssignableFrom` (and their `WhichAre…` / `Are…` forms) use runtime assignability, which
 covers base classes *and* interfaces in one step, treats a type as assignable to itself, and honors closed

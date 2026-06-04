@@ -403,12 +403,19 @@ internal static class TypeHelpers
 	/// <summary>
 	///     Determines whether the current <see cref="Type" /> implements the <paramref name="interfaceType" />.
 	/// </summary>
+	/// <remarks>
+	///     With <paramref name="forceDirect" /> a <paramref name="interfaceType" /> reached only through a base class or
+	///     through another implemented interface is excluded. Because the compiler emits the full transitive interface set
+	///     into the metadata, a redundantly declared interface (e.g. <c>class C : IDerived, IBase</c> where
+	///     <c>IDerived : IBase</c>) cannot be distinguished from an inherited one and is therefore treated as not direct.
+	/// </remarks>
 	/// <param name="type">The <see cref="Type" />.</param>
 	/// <param name="interfaceType">The interface <see cref="Type" />.</param>
 	/// <param name="forceDirect">
 	///     If set to <see langword="false" /> (default value), the <paramref name="interfaceType" />
 	///     can be anywhere in the inheritance tree, otherwise if set to <see langword="true" /> requires the
-	///     <paramref name="interfaceType" /> to be directly implemented in the <paramref name="type" />.
+	///     <paramref name="interfaceType" /> to be implemented directly on the <paramref name="type" /> itself and not
+	///     inherited from a base class or another implemented interface.
 	/// </param>
 	public static bool Implements(
 		this Type type,
@@ -421,10 +428,16 @@ internal static class TypeHelpers
 		}
 
 		Type[] interfaces = type.GetInterfaces();
-		if (forceDirect && type.BaseType != null)
+		if (forceDirect)
 		{
+			IEnumerable<Type> inherited = interfaces.SelectMany(@interface => @interface.GetInterfaces());
+			if (type.BaseType != null)
+			{
+				inherited = inherited.Concat(type.BaseType.GetInterfaces());
+			}
+
 			interfaces = interfaces
-				.Except(type.BaseType.GetInterfaces())
+				.Except(inherited)
 				.ToArray();
 		}
 

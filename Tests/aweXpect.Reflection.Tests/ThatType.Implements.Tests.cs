@@ -67,6 +67,50 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTypeImplementsDerivedInterfaceDirectly_WithForceDirect_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithDerivedInterface);
+
+				async Task Act()
+				{
+					await That(subject).Implements<IDerivedTestInterface>(true);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenInterfaceIsInheritedViaAnotherInterface_WithForceDirect_ShouldFail()
+			{
+				Type subject = typeof(ClassWithDerivedInterface);
+
+				async Task Act()
+				{
+					await That(subject).Implements<ITestInterface>(true);
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             directly implements ThatType.ITestInterface,
+					             but it did not directly implement ThatType.ITestInterface, but was ThatType.ClassWithDerivedInterface
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenInterfaceIsInheritedViaAnotherInterface_WithoutForceDirect_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithDerivedInterface);
+
+				async Task Act()
+				{
+					await That(subject).Implements<ITestInterface>();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeDoesNotImplementInterface_ShouldFail()
 			{
 				Type subject = typeof(UnrelatedClass);

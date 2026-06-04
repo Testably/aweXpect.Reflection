@@ -36,6 +36,17 @@ public sealed partial class MethodFilters
 				await That(methods.GetDescription())
 					.IsEqualTo("operator methods in").AsPrefix();
 			}
+
+			[Fact]
+			public async Task ShouldNotModifyTheSourceCollection()
+			{
+				Filtered.Methods source = In.Type<ClassWithOperators>().Methods();
+
+				// Deriving an operator filter must not retroactively pull operators into the source collection.
+				_ = source.WhichAreOperators();
+
+				await That(source).All().Satisfy(x => !x.IsReallyOperator()).And.IsNotEmpty();
+			}
 		}
 
 		public sealed class WithOperatorTests

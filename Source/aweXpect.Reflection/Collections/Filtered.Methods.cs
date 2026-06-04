@@ -18,7 +18,8 @@ public static partial class Filtered
 	public class Methods : Filtered<MethodInfo, Methods>, IDescribableSubject
 	{
 		private readonly string _description;
-		private readonly OperatorInclusion _operatorInclusion;
+		private readonly bool _includeOperators;
+		private readonly MemberScope _memberScope;
 		private readonly Types? _types;
 
 		/// <summary>
@@ -26,17 +27,17 @@ public static partial class Filtered
 		/// </summary>
 		internal Methods(Types types, string description,
 			MemberScope memberScope = MemberScope.DeclaredOnly)
-			: this(types, description, new OperatorInclusion(), memberScope)
+			: this(types, description, memberScope, includeOperators: false)
 		{
 		}
 
-		private Methods(Types types, string description, OperatorInclusion operatorInclusion,
-			MemberScope memberScope) : base(types.SelectMany(type =>
-			type.GetDeclaredMethods(memberScope, operatorInclusion.Include)))
+		private Methods(Types types, string description, MemberScope memberScope, bool includeOperators)
+			: base(types.SelectMany(type => type.GetDeclaredMethods(memberScope, includeOperators)))
 		{
 			_types = types;
 			_description = description;
-			_operatorInclusion = operatorInclusion;
+			_memberScope = memberScope;
+			_includeOperators = includeOperators;
 		}
 
 		/// <summary>
@@ -46,7 +47,6 @@ public static partial class Filtered
 			: base(methods.WhereNotNull())
 		{
 			_description = description;
-			_operatorInclusion = new OperatorInclusion();
 		}
 
 		/// <summary>
@@ -56,7 +56,8 @@ public static partial class Filtered
 		{
 			_description = inner._description;
 			_types = inner._types;
-			_operatorInclusion = inner._operatorInclusion;
+			_memberScope = inner._memberScope;
+			_includeOperators = inner._includeOperators;
 		}
 
 		/// <inheritdoc />
@@ -77,32 +78,35 @@ public static partial class Filtered
 		}
 
 		/// <summary>
-		///     Implicitly re-includes operator special-name members for this query, so that operator filters work even when
-		///     operators are not opted in via <c>IncludedSpecialNameMembers</c>.
+		///     Returns a copy of this collection that additionally includes operator special-name members, so that operator
+		///     filters work even when operators are not opted in via <c>IncludedSpecialNameMembers</c>.
 		/// </summary>
 		/// <remarks>
-		///     The flag is read lazily while the underlying methods are enumerated, so switching it on before enumeration
-		///     (i.e. while still composing the filter) is sufficient.
+		///     Operator inclusion is fixed when the underlying methods are gathered, so it cannot be toggled in place after
+		///     construction. This rebuilds the collection from its source types - re-applying any filters already composed -
+		///     with operators included. Collections that already include operators, or that were created from an explicit
+		///     method list (and therefore have no source types to rebuild from), are returned unchanged.
 		/// </remarks>
-		internal Methods IncludingOperators()
+		internal Methods WithOperatorsIncluded()
 		{
-			_operatorInclusion.Include = true;
-			return this;
+			if (_includeOperators || _types is null)
+			{
+				return this;
+			}
+
+			Methods rebuilt = new(_types, _description, _memberScope, includeOperators: true);
+			foreach (IFilter<MethodInfo> filter in Filters)
+			{
+				rebuilt.Which(filter);
+			}
+
+			return rebuilt;
 		}
 
 		/// <summary>
 		///     Get all declaring types of the filtered methods.
 		/// </summary>
 		public Types DeclaringTypes() => new(this);
-
-		/// <summary>
-		///     Mutable holder shared between a <see cref="Methods" /> and its copies that controls whether operators are
-		///     force-included while the methods are gathered.
-		/// </summary>
-		private sealed class OperatorInclusion
-		{
-			public bool Include { get; set; }
-		}
 
 		/// <summary>
 		///     A Container for a filterable collection of <see cref="MethodInfo" />,

@@ -14,7 +14,7 @@ public static partial class MethodFilters
 	///     configuration of <c>IncludedSpecialNameMembers</c>.
 	/// </remarks>
 	public static Filtered.Methods WhichAreOperators(this Filtered.Methods @this)
-		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
+		=> @this.WithOperatorsIncluded().Which(Filter.Prefix<MethodInfo>(
 			method => method.IsOperator(),
 			"operator "));
 
@@ -27,7 +27,7 @@ public static partial class MethodFilters
 	///     configuration of <c>IncludedSpecialNameMembers</c>.
 	/// </remarks>
 	public static Filtered.Methods WhichAreOperators(this Filtered.Methods @this, Operator @operator)
-		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
+		=> @this.WithOperatorsIncluded().Which(Filter.Prefix<MethodInfo>(
 			method => method.IsOperator(@operator),
 			$"{OperatorNames.Display(@operator)} operator "));
 
@@ -48,7 +48,7 @@ public static partial class MethodFilters
 	///     remain in the result without prior configuration of <c>IncludedSpecialNameMembers</c>.
 	/// </remarks>
 	public static Filtered.Methods WhichAreNotOperators(this Filtered.Methods @this, Operator @operator)
-		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
+		=> @this.WithOperatorsIncluded().Which(Filter.Prefix<MethodInfo>(
 			method => !method.IsOperator(@operator),
 			$"non-{OperatorNames.Display(@operator)} operator "));
 }

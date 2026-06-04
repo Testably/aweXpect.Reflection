@@ -444,13 +444,13 @@ The `Operator` enum maps each C# operator to its compiler-emitted `op_*` metadat
 on magic strings. It covers unary, binary, comparison and conversion operators, including the C# 11 `checked`
 variants and `>>>` (`UnsignedRightShift`).
 
-| Scope                | Filter                              | Assert (single)                    | Assert (many)            |
-|----------------------|-------------------------------------|------------------------------------|--------------------------|
-| any operator method  | `.WhichAreOperators()`              | `.IsAnOperator()`                  | `.AreOperators()`        |
-| specific operator    | `.WhichAreOperators(Operator)`      | `.IsAnOperator(Operator)`          | —                        |
-| type has operator    | —                                   | `.HasOperator(Operator)`           | `.HaveOperator(Operator)` |
-| implicit conversion  | —                                   | `.HasImplicitConversionOperator<TSource, TTarget>()` | `.HaveImplicitConversionOperator<TSource, TTarget>()` |
-| explicit conversion  | —                                   | `.HasExplicitConversionOperator<TSource, TTarget>()` | `.HaveExplicitConversionOperator<TSource, TTarget>()` |
+| Scope               | Filter                         | Assert (single)                                      | Assert (many)                                         |
+|---------------------|--------------------------------|------------------------------------------------------|-------------------------------------------------------|
+| any operator method | `.WhichAreOperators()`         | `.IsAnOperator()`                                    | `.AreOperators()`                                     |
+| specific operator   | `.WhichAreOperators(Operator)` | `.IsAnOperator(Operator)`                            | —                                                     |
+| type has operator   | —                              | `.HasOperator(Operator)`                             | `.HaveOperator(Operator)`                             |
+| implicit conversion | —                              | `.HasImplicitConversionOperator<TSource, TTarget>()` | `.HaveImplicitConversionOperator<TSource, TTarget>()` |
+| explicit conversion | —                              | `.HasExplicitConversionOperator<TSource, TTarget>()` | `.HaveExplicitConversionOperator<TSource, TTarget>()` |
 
 ```csharp
 // Method-level: narrow an operator method to a specific operator

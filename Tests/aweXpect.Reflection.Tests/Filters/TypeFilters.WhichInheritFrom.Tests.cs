@@ -37,6 +37,22 @@ public sealed partial class TypeFilters
 					             """);
 			}
 
+			[Fact]
+			public async Task WhenBaseTypeIsAnInterface_ShouldThrowArgumentException()
+			{
+				async Task Act()
+				{
+					await That(In.AssemblyContaining<WhichInheritFrom>().Types().WhichInheritFrom<IFoo>())
+						.AreNotAbstract();
+				}
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage(
+						"The type to check inheritance from must be a class, but it was the interface TypeFilters.WhichInheritFrom.Tests.IFoo. Use 'Implements' to check for interface implementations.");
+			}
+
+			private interface IFoo;
+
 			private class FooBase;
 
 			// ReSharper disable once UnusedType.Local

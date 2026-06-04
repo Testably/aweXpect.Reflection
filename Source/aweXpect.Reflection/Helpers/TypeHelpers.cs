@@ -440,19 +440,18 @@ internal static class TypeHelpers
 	}
 
 	/// <summary>
-	///     Determines whether the current <see cref="Type" /> inherits from the <paramref name="parentType" />.
+	///     Determines whether the current <see cref="Type" /> inherits from the <paramref name="parentType" />
+	///     (a base class) or implements it (an interface), anywhere in the inheritance tree.
 	/// </summary>
+	/// <remarks>
+	///     Used for member-type assignability matching (e.g. <c>OfType</c>); for the base-class-only inheritance check
+	///     used by type assertions see <see cref="InheritsFromClass" />.
+	/// </remarks>
 	/// <param name="type">The <see cref="Type" />.</param>
 	/// <param name="parentType">The parent <see cref="Type" />.</param>
-	/// <param name="forceDirect">
-	///     If set to <see langword="false" /> (default value), the <paramref name="parentType" />
-	///     can be anywhere in the inheritance tree, otherwise if set to <see langword="true" /> requires the
-	///     <paramref name="parentType" /> to be the direct parent.
-	/// </param>
 	public static bool InheritsFrom(
 		this Type type,
-		Type parentType,
-		bool forceDirect = false)
+		Type parentType)
 	{
 		if (type == parentType)
 		{
@@ -461,7 +460,6 @@ internal static class TypeHelpers
 
 		Type currentType = type;
 
-		int level = 0;
 		while (currentType != typeof(object))
 		{
 			if (parentType.IsEqualTo(currentType))
@@ -469,12 +467,7 @@ internal static class TypeHelpers
 				return true;
 			}
 
-			if (forceDirect && level++ > 0)
-			{
-				return false;
-			}
-
-			if (currentType.Implements(parentType, forceDirect))
+			if (currentType.Implements(parentType))
 			{
 				return true;
 			}
@@ -488,6 +481,100 @@ internal static class TypeHelpers
 		}
 
 		return false;
+	}
+
+	/// <summary>
+	///     Determines whether the current <see cref="Type" /> inherits from the base class <paramref name="baseClass" />.
+	/// </summary>
+	/// <remarks>
+	///     Unlike <see cref="InheritsFrom" />, only the base-class chain is considered; implemented interfaces are ignored.
+	/// </remarks>
+	/// <param name="type">The <see cref="Type" />.</param>
+	/// <param name="baseClass">The base class to check inheritance from.</param>
+	/// <param name="forceDirect">
+	///     If set to <see langword="false" /> (default value), the <paramref name="baseClass" />
+	///     can be anywhere in the inheritance tree, otherwise if set to <see langword="true" /> requires the
+	///     <paramref name="baseClass" /> to be the direct parent.
+	/// </param>
+	public static bool InheritsFromClass(
+		this Type type,
+		Type baseClass,
+		bool forceDirect = false)
+	{
+		if (type == baseClass)
+		{
+			return false;
+		}
+
+		Type currentType = type;
+
+		int level = 0;
+		while (currentType != typeof(object))
+		{
+			if (baseClass.IsEqualTo(currentType))
+			{
+				return true;
+			}
+
+			if (forceDirect && level++ > 0)
+			{
+				return false;
+			}
+
+			if (currentType.BaseType == null)
+			{
+				break;
+			}
+
+			currentType = currentType.BaseType;
+		}
+
+		return false;
+	}
+
+	/// <summary>
+	///     Throws an <see cref="ArgumentException" /> if the <paramref name="baseClass" /> is an interface,
+	///     because inheritance checks only consider the base-class chain.
+	/// </summary>
+	public static Type EnsureIsClass(this Type baseClass)
+	{
+		if (baseClass.IsInterface)
+		{
+			throw new ArgumentException(
+				$"The type to check inheritance from must be a class, but it was the interface {Formatter.Format(baseClass)}. Use 'Implements' to check for interface implementations.");
+		}
+
+		return baseClass;
+	}
+
+	/// <summary>
+	///     Throws an <see cref="ArgumentException" /> if the <paramref name="interfaceType" /> is not an interface,
+	///     because implementation checks only consider interfaces.
+	/// </summary>
+	public static Type EnsureIsInterface(this Type interfaceType)
+	{
+		if (!interfaceType.IsInterface)
+		{
+			throw new ArgumentException(
+				$"The type to check implementation of must be an interface, but it was {Formatter.Format(interfaceType)}. Use 'InheritsFrom' to check for base-class inheritance.");
+		}
+
+		return interfaceType;
+	}
+
+	/// <summary>
+	///     Throws an <see cref="ArgumentException" /> if the <paramref name="type" /> is an open generic type definition,
+	///     because runtime assignability cannot be evaluated for open generics.
+	/// </summary>
+	public static Type EnsureIsNotOpenGeneric(this Type type)
+	{
+		if (type.ContainsGenericParameters)
+		{
+			throw new ArgumentException(
+				$"The type to check assignability against must not be an open generic type definition, but it was {Formatter.Format(type)}. Use 'Implements' or 'InheritsFrom' for open generic type definitions.");
+		}
+
+		return type;
 	}
 
 	/// <summary>

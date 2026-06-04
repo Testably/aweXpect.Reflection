@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 #if NET8_0_OR_GREATER
-using System.Threading.Tasks;
 #endif
 
 namespace aweXpect.Reflection.Internal.Tests.Helpers;
@@ -100,7 +99,7 @@ public sealed class LinqAsyncHelpersTests
 		int[] source = [1, 2, 3, 4,];
 
 		List<int> result = new();
-		await foreach (int item in LinqAsyncHelpers.Where(ToAsync(source), i => i % 2 == 0))
+		await foreach (int item in ToAsync(source).Where(i => i % 2 == 0))
 		{
 			result.Add(item);
 		}
@@ -128,7 +127,7 @@ public sealed class LinqAsyncHelpersTests
 		int[] source = [1, 1, 2, 3, 3, 3,];
 
 		List<int> result = new();
-		await foreach (int item in LinqAsyncHelpers.Distinct(ToAsync(source)))
+		await foreach (int item in ToAsync(source).Distinct())
 		{
 			result.Add(item);
 		}

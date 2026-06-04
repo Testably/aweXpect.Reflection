@@ -40,6 +40,32 @@ public static partial class ThatTypes
 				=> new HaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
 			subject);
 
+#if NET8_0_OR_GREATER
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
+	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Operator @operator,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new HaveOperatorConstraint(it, grammars, @operator, null, inherit)),
+			subject);
+
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
+	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator<TOperand>(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Operator @operator,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new HaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
+			subject);
+#endif
+
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
@@ -65,30 +91,6 @@ public static partial class ThatTypes
 			subject);
 
 #if NET8_0_OR_GREATER
-	/// <summary>
-	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
-	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator(
-		this IThat<IAsyncEnumerable<Type?>> subject,
-		Operator @operator,
-		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveOperatorConstraint(it, grammars, @operator, null, inherit)),
-			subject);
-
-	/// <summary>
-	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
-	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator<TOperand>(
-		this IThat<IAsyncEnumerable<Type?>> subject,
-		Operator @operator,
-		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveOperatorConstraint(it, grammars, @operator, typeof(TOperand), inherit)),
-			subject);
-
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).

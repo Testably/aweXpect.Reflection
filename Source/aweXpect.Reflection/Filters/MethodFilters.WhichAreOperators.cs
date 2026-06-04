@@ -9,8 +9,12 @@ public static partial class MethodFilters
 	/// <summary>
 	///     Filters for methods that are operators (e.g. <c>op_Addition</c>, <c>op_Equality</c>, …).
 	/// </summary>
+	/// <remarks>
+	///     This filter implicitly re-includes operator special-name members for the query, so it works without prior
+	///     configuration of <c>IncludedSpecialNameMembers</c>.
+	/// </remarks>
 	public static Filtered.Methods WhichAreOperators(this Filtered.Methods @this)
-		=> @this.Which(Filter.Prefix<MethodInfo>(
+		=> @this.IncludingOperators().Which(Filter.Prefix<MethodInfo>(
 			method => method.IsOperator(),
 			"operator "));
 

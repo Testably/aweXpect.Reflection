@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using aweXpect.Core;
@@ -39,6 +39,31 @@ public static partial class ThatTypes
 				=> new HaveConversionOperatorConstraint(it, grammars, true, source, target, inherit)),
 			subject);
 
+#if NET8_0_OR_GREATER
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an implicit conversion
+	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
+		HaveImplicitConversionOperator<TSource, TTarget>(
+			this IThat<IAsyncEnumerable<Type?>> subject,
+			bool inherit = false)
+		=> subject.HaveImplicitConversionOperator(typeof(TSource), typeof(TTarget), inherit);
+
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an implicit conversion
+	///     operator from <paramref name="source" /> to <paramref name="target" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveImplicitConversionOperator(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Type source,
+		Type target,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new HaveConversionOperatorConstraint(it, grammars, true, source, target, inherit)),
+			subject);
+#endif
+
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an implicit
 	///     conversion operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
@@ -62,6 +87,31 @@ public static partial class ThatTypes
 				=> new DoNotHaveConversionOperatorConstraint(it, grammars, true, source, target, inherit)),
 			subject);
 
+#if NET8_0_OR_GREATER
+	/// <summary>
+	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an implicit
+	///     conversion operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
+		DoNotHaveImplicitConversionOperator<TSource, TTarget>(
+			this IThat<IAsyncEnumerable<Type?>> subject,
+			bool inherit = false)
+		=> subject.DoNotHaveImplicitConversionOperator(typeof(TSource), typeof(TTarget), inherit);
+
+	/// <summary>
+	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an implicit
+	///     conversion operator from <paramref name="source" /> to <paramref name="target" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveImplicitConversionOperator(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Type source,
+		Type target,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new DoNotHaveConversionOperatorConstraint(it, grammars, true, source, target, inherit)),
+			subject);
+#endif
+
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
 	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
@@ -84,6 +134,31 @@ public static partial class ThatTypes
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
 				=> new HaveConversionOperatorConstraint(it, grammars, false, source, target, inherit)),
 			subject);
+
+#if NET8_0_OR_GREATER
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
+	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
+		HaveExplicitConversionOperator<TSource, TTarget>(
+			this IThat<IAsyncEnumerable<Type?>> subject,
+			bool inherit = false)
+		=> subject.HaveExplicitConversionOperator(typeof(TSource), typeof(TTarget), inherit);
+
+	/// <summary>
+	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
+	///     operator from <paramref name="source" /> to <paramref name="target" />.
+	/// </summary>
+	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveExplicitConversionOperator(
+		this IThat<IAsyncEnumerable<Type?>> subject,
+		Type source,
+		Type target,
+		bool inherit = false)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+				=> new HaveConversionOperatorConstraint(it, grammars, false, source, target, inherit)),
+			subject);
+#endif
 
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an explicit
@@ -109,75 +184,6 @@ public static partial class ThatTypes
 			subject);
 
 #if NET8_0_OR_GREATER
-	/// <summary>
-	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an implicit conversion
-	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
-		HaveImplicitConversionOperator<TSource, TTarget>(
-			this IThat<IAsyncEnumerable<Type?>> subject,
-			bool inherit = false)
-		=> subject.HaveImplicitConversionOperator(typeof(TSource), typeof(TTarget), inherit);
-
-	/// <summary>
-	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an implicit conversion
-	///     operator from <paramref name="source" /> to <paramref name="target" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveImplicitConversionOperator(
-		this IThat<IAsyncEnumerable<Type?>> subject,
-		Type source,
-		Type target,
-		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveConversionOperatorConstraint(it, grammars, true, source, target, inherit)),
-			subject);
-
-	/// <summary>
-	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an implicit
-	///     conversion operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
-		DoNotHaveImplicitConversionOperator<TSource, TTarget>(
-			this IThat<IAsyncEnumerable<Type?>> subject,
-			bool inherit = false)
-		=> subject.DoNotHaveImplicitConversionOperator(typeof(TSource), typeof(TTarget), inherit);
-
-	/// <summary>
-	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an implicit
-	///     conversion operator from <paramref name="source" /> to <paramref name="target" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveImplicitConversionOperator(
-		this IThat<IAsyncEnumerable<Type?>> subject,
-		Type source,
-		Type target,
-		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new DoNotHaveConversionOperatorConstraint(it, grammars, true, source, target, inherit)),
-			subject);
-
-	/// <summary>
-	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
-	///     operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>>
-		HaveExplicitConversionOperator<TSource, TTarget>(
-			this IThat<IAsyncEnumerable<Type?>> subject,
-			bool inherit = false)
-		=> subject.HaveExplicitConversionOperator(typeof(TSource), typeof(TTarget), inherit);
-
-	/// <summary>
-	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare an explicit conversion
-	///     operator from <paramref name="source" /> to <paramref name="target" />.
-	/// </summary>
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveExplicitConversionOperator(
-		this IThat<IAsyncEnumerable<Type?>> subject,
-		Type source,
-		Type target,
-		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveConversionOperatorConstraint(it, grammars, false, source, target, inherit)),
-			subject);
-
 	/// <summary>
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare an explicit
 	///     conversion operator from <typeparamref name="TSource" /> to <typeparamref name="TTarget" />.

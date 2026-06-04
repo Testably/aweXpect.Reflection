@@ -25,6 +25,17 @@ public sealed partial class MethodFilters
 						.IsEqualTo("operator methods in types in assembly").AsPrefix();
 				}
 			}
+
+			[Fact]
+			public async Task ShouldAllowFilteringForOperatorsWithoutCustomization()
+			{
+				Filtered.Methods methods = In.Type<ClassWithOperators>()
+					.Methods().WhichAreOperators();
+
+				await That(methods).All().Satisfy(x => x.IsReallyOperator()).And.IsNotEmpty();
+				await That(methods.GetDescription())
+					.IsEqualTo("operator methods in").AsPrefix();
+			}
 		}
 
 		public sealed class WithOperatorTests

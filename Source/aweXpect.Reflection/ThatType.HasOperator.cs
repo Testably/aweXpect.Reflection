@@ -133,11 +133,10 @@ public static partial class ThatType
 		public ConstraintResult IsMetBy(Type? actual)
 		{
 			Actual = actual;
-			Outcome = (operand is null
+			bool hasOperator = operand is null
 				? actual.HasOperator(@operator, inherit)
-				: actual.HasOperator(@operator, operand, inherit))
-				? Outcome.Success
-				: Outcome.Failure;
+				: actual.HasOperator(@operator, operand, inherit);
+			Outcome = hasOperator ? Outcome.Success : Outcome.Failure;
 			return this;
 		}
 

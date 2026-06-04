@@ -187,12 +187,14 @@ await Expect.That(typeof(MyClass)).HasADefaultConstructor();
 ```csharp
 // FluentAssertions
 // No dedicated FieldInfo assertions; fall back to raw reflection + LINQ/string assertions:
-typeof(MyClass).GetField("_counter").IsInitOnly.Should().BeTrue();
+typeof(MyClass).GetField("_counter", BindingFlags.Instance | BindingFlags.NonPublic)
+    .IsInitOnly.Should().BeTrue();
 ```
 
 ```csharp
 // aweXpect.Reflection
-FieldInfo field = typeof(MyClass).GetField("_counter");
+FieldInfo field = typeof(MyClass).GetField("_counter",
+    BindingFlags.Instance | BindingFlags.NonPublic);
 await Expect.That(field).IsReadOnly();
 await Expect.That(field).IsPrivate();
 

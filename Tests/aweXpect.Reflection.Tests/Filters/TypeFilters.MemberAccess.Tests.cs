@@ -143,8 +143,12 @@ public sealed partial class TypeFilters
 			// ReSharper disable once ClassNeverInstantiated.Local
 			private sealed class SealedMemberClass : ConcreteForSealed
 			{
+				// 'sealed' is required so MethodInfo.IsFinal is true, which the .Sealed
+				// filter relies on (see ShouldChainSealedBeforeMethods); do not remove.
+				// ReSharper disable RedundantSealedKeyword
 				public sealed override string ToString() => "Sealed";
 				public sealed override void VirtualMethod() { }
+				// ReSharper restore RedundantSealedKeyword
 			}
 		}
 	}

@@ -125,11 +125,16 @@ public static partial class ThatType
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(It).Append(" did not inherit ");
-			AppendDirectlyFrom(stringBuilder, forceDirect);
+			if (forceDirect && Actual?.InheritsFromClass(baseType) == true)
+			{
+				stringBuilder.Append(It).Append(" inherited from ");
+				Formatter.Format(stringBuilder, baseType);
+				stringBuilder.Append(" only indirectly");
+				return;
+			}
+
+			stringBuilder.Append(It).Append(" did not inherit from ");
 			Formatter.Format(stringBuilder, baseType);
-			stringBuilder.Append(", but was ");
-			Formatter.Format(stringBuilder, Actual);
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)

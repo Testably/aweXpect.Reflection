@@ -191,7 +191,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
-					             but it did not inherit from ThatType.BaseClass, but was ThatType.UnrelatedClass
+					             but it did not inherit from ThatType.BaseClass
 					             """);
 			}
 

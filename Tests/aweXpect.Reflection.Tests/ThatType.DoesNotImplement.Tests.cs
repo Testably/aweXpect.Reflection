@@ -168,7 +168,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             implements ThatType.ITestInterface,
-					             but it did not implement ThatType.ITestInterface, but was ThatType.UnrelatedClass
+					             but it did not implement ThatType.ITestInterface
 					             """);
 			}
 		}

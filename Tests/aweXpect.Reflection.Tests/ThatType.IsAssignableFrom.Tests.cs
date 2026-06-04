@@ -63,7 +63,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             is assignable from ThatType.UnrelatedClass,
-					             but it was not assignable from ThatType.UnrelatedClass, but was ThatType.BaseClass
+					             but it was not assignable from ThatType.UnrelatedClass
 					             """);
 			}
 

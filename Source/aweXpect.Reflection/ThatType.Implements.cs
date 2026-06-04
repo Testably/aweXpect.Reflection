@@ -126,10 +126,16 @@ public static partial class ThatType
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(It).Append(forceDirect ? " did not directly implement " : " did not implement ");
+			if (forceDirect && Actual?.Implements(interfaceType) == true)
+			{
+				stringBuilder.Append(It).Append(" implemented ");
+				Formatter.Format(stringBuilder, interfaceType);
+				stringBuilder.Append(" only indirectly");
+				return;
+			}
+
+			stringBuilder.Append(It).Append(" did not implement ");
 			Formatter.Format(stringBuilder, interfaceType);
-			stringBuilder.Append(", but was ");
-			Formatter.Format(stringBuilder, Actual);
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)

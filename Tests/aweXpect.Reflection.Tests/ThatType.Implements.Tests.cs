@@ -62,7 +62,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             directly implements ThatType.ITestInterface,
-					             but it did not directly implement ThatType.ITestInterface, but was ThatType.DerivedFromClassWithInterface
+					             but it implemented ThatType.ITestInterface only indirectly
 					             """);
 			}
 
@@ -93,7 +93,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             directly implements ThatType.ITestInterface,
-					             but it did not directly implement ThatType.ITestInterface, but was ThatType.ClassWithDerivedInterface
+					             but it implemented ThatType.ITestInterface only indirectly
 					             """);
 			}
 
@@ -124,7 +124,25 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             implements ThatType.ITestInterface,
-					             but it did not implement ThatType.ITestInterface, but was ThatType.UnrelatedClass
+					             but it did not implement ThatType.ITestInterface
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenTypeDoesNotImplementInterface_WithForceDirect_ShouldReportNotImplemented()
+			{
+				Type subject = typeof(UnrelatedClass);
+
+				async Task Act()
+				{
+					await That(subject).Implements<ITestInterface>(true);
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             directly implements ThatType.ITestInterface,
+					             but it did not implement ThatType.ITestInterface
 					             """);
 			}
 
@@ -175,7 +193,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             implements ThatType.ITestInterface,
-					             but it did not implement ThatType.ITestInterface, but was ThatType.UnrelatedClass
+					             but it did not implement ThatType.ITestInterface
 					             """);
 			}
 

@@ -22,7 +22,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
-					             but it did not inherit from ThatType.BaseClass, but was ThatType.UnrelatedClass
+					             but it did not inherit from ThatType.BaseClass
 					             """);
 			}
 
@@ -94,7 +94,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             inherits directly from ThatType.BaseClass,
-					             but it did not inherit directly from ThatType.BaseClass, but was ThatType.GrandChildClass
+					             but it inherited from ThatType.BaseClass only indirectly
 					             """);
 			}
 
@@ -112,7 +112,25 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
-					             but it did not inherit from ThatType.BaseClass, but was ThatType.BaseClass
+					             but it did not inherit from ThatType.BaseClass
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenTypeDoesNotInherit_WithForceDirect_ShouldReportNotInherited()
+			{
+				Type subject = typeof(UnrelatedClass);
+
+				async Task Act()
+				{
+					await That(subject).InheritsFrom<BaseClass>(true);
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             inherits directly from ThatType.BaseClass,
+					             but it did not inherit from ThatType.BaseClass
 					             """);
 			}
 		}
@@ -134,7 +152,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
-					             but it did not inherit from ThatType.BaseClass, but was ThatType.UnrelatedClass
+					             but it did not inherit from ThatType.BaseClass
 					             """);
 			}
 
@@ -197,7 +215,7 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             inherits directly from ThatType.BaseClass,
-					             but it did not inherit directly from ThatType.BaseClass, but was ThatType.GrandChildClass
+					             but it inherited from ThatType.BaseClass only indirectly
 					             """);
 			}
 		}

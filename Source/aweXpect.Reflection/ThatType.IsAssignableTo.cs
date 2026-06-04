@@ -181,8 +181,6 @@ public static partial class ThatType
 		{
 			stringBuilder.Append(It).Append(" was not assignable to ");
 			Formatter.Format(stringBuilder, type);
-			stringBuilder.Append(", but was ");
-			Formatter.Format(stringBuilder, Actual);
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -222,8 +220,6 @@ public static partial class ThatType
 		{
 			stringBuilder.Append(It).Append(" was not assignable from ");
 			Formatter.Format(stringBuilder, type);
-			stringBuilder.Append(", but was ");
-			Formatter.Format(stringBuilder, Actual);
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)

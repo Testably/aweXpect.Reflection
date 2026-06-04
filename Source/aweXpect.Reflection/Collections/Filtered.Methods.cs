@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -18,17 +18,25 @@ public static partial class Filtered
 	public class Methods : Filtered<MethodInfo, Methods>, IDescribableSubject
 	{
 		private readonly string _description;
+		private readonly OperatorInclusion _operatorInclusion;
 		private readonly Types? _types;
 
 		/// <summary>
 		///     Container for a filterable collection of <see cref="MethodInfo" />.
 		/// </summary>
 		internal Methods(Types types, string description,
-			MemberScope memberScope = MemberScope.DeclaredOnly) : base(types.SelectMany(type =>
-			type.GetDeclaredMethods(memberScope)))
+			MemberScope memberScope = MemberScope.DeclaredOnly)
+			: this(types, description, new OperatorInclusion(), memberScope)
+		{
+		}
+
+		private Methods(Types types, string description, OperatorInclusion operatorInclusion,
+			MemberScope memberScope) : base(types.SelectMany(type =>
+			type.GetDeclaredMethods(memberScope, operatorInclusion.Include)))
 		{
 			_types = types;
 			_description = description;
+			_operatorInclusion = operatorInclusion;
 		}
 
 		/// <summary>
@@ -38,6 +46,7 @@ public static partial class Filtered
 			: base(methods.WhereNotNull())
 		{
 			_description = description;
+			_operatorInclusion = new OperatorInclusion();
 		}
 
 		/// <summary>
@@ -47,6 +56,30 @@ public static partial class Filtered
 		{
 			_description = inner._description;
 			_types = inner._types;
+			_operatorInclusion = inner._operatorInclusion;
+		}
+
+		/// <summary>
+		///     Implicitly re-includes operator special-name members for this query, so that operator filters work even when
+		///     operators are not opted in via <c>IncludedSpecialNameMembers</c>.
+		/// </summary>
+		/// <remarks>
+		///     The flag is read lazily while the underlying methods are enumerated, so switching it on before enumeration
+		///     (i.e. while still composing the filter) is sufficient.
+		/// </remarks>
+		internal Methods IncludingOperators()
+		{
+			_operatorInclusion.Include = true;
+			return this;
+		}
+
+		/// <summary>
+		///     Mutable holder shared between a <see cref="Methods" /> and its copies that controls whether operators are
+		///     force-included while the methods are gathered.
+		/// </summary>
+		private sealed class OperatorInclusion
+		{
+			public bool Include { get; set; }
 		}
 
 		/// <inheritdoc />

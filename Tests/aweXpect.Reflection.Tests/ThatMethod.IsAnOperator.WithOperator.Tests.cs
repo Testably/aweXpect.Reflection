@@ -8,38 +8,38 @@ public sealed partial class ThatMethod
 {
 	public sealed partial class IsAnOperator
 	{
-		public sealed class Tests
+		public sealed class WithOperatorTests
 		{
 			[Fact]
-			public async Task WhenMethodIsAnOperator_ShouldSucceed()
+			public async Task WhenMethodIsTheExpectedOperator_ShouldSucceed()
 			{
 				MethodInfo subject =
 					typeof(ClassWithOperators).GetMethod("op_Addition")!;
 
 				async Task Act()
 				{
-					await That(subject).IsAnOperator();
+					await That(subject).IsAnOperator(Operator.Addition);
 				}
 
 				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]
-			public async Task WhenMethodIsAPropertyAccessor_ShouldFail()
+			public async Task WhenMethodIsADifferentOperator_ShouldFail()
 			{
 				MethodInfo subject =
-					typeof(ClassWithOperators).GetMethod("get_Value")!;
+					typeof(ClassWithOperators).GetMethod("op_Subtraction")!;
 
 				async Task Act()
 				{
-					await That(subject).IsAnOperator();
+					await That(subject).IsAnOperator(Operator.Addition);
 				}
 
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              is an operator,
-					              but it was not an operator {Formatter.Format(subject)}
+					              is the operator op_Addition,
+					              but it was not the operator op_Addition {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -52,14 +52,14 @@ public sealed partial class ThatMethod
 
 				async Task Act()
 				{
-					await That(subject).IsAnOperator();
+					await That(subject).IsAnOperator(Operator.Addition);
 				}
 
 				await That(Act).ThrowsException()
 					.WithMessage($"""
 					              Expected that subject
-					              is an operator,
-					              but it was not an operator {Formatter.Format(subject)}
+					              is the operator op_Addition,
+					              but it was not the operator op_Addition {Formatter.Format(subject)}
 					              """);
 			}
 
@@ -70,49 +70,48 @@ public sealed partial class ThatMethod
 
 				async Task Act()
 				{
-					await That(subject).IsAnOperator();
+					await That(subject).IsAnOperator(Operator.Addition);
 				}
 
 				await That(Act).ThrowsException()
 					.WithMessage("""
 					             Expected that subject
-					             is an operator,
+					             is the operator op_Addition,
 					             but it was <null>
 					             """);
 			}
 		}
 
-		public sealed class NegatedTests
+		public sealed class WithOperatorNegatedTests
 		{
 			[Fact]
-			public async Task WhenMethodIsAnOperator_ShouldFail()
+			public async Task WhenMethodIsTheExpectedOperator_ShouldFail()
 			{
 				MethodInfo subject =
 					typeof(ClassWithOperators).GetMethod("op_Addition")!;
 
 				async Task Act()
 				{
-					await That(subject).DoesNotComplyWith(it => it.IsAnOperator());
+					await That(subject).DoesNotComplyWith(it => it.IsAnOperator(Operator.Addition));
 				}
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage($"""
 					              Expected that subject
-					              is not an operator,
-					              but it was an operator {Formatter.Format(subject)}
+					              is not the operator op_Addition,
+					              but it was the operator op_Addition {Formatter.Format(subject)}
 					              """);
 			}
 
 			[Fact]
-			public async Task WhenMethodIsNotAnOperator_ShouldSucceed()
+			public async Task WhenMethodIsADifferentOperator_ShouldSucceed()
 			{
 				MethodInfo subject =
-					typeof(ClassWithOperators).GetMethod(
-						nameof(ClassWithOperators.RegularMethod))!;
+					typeof(ClassWithOperators).GetMethod("op_Subtraction")!;
 
 				async Task Act()
 				{
-					await That(subject).DoesNotComplyWith(it => it.IsAnOperator());
+					await That(subject).DoesNotComplyWith(it => it.IsAnOperator(Operator.Addition));
 				}
 
 				await That(Act).DoesNotThrow();

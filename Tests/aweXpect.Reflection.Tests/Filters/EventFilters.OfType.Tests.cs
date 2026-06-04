@@ -39,6 +39,7 @@ public sealed partial class EventFilters
 			}
 		}
 
+#pragma warning disable CA2263 // tests intentionally exercise the non-generic Type overload
 		public sealed class TypeTests
 		{
 			[Fact]
@@ -110,6 +111,7 @@ public sealed partial class EventFilters
 					.AsPrefix();
 			}
 		}
+#pragma warning restore CA2263
 
 		public delegate void CustomHandler();
 

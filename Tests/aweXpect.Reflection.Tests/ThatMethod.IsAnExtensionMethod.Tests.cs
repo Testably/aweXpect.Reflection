@@ -289,6 +289,21 @@ public sealed partial class ThatMethod
 
 				await That(Act).DoesNotThrow();
 			}
+
+			[Fact]
+			public async Task WhenMethodIsAGenericStaticExtensionMethodWithOwnTypeParameter_ShouldSucceed()
+			{
+				MethodInfo subject =
+					typeof(GenericClassWithNewExtensionMethods).GetMethod(
+						nameof(GenericClassWithNewExtensionMethods.Convert))!;
+
+				async Task Act()
+				{
+					await That(subject).IsAnExtensionMethod();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 #endif
 	}

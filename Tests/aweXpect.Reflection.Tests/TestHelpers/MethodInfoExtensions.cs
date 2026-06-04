@@ -19,7 +19,10 @@ public static class MethodInfoExtensions
 	///     declared with the C# extension block syntax).
 	/// </summary>
 	/// <remarks>
-	///     This is an independent re-implementation used to validate the production detection, so it must not call into it.
+	///     This is a parallel reference implementation used to derive the expected method set in the filter and collection
+	///     tests, so it must not call into the production code. It mirrors the same detection heuristic and therefore
+	///     shares its limitations; it is not an independent oracle. The behaviour of individual methods is pinned by the
+	///     hard-coded assertions in <c>ThatMethod.IsAnExtensionMethod</c>.
 	/// </remarks>
 	/// <param name="methodInfo">The <see cref="MethodInfo" /> to check.</param>
 	public static bool IsReallyExtensionMethod(this MethodInfo? methodInfo)
@@ -34,7 +37,13 @@ public static class MethodInfoExtensions
 			return true;
 		}
 
-#if NET10_0_OR_GREATER
+		// The public implementation of a static extension method is itself a static method without the
+		// [Extension] attribute; instance (and classic) extension methods always carry the attribute.
+		if (!methodInfo.IsStatic)
+		{
+			return false;
+		}
+
 		Type? declaringType = methodInfo.DeclaringType;
 		if (declaringType?.IsDefined(typeof(ExtensionAttribute), false) != true)
 		{
@@ -45,18 +54,15 @@ public static class MethodInfoExtensions
 			.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic)
 			.Where(nestedType => nestedType.Name.StartsWith("<", StringComparison.Ordinal) &&
 			                     nestedType.IsDefined(typeof(ExtensionAttribute), false))
-			.SelectMany(groupingType => groupingType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
-			                                                    BindingFlags.Static | BindingFlags.DeclaredOnly))
-			.Any(skeleton => !skeleton.IsSpecialName &&
-			                 string.Equals(skeleton.Name, methodInfo.Name, StringComparison.Ordinal) &&
-			                 ParametersMatch(skeleton, methodInfo));
-#else
-		return false;
-#endif
+			.Any(groupingType => groupingType
+				.GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+				            BindingFlags.Static | BindingFlags.DeclaredOnly)
+				.Any(skeleton => !skeleton.IsSpecialName &&
+				                 string.Equals(skeleton.Name, methodInfo.Name, StringComparison.Ordinal) &&
+				                 ParametersMatch(skeleton, methodInfo, groupingType.GetGenericArguments().Length)));
 	}
 
-#if NET10_0_OR_GREATER
-	private static bool ParametersMatch(MethodInfo skeleton, MethodInfo implementation)
+	private static bool ParametersMatch(MethodInfo skeleton, MethodInfo implementation, int extensionArity)
 	{
 		ParameterInfo[] skeletonParameters = skeleton.GetParameters();
 		ParameterInfo[] implementationParameters = implementation.GetParameters();
@@ -67,17 +73,11 @@ public static class MethodInfoExtensions
 
 		for (int i = 0; i < skeletonParameters.Length; i++)
 		{
-			Type skeletonType = skeletonParameters[i].ParameterType;
-			Type implementationType = implementationParameters[i].ParameterType;
-
-			// Generic parameters are named differently on the grouping type ($T0, …) than on the implementation, so
-			// compare them by position; compare other types by their full name (falling back to the simple name).
-			bool matches = skeletonType.IsGenericParameter || implementationType.IsGenericParameter
-				? skeletonType.IsGenericParameter && implementationType.IsGenericParameter &&
-				  skeletonType.GenericParameterPosition == implementationType.GenericParameterPosition
-				: string.Equals(skeletonType.FullName ?? skeletonType.Name,
-					implementationType.FullName ?? implementationType.Name, StringComparison.Ordinal);
-			if (!matches)
+			// The extension's type parameters are declared on the grouping type for the skeleton, but merged
+			// (ahead of the method's own) into the method for the implementation, so offset the skeleton's
+			// method-level type parameters by the extension arity to re-align the two numberings.
+			if (!string.Equals(ParameterTypeKey(skeletonParameters[i].ParameterType, extensionArity),
+				    ParameterTypeKey(implementationParameters[i].ParameterType, 0), StringComparison.Ordinal))
 			{
 				return false;
 			}
@@ -85,7 +85,33 @@ public static class MethodInfoExtensions
 
 		return true;
 	}
-#endif
+
+	private static string ParameterTypeKey(Type type, int methodGenericOffset)
+	{
+		if (type.IsByRef || type.IsArray || type.IsPointer)
+		{
+			string suffix = type.IsByRef ? "&" : type.IsPointer ? "*" : "[]";
+			return ParameterTypeKey(type.GetElementType()!, methodGenericOffset) + suffix;
+		}
+
+		if (type.IsGenericParameter)
+		{
+			int position = type.DeclaringMethod is null
+				? type.GenericParameterPosition
+				: type.GenericParameterPosition + methodGenericOffset;
+			return "!" + position.ToString(System.Globalization.CultureInfo.InvariantCulture);
+		}
+
+		if (type.IsGenericType)
+		{
+			Type definition = type.GetGenericTypeDefinition();
+			return (definition.FullName ?? definition.Name) + "[" +
+			       string.Join(",", type.GetGenericArguments()
+				       .Select(argument => ParameterTypeKey(argument, methodGenericOffset))) + "]";
+		}
+
+		return type.FullName ?? type.Name;
+	}
 
 	/// <summary>
 	///     Checks if the <paramref name="methodInfo" /> is an operator (e.g. <c>op_Addition</c>, <c>op_Equality</c>, …).

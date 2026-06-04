@@ -201,6 +201,14 @@ internal static class MethodInfoHelpers
 	/// </summary>
 	private static bool IsStaticExtensionMethod(this MethodInfo methodInfo)
 	{
+		// The public implementation of a static extension method is itself a static method without the
+		// [Extension] attribute; instance (and classic) extension methods always carry the attribute and are
+		// handled before reaching this point. Anything non-static therefore cannot be a static extension method.
+		if (!methodInfo.IsStatic)
+		{
+			return false;
+		}
+
 		Type? declaringType = methodInfo.DeclaringType;
 		if (declaringType?.IsDefined(typeof(ExtensionAttribute), false) != true)
 		{
@@ -214,6 +222,7 @@ internal static class MethodInfoHelpers
 				continue;
 			}
 
+			int extensionArity = nestedType.GetGenericArguments().Length;
 			foreach (MethodInfo skeleton in nestedType.GetMethods(BindingFlags.Public |
 			                                                      BindingFlags.NonPublic |
 			                                                      BindingFlags.Static |
@@ -221,7 +230,7 @@ internal static class MethodInfoHelpers
 			{
 				if (!skeleton.IsSpecialName &&
 				    string.Equals(skeleton.Name, methodInfo.Name, StringComparison.Ordinal) &&
-				    ParametersMatch(skeleton, methodInfo))
+				    ParametersMatch(skeleton, methodInfo, extensionArity))
 				{
 					return true;
 				}
@@ -231,7 +240,7 @@ internal static class MethodInfoHelpers
 		return false;
 	}
 
-	private static bool ParametersMatch(MethodInfo skeleton, MethodInfo implementation)
+	private static bool ParametersMatch(MethodInfo skeleton, MethodInfo implementation, int extensionArity)
 	{
 		ParameterInfo[] skeletonParameters = skeleton.GetParameters();
 		ParameterInfo[] implementationParameters = implementation.GetParameters();
@@ -242,8 +251,11 @@ internal static class MethodInfoHelpers
 
 		for (int i = 0; i < skeletonParameters.Length; i++)
 		{
-			if (!string.Equals(ParameterTypeKey(skeletonParameters[i].ParameterType),
-				    ParameterTypeKey(implementationParameters[i].ParameterType), StringComparison.Ordinal))
+			// On the skeleton the extension's type parameters are declared on the grouping type, while the
+			// implementation merges them (ahead of the method's own type parameters) into the method itself.
+			// Offsetting the skeleton's method-level type parameters by the extension arity re-aligns the two.
+			if (!string.Equals(ParameterTypeKey(skeletonParameters[i].ParameterType, extensionArity),
+				    ParameterTypeKey(implementationParameters[i].ParameterType, 0), StringComparison.Ordinal))
 			{
 				return false;
 			}
@@ -258,13 +270,38 @@ internal static class MethodInfoHelpers
 	/// </summary>
 	/// <remarks>
 	///     Generic type parameters are named differently on the grouping type (<c>$T0</c>, <c>$T1</c>, …) than on the
-	///     public implementation (the source names), so they are keyed by their position. All other types are keyed by
-	///     their full name (avoiding false matches between unrelated types that share a simple name), falling back to the
-	///     simple name when the full name is unavailable (e.g. for a constructed generic type such as
-	///     <c>List&lt;T&gt;</c>).
+	///     public implementation (the source names), so they are keyed by their position within a single merged
+	///     numbering: parameters declared on the grouping type keep their position, while those declared on the method
+	///     are shifted past the extension's type parameters (<paramref name="methodGenericOffset" />) which the
+	///     implementation hoists ahead of its own. Constructed generic types, arrays and by-ref/pointer types are keyed
+	///     recursively so their generic arguments and element types are compared too. All other types are keyed by their
+	///     full name (avoiding false matches between unrelated types that share a simple name), falling back to the
+	///     simple name when the full name is unavailable.
 	/// </remarks>
-	private static string ParameterTypeKey(Type type)
-		=> type.IsGenericParameter
-			? "!" + type.GenericParameterPosition.ToString(CultureInfo.InvariantCulture)
-			: type.FullName ?? type.Name;
+	private static string ParameterTypeKey(Type type, int methodGenericOffset)
+	{
+		if (type.IsByRef || type.IsArray || type.IsPointer)
+		{
+			string suffix = type.IsByRef ? "&" : type.IsPointer ? "*" : "[]";
+			return ParameterTypeKey(type.GetElementType()!, methodGenericOffset) + suffix;
+		}
+
+		if (type.IsGenericParameter)
+		{
+			int position = type.DeclaringMethod is null
+				? type.GenericParameterPosition
+				: type.GenericParameterPosition + methodGenericOffset;
+			return "!" + position.ToString(CultureInfo.InvariantCulture);
+		}
+
+		if (type.IsGenericType)
+		{
+			Type definition = type.GetGenericTypeDefinition();
+			return (definition.FullName ?? definition.Name) + "[" +
+			       string.Join(",", type.GetGenericArguments()
+				       .Select(argument => ParameterTypeKey(argument, methodGenericOffset))) + "]";
+		}
+
+		return type.FullName ?? type.Name;
+	}
 }

@@ -25,6 +25,11 @@ public static class GenericClassWithNewExtensionMethods
 
 		// Generic static extension method whose parameter is a constructed generic type (FullName is null).
 		public static T First(List<T> values) => values[0];
+
+		// Generic static extension method that declares its OWN method-level type parameter in addition to the
+		// extension's type parameter. The implementation merges both into the method (extension parameter first),
+		// shifting the positions relative to the grouping-type skeleton.
+		public static TValue Convert<TValue>(TValue value, T element) => value;
 	}
 }
 #endif

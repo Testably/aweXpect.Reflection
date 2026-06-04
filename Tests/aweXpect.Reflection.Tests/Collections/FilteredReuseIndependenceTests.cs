@@ -118,6 +118,87 @@ public sealed class FilteredReuseIndependenceTests
 		await That(@base).IsEqualTo([typeof(SampleType1), typeof(SampleType2),]).InAnyOrder();
 	}
 
+	[Fact]
+	public async Task MethodsWhichAreGenericWithArgumentCount_BranchingFromSharedBase_ShouldBeIndependent()
+	{
+		MethodFilters.GenericMethods @base = In.Type<SampleGenericMethods>().Methods()
+			.WhichAreGeneric();
+
+		Filtered.Methods view1 = @base.WithArgumentCount(1);
+		Filtered.Methods view2 = @base.WithArgumentCount(2);
+
+		await That(view1).All().Satisfy(m => m.GetGenericArguments().Length == 1);
+		await That(view1).HasCount(1);
+		await That(view2).All().Satisfy(m => m.GetGenericArguments().Length == 2);
+		await That(view2).HasCount(1);
+		await That(@base).All().Satisfy(m => m.IsGenericMethod);
+		await That(@base).HasCount(2);
+	}
+
+	[Fact]
+	public async Task MethodsWhichAreGenericWithArgument_BranchingFromSharedBase_ShouldBeIndependent()
+	{
+		MethodFilters.GenericMethods @base = In.Type<SampleGenericArgumentMethods>().Methods()
+			.WhichAreGeneric();
+
+		Filtered.Methods view1 = @base.WithArgument<BaseA>();
+		Filtered.Methods view2 = @base.WithArgument<BaseB>();
+
+		await That(view1).IsEqualTo([
+			typeof(SampleGenericArgumentMethods).GetMethod(nameof(SampleGenericArgumentMethods.ArgumentOfBaseA))!,
+		]).InAnyOrder();
+		await That(view2).IsEqualTo([
+			typeof(SampleGenericArgumentMethods).GetMethod(nameof(SampleGenericArgumentMethods.ArgumentOfBaseB))!,
+		]).InAnyOrder();
+		await That(@base).HasCount(2);
+	}
+
+	[Fact]
+	public async Task TypesWhichAreGenericWithArgumentCount_BranchingFromSharedBase_ShouldBeIndependent()
+	{
+		TypeFilters.GenericTypes @base = In.Types<SampleGenericType1<int>, SampleGenericType2<int, int>>()
+			.WhichAreGeneric();
+
+		Filtered.Types view1 = @base.WithArgumentCount(1);
+		Filtered.Types view2 = @base.WithArgumentCount(2);
+
+		await That(view1).IsEqualTo([typeof(SampleGenericType1<int>),]).InAnyOrder();
+		await That(view2).IsEqualTo([typeof(SampleGenericType2<int, int>),]).InAnyOrder();
+		await That(@base).IsEqualTo([
+			typeof(SampleGenericType1<int>), typeof(SampleGenericType2<int, int>),
+		]).InAnyOrder();
+	}
+
+	private class BaseA;
+
+	private class BaseB;
+
+	private class SampleGenericMethods
+	{
+		public static void OneArgument<T1>()
+		{
+		}
+
+		public static void TwoArguments<T1, T2>()
+		{
+		}
+	}
+
+	private class SampleGenericArgumentMethods
+	{
+		public static void ArgumentOfBaseA<T>() where T : BaseA
+		{
+		}
+
+		public static void ArgumentOfBaseB<T>() where T : BaseB
+		{
+		}
+	}
+
+	private class SampleGenericType1<T1>;
+
+	private class SampleGenericType2<T1, T2>;
+
 	private class SampleType1;
 
 	private class SampleType2;
@@ -142,11 +223,11 @@ public sealed class FilteredReuseIndependenceTests
 		public int PropA { get; set; }
 		public int PropB { get; set; }
 
-		public void DoA()
+		public static void DoA()
 		{
 		}
 
-		public void DoB()
+		public static void DoB()
 		{
 		}
 	}

@@ -23,7 +23,7 @@ public sealed class ExtensionGroupingTypeFilteringTests
 		IReadOnlyList<Type> types = await GetTypes();
 
 		await That(types).None().Satisfy(t => t.DeclaringType == typeof(StaticClassWithNewExtensionMethods) &&
-		                                      t.Name.StartsWith("<", StringComparison.Ordinal));
+		                                      t.Name.StartsWith('<'));
 		await That(types).Contains(t => t == typeof(StaticClassWithNewExtensionMethods));
 	}
 
@@ -36,7 +36,7 @@ public sealed class ExtensionGroupingTypeFilteringTests
 			IReadOnlyList<Type> types = await GetTypes();
 
 			await That(types).Contains(t => t.DeclaringType == typeof(StaticClassWithNewExtensionMethods) &&
-			                                t.Name.StartsWith("<", StringComparison.Ordinal));
+			                                t.Name.StartsWith('<'));
 		}
 	}
 

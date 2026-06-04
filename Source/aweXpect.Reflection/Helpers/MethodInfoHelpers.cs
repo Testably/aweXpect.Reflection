@@ -282,7 +282,12 @@ internal static class MethodInfoHelpers
 	{
 		if (type.IsByRef || type.IsArray || type.IsPointer)
 		{
-			string suffix = type.IsByRef ? "&" : type.IsPointer ? "*" : "[]";
+			string suffix = type switch
+			{
+				{ IsByRef: true, } => "&",
+				{ IsPointer: true, } => "*",
+				_ => "[]",
+			};
 			return ParameterTypeKey(type.GetElementType()!, methodGenericOffset) + suffix;
 		}
 

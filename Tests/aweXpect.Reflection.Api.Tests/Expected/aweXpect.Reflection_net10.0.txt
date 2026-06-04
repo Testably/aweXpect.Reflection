@@ -1023,6 +1023,41 @@ namespace aweXpect.Reflection
     }
     public static class ThatMember
     {
+        public static aweXpect.Results.StringEqualityTypeResult<TMember, aweXpect.Core.IThat<TMember>> DoesNotHaveName<TMember>(this aweXpect.Core.IThat<TMember> subject, string unexpected)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.StringEqualityTypeResult<TMember, aweXpect.Core.IThat<TMember>> HasName<TMember>(this aweXpect.Core.IThat<TMember> subject, string expected)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotObsolete<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotPrivate<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotPrivateProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotProtectedInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotPublic<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsObsolete<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsPrivate<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsPrivateProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsProtectedInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsPublic<TMember>(this aweXpect.Core.IThat<TMember> subject)
+            where TMember : System.Reflection.MemberInfo? { }
+    }
+    public static class ThatMembers
+    {
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IAsyncEnumerable<TMember>, aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<TMember>>> AreInternal<TMember>(this aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<TMember>> subject)
             where TMember : System.Reflection.MemberInfo? { }
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<TMember>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<TMember>>> AreInternal<TMember>(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<TMember>> subject)
@@ -1079,41 +1114,6 @@ namespace aweXpect.Reflection
             where TMember : System.Reflection.MemberInfo? { }
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<TMember>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<TMember>>> ArePublic<TMember>(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<TMember>> subject)
             where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.StringEqualityTypeResult<TMember, aweXpect.Core.IThat<TMember>> DoesNotHaveName<TMember>(this aweXpect.Core.IThat<TMember> subject, string unexpected)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.StringEqualityTypeResult<TMember, aweXpect.Core.IThat<TMember>> HasName<TMember>(this aweXpect.Core.IThat<TMember> subject, string expected)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotObsolete<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotPrivate<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotPrivateProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotProtectedInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsNotPublic<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsObsolete<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsPrivate<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsPrivateProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsProtected<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsProtectedInternal<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-        public static aweXpect.Results.AndOrResult<TMember, aweXpect.Core.IThat<TMember>> IsPublic<TMember>(this aweXpect.Core.IThat<TMember> subject)
-            where TMember : System.Reflection.MemberInfo? { }
-    }
-    public static class ThatMembers
-    {
         public static aweXpect.Results.StringEqualityTypeResult<System.Collections.Generic.IAsyncEnumerable<TMember>, aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<TMember>>> DoNotHaveName<TMember>(this aweXpect.Core.IThat<System.Collections.Generic.IAsyncEnumerable<TMember>> subject, string unexpected)
             where TMember : System.Reflection.MemberInfo? { }
         public static aweXpect.Results.StringEqualityTypeResult<System.Collections.Generic.IEnumerable<TMember>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<TMember>>> DoNotHaveName<TMember>(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<TMember>> subject, string unexpected)

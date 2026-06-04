@@ -11,25 +11,6 @@ public sealed partial class ThatMethod
 		public sealed class WithOperatorTests
 		{
 			[Fact]
-			public async Task WhenMethodIsTheExpectedOperator_ShouldFail()
-			{
-				MethodInfo subject =
-					typeof(ClassWithOperators).GetMethod("op_Addition")!;
-
-				async Task Act()
-				{
-					await That(subject).IsNotAnOperator(Operator.Addition);
-				}
-
-				await That(Act).ThrowsException()
-					.WithMessage($"""
-					              Expected that subject
-					              is not the operator op_Addition,
-					              but it was the operator op_Addition {Formatter.Format(subject)}
-					              """);
-			}
-
-			[Fact]
 			public async Task WhenMethodIsADifferentOperator_ShouldSucceed()
 			{
 				MethodInfo subject =
@@ -74,6 +55,25 @@ public sealed partial class ThatMethod
 					             is not the operator op_Addition,
 					             but it was <null>
 					             """);
+			}
+
+			[Fact]
+			public async Task WhenMethodIsTheExpectedOperator_ShouldFail()
+			{
+				MethodInfo subject =
+					typeof(ClassWithOperators).GetMethod("op_Addition")!;
+
+				async Task Act()
+				{
+					await That(subject).IsNotAnOperator(Operator.Addition);
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              is not the operator op_Addition,
+					              but it was the operator op_Addition {Formatter.Format(subject)}
+					              """);
 			}
 		}
 

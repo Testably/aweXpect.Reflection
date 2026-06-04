@@ -59,29 +59,6 @@ public static partial class Filtered
 			_operatorInclusion = inner._operatorInclusion;
 		}
 
-		/// <summary>
-		///     Implicitly re-includes operator special-name members for this query, so that operator filters work even when
-		///     operators are not opted in via <c>IncludedSpecialNameMembers</c>.
-		/// </summary>
-		/// <remarks>
-		///     The flag is read lazily while the underlying methods are enumerated, so switching it on before enumeration
-		///     (i.e. while still composing the filter) is sufficient.
-		/// </remarks>
-		internal Methods IncludingOperators()
-		{
-			_operatorInclusion.Include = true;
-			return this;
-		}
-
-		/// <summary>
-		///     Mutable holder shared between a <see cref="Methods" /> and its copies that controls whether operators are
-		///     force-included while the methods are gathered.
-		/// </summary>
-		private sealed class OperatorInclusion
-		{
-			public bool Include { get; set; }
-		}
-
 		/// <inheritdoc />
 		public string GetDescription()
 		{
@@ -100,9 +77,32 @@ public static partial class Filtered
 		}
 
 		/// <summary>
+		///     Implicitly re-includes operator special-name members for this query, so that operator filters work even when
+		///     operators are not opted in via <c>IncludedSpecialNameMembers</c>.
+		/// </summary>
+		/// <remarks>
+		///     The flag is read lazily while the underlying methods are enumerated, so switching it on before enumeration
+		///     (i.e. while still composing the filter) is sufficient.
+		/// </remarks>
+		internal Methods IncludingOperators()
+		{
+			_operatorInclusion.Include = true;
+			return this;
+		}
+
+		/// <summary>
 		///     Get all declaring types of the filtered methods.
 		/// </summary>
 		public Types DeclaringTypes() => new(this);
+
+		/// <summary>
+		///     Mutable holder shared between a <see cref="Methods" /> and its copies that controls whether operators are
+		///     force-included while the methods are gathered.
+		/// </summary>
+		private sealed class OperatorInclusion
+		{
+			public bool Include { get; set; }
+		}
 
 		/// <summary>
 		///     A Container for a filterable collection of <see cref="MethodInfo" />,

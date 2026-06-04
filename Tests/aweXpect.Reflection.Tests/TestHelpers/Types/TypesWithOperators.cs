@@ -9,21 +9,42 @@
 /// </summary>
 public readonly struct Money
 {
-	public Money(decimal amount) => Amount = amount;
+	public Money(decimal amount)
+	{
+		Amount = amount;
+	}
 
 	public decimal Amount { get; }
 
-	public static Money operator +(Money left, Money right) => new(left.Amount + right.Amount);
+	public static Money operator +(Money left, Money right)
+	{
+		return new Money(left.Amount + right.Amount);
+	}
 
-	public static Money operator +(Money left, int right) => new(left.Amount + right);
+	public static Money operator +(Money left, int right)
+	{
+		return new Money(left.Amount + right);
+	}
 
-	public static bool operator ==(Money left, Money right) => left.Amount == right.Amount;
+	public static bool operator ==(Money left, Money right)
+	{
+		return left.Amount == right.Amount;
+	}
 
-	public static bool operator !=(Money left, Money right) => left.Amount != right.Amount;
+	public static bool operator !=(Money left, Money right)
+	{
+		return left.Amount != right.Amount;
+	}
 
-	public static implicit operator decimal(Money money) => money.Amount;
+	public static implicit operator decimal(Money money)
+	{
+		return money.Amount;
+	}
 
-	public static explicit operator int(Money money) => (int)money.Amount;
+	public static explicit operator int(Money money)
+	{
+		return (int)money.Amount;
+	}
 
 	public override bool Equals(object? obj) => obj is Money other && other.Amount == Amount;
 
@@ -35,12 +56,17 @@ public readonly struct Money
 /// </summary>
 public class OperatorBaseClass
 {
-	public OperatorBaseClass(int value) => Value = value;
+	public OperatorBaseClass(int value)
+	{
+		Value = value;
+	}
 
 	public int Value { get; }
 
 	public static OperatorBaseClass operator -(OperatorBaseClass left, OperatorBaseClass right)
-		=> new(left.Value - right.Value);
+	{
+		return new OperatorBaseClass(left.Value - right.Value);
+	}
 }
 
 /// <summary>

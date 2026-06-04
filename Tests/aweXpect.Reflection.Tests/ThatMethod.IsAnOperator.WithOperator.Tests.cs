@@ -11,20 +11,6 @@ public sealed partial class ThatMethod
 		public sealed class WithOperatorTests
 		{
 			[Fact]
-			public async Task WhenMethodIsTheExpectedOperator_ShouldSucceed()
-			{
-				MethodInfo subject =
-					typeof(ClassWithOperators).GetMethod("op_Addition")!;
-
-				async Task Act()
-				{
-					await That(subject).IsAnOperator(Operator.Addition);
-				}
-
-				await That(Act).DoesNotThrow();
-			}
-
-			[Fact]
 			public async Task WhenMethodIsADifferentOperator_ShouldFail()
 			{
 				MethodInfo subject =
@@ -80,10 +66,38 @@ public sealed partial class ThatMethod
 					             but it was <null>
 					             """);
 			}
+
+			[Fact]
+			public async Task WhenMethodIsTheExpectedOperator_ShouldSucceed()
+			{
+				MethodInfo subject =
+					typeof(ClassWithOperators).GetMethod("op_Addition")!;
+
+				async Task Act()
+				{
+					await That(subject).IsAnOperator(Operator.Addition);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 
 		public sealed class WithOperatorNegatedTests
 		{
+			[Fact]
+			public async Task WhenMethodIsADifferentOperator_ShouldSucceed()
+			{
+				MethodInfo subject =
+					typeof(ClassWithOperators).GetMethod("op_Subtraction")!;
+
+				async Task Act()
+				{
+					await That(subject).DoesNotComplyWith(it => it.IsAnOperator(Operator.Addition));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
 			[Fact]
 			public async Task WhenMethodIsTheExpectedOperator_ShouldFail()
 			{
@@ -101,20 +115,6 @@ public sealed partial class ThatMethod
 					              is not the operator op_Addition,
 					              but it was the operator op_Addition {Formatter.Format(subject)}
 					              """);
-			}
-
-			[Fact]
-			public async Task WhenMethodIsADifferentOperator_ShouldSucceed()
-			{
-				MethodInfo subject =
-					typeof(ClassWithOperators).GetMethod("op_Subtraction")!;
-
-				async Task Act()
-				{
-					await That(subject).DoesNotComplyWith(it => it.IsAnOperator(Operator.Addition));
-				}
-
-				await That(Act).DoesNotThrow();
 			}
 		}
 	}

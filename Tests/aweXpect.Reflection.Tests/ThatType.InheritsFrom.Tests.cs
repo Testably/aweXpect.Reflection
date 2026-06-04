@@ -23,6 +23,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
 					             but it did not inherit from ThatType.BaseClass
+
+					             Actual:
+					             ThatType.UnrelatedClass
 					             """);
 			}
 
@@ -95,6 +98,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             inherits directly from ThatType.BaseClass,
 					             but it inherited from ThatType.BaseClass only indirectly
+
+					             Actual:
+					             ThatType.GrandChildClass
 					             """);
 			}
 
@@ -113,6 +119,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
 					             but it did not inherit from ThatType.BaseClass
+
+					             Actual:
+					             ThatType.BaseClass
 					             """);
 			}
 
@@ -131,6 +140,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             inherits directly from ThatType.BaseClass,
 					             but it did not inherit from ThatType.BaseClass
+
+					             Actual:
+					             ThatType.UnrelatedClass
 					             """);
 			}
 		}
@@ -153,6 +165,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             inherits from ThatType.BaseClass,
 					             but it did not inherit from ThatType.BaseClass
+
+					             Actual:
+					             ThatType.UnrelatedClass
 					             """);
 			}
 
@@ -216,6 +231,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             inherits directly from ThatType.BaseClass,
 					             but it inherited from ThatType.BaseClass only indirectly
+
+					             Actual:
+					             ThatType.GrandChildClass
 					             """);
 			}
 		}
@@ -265,6 +283,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             does not inherit from ThatType.BaseClass,
 					             but it did inherit from ThatType.BaseClass
+
+					             Actual:
+					             ThatType.DerivedClass
 					             """);
 			}
 
@@ -283,6 +304,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             does not inherit from ThatType.BaseClass,
 					             but it did inherit from ThatType.BaseClass
+
+					             Actual:
+					             ThatType.GrandChildClass
 					             """);
 			}
 		}

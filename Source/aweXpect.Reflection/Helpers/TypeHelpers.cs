@@ -444,11 +444,13 @@ internal static class TypeHelpers
 		return interfaces
 			.Any(childInterface =>
 			{
-				Type currentInterface = childInterface.IsGenericType
-					? childInterface.GetGenericTypeDefinition()
-					: childInterface;
+				if (interfaceType.IsGenericTypeDefinition)
+				{
+					return childInterface.IsGenericType &&
+					       childInterface.GetGenericTypeDefinition() == interfaceType;
+				}
 
-				return currentInterface == interfaceType;
+				return childInterface == interfaceType;
 			});
 	}
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
@@ -53,8 +53,8 @@ public static partial class ThatType
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new ImplementsConstraint(it, grammars, interfaceType, forceDirect)),
+		return new(subject.Get().ExpectationBuilder.AddConstraint((expectationBuilder, it, grammars)
+				=> new ImplementsConstraint(expectationBuilder, it, grammars, interfaceType, forceDirect)),
 			subject);
 	}
 
@@ -98,12 +98,13 @@ public static partial class ThatType
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new ImplementsConstraint(it, grammars, interfaceType, forceDirect).Invert()),
+		return new(subject.Get().ExpectationBuilder.AddConstraint((expectationBuilder, it, grammars)
+				=> new ImplementsConstraint(expectationBuilder, it, grammars, interfaceType, forceDirect).Invert()),
 			subject);
 	}
 
 	private sealed class ImplementsConstraint(
+		ExpectationBuilder expectationBuilder,
 		string it,
 		ExpectationGrammars grammars,
 		Type interfaceType,
@@ -115,6 +116,11 @@ public static partial class ThatType
 		{
 			Actual = actual;
 			Outcome = actual?.Implements(interfaceType, forceDirect) == true ? Outcome.Success : Outcome.Failure;
+			if (actual is not null)
+			{
+				expectationBuilder.AddContext(new ResultContext.Fixed("Actual", Formatter.Format(actual)));
+			}
+
 			return this;
 		}
 

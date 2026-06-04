@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Xunit.Sdk;
 
@@ -77,6 +77,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             is assignable to ThatType.BaseClass,
 					             but it was not assignable to ThatType.BaseClass
+
+					             Actual:
+					             ThatType.UnrelatedClass
 					             """);
 			}
 
@@ -145,6 +148,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             is not assignable to ThatType.BaseClass,
 					             but it was assignable to ThatType.BaseClass
+
+					             Actual:
+					             ThatType.DerivedClass
 					             """);
 			}
 		}
@@ -182,6 +188,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             is not assignable to ThatType.BaseClass,
 					             but it was assignable to ThatType.BaseClass
+
+					             Actual:
+					             ThatType.DerivedClass
 					             """);
 			}
 

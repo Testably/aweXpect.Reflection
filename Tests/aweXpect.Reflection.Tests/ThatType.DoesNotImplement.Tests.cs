@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -50,6 +50,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             does not implement ThatType.ITestInterface,
 					             but it did implement ThatType.ITestInterface
+
+					             Actual:
+					             ThatType.ClassWithInterface
 					             """);
 			}
 
@@ -68,6 +71,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             does not directly implement ThatType.ITestInterface,
 					             but it did directly implement ThatType.ITestInterface
+
+					             Actual:
+					             ThatType.ClassWithInterface
 					             """);
 			}
 
@@ -119,6 +125,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             does not implement ThatType.ITestInterface,
 					             but it did implement ThatType.ITestInterface
+
+					             Actual:
+					             ThatType.ClassWithInterface
 					             """);
 			}
 
@@ -169,6 +178,9 @@ public sealed partial class ThatType
 					             Expected that subject
 					             implements ThatType.ITestInterface,
 					             but it did not implement ThatType.ITestInterface
+
+					             Actual:
+					             ThatType.UnrelatedClass
 					             """);
 			}
 		}

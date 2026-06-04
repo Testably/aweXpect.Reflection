@@ -6,6 +6,8 @@ using aweXpect.Reflection.Tests.TestHelpers;
 
 namespace aweXpect.Reflection.Tests;
 
+#pragma warning disable CA2263 // Prefer generic overload when type is known
+
 public sealed partial class ThatTypes
 {
 	public sealed class HaveOperator
@@ -382,3 +384,5 @@ public sealed partial class ThatTypes
 #endif
 	}
 }
+
+#pragma warning restore CA2263 // Prefer generic overload when type is known

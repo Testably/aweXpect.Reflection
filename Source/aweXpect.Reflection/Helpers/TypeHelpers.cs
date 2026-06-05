@@ -696,21 +696,7 @@ internal static class TypeHelpers
 	///     character after the match must be a namespace separator (<c>.</c>) or the end of the namespace.
 	/// </remarks>
 	public static bool IsWithinNamespace(this Type? type, string expected)
-	{
-		string? current = type?.Namespace;
-		while (current is not null)
-		{
-			if (string.Equals(current, expected, StringComparison.Ordinal))
-			{
-				return true;
-			}
-
-			int lastSeparator = current.LastIndexOf('.');
-			current = lastSeparator < 0 ? null : current.Substring(0, lastSeparator);
-		}
-
-		return false;
-	}
+		=> type?.Namespace is { } @namespace && NamespaceMatches(@namespace, expected, includeSubNamespaces: true);
 
 	/// <summary>
 	///     Checks whether the <paramref name="actualNamespace" /> matches the <paramref name="expectedNamespace" />,

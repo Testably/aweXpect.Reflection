@@ -858,7 +858,7 @@ internal static class TypeHelpers
 
 		// The implicit object/ValueType/Enum base type is not a dependency the author wrote, so it is skipped to
 		// avoid every type trivially "depending on" System.
-		if (type.BaseType is { } baseType &&
+		if (SafeOrNull(() => type.BaseType) is { } baseType &&
 		    baseType != typeof(object) && baseType != typeof(ValueType) && baseType != typeof(Enum))
 		{
 			collector.Add(baseType);
@@ -945,7 +945,9 @@ internal static class TypeHelpers
 		{
 			foreach (FieldInfo field in Safe(() => type.GetFields(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
-				Add(field.FieldType);
+				// Member signature types are resolved lazily on first access and can throw when the defining
+				// assembly is missing, so each access is guarded individually to skip only the unresolvable member.
+				AddSafe(() => field.FieldType);
 				AddAttributes(field);
 			}
 		}
@@ -954,8 +956,8 @@ internal static class TypeHelpers
 		{
 			foreach (PropertyInfo property in Safe(() => type.GetProperties(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
-				Add(property.PropertyType);
-				AddAll(Safe(property.GetIndexParameters).Select(parameter => parameter.ParameterType));
+				AddSafe(() => property.PropertyType);
+				AddAll(Safe(() => property.GetIndexParameters().Select(parameter => parameter.ParameterType).ToArray()));
 				AddAttributes(property);
 			}
 		}
@@ -964,7 +966,7 @@ internal static class TypeHelpers
 		{
 			foreach (EventInfo @event in Safe(() => type.GetEvents(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
-				Add(@event.EventHandlerType);
+				AddSafe(() => @event.EventHandlerType);
 				AddAttributes(@event);
 			}
 		}
@@ -973,8 +975,8 @@ internal static class TypeHelpers
 		{
 			foreach (MethodInfo method in Safe(() => type.GetMethods(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
-				Add(method.ReturnType);
-				AddAll(Safe(method.GetParameters).Select(parameter => parameter.ParameterType));
+				AddSafe(() => method.ReturnType);
+				AddAll(Safe(() => method.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
 				AddGenericArguments(Safe(method.GetGenericArguments));
 				AddAttributes(method);
 			}
@@ -985,8 +987,25 @@ internal static class TypeHelpers
 			foreach (ConstructorInfo constructor in Safe(() => type.GetConstructors(Flags))
 				         .Where(m => !m.IsCompilerGenerated()))
 			{
-				AddAll(Safe(constructor.GetParameters).Select(parameter => parameter.ParameterType));
+				AddAll(Safe(() => constructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
 				AddAttributes(constructor);
+			}
+		}
+
+		private void AddSafe(Func<Type?> get)
+		{
+			try
+			{
+				Add(get());
+			}
+			catch (Exception exception) when (exception
+				                                  is TypeLoadException
+				                                  or FileNotFoundException
+				                                  or FileLoadException
+				                                  or BadImageFormatException)
+			{
+				// The member's signature type could not be resolved (e.g. its assembly is not deployed);
+				// skip just this member, consistent with GetDeclaredFields/Methods/Properties.
 			}
 		}
 
@@ -1109,6 +1128,22 @@ internal static class TypeHelpers
 			                                  or BadImageFormatException)
 		{
 			return [];
+		}
+	}
+
+	private static T? SafeOrNull<T>(Func<T?> get) where T : class
+	{
+		try
+		{
+			return get();
+		}
+		catch (Exception exception) when (exception
+			                                  is TypeLoadException
+			                                  or FileNotFoundException
+			                                  or FileLoadException
+			                                  or BadImageFormatException)
+		{
+			return null;
 		}
 	}
 

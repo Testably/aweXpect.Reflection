@@ -170,6 +170,18 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 		public required TargetA Target { get; set; }
 	}
 
+	// The compiler skips emitting its [Obsolete] marker when the constructor already carries an authored
+	// one, so the authored (single-argument, non-error) [Obsolete] is the type's only System reference.
+	public class WithRequiredPropertyAndAuthoredObsoleteConstructor
+	{
+		[Obsolete("This constructor is obsolete.")]
+		public WithRequiredPropertyAndAuthoredObsoleteConstructor()
+		{
+		}
+
+		public required TargetA Target { get; set; }
+	}
+
 	public class BaseWithLayer1Interface : ITargetInterface;
 
 	public class DerivedWithoutOwnReferences : BaseWithLayer1Interface;

@@ -69,6 +69,19 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenObsoleteIsAuthoredOnRequiredMembersConstructor_ShouldCountAsDependency()
+			{
+				// Only the compiler-emitted [Obsolete(marker, error: true)] paired with required members is
+				// skipped; an authored [Obsolete] on the same constructor still counts.
+				Type subject = typeof(WithRequiredPropertyAndAuthoredObsoleteConstructor);
+
+				async Task Act()
+					=> await That(subject).DependsOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenDelegateSignatureReferencesNamespace_ShouldSucceed()
 			{
 				// The authored Invoke signature (return type Layer1.TargetA, parameter Layer2.TargetB)

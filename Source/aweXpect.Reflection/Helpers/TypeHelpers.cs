@@ -1026,10 +1026,11 @@ internal static class TypeHelpers
 			IEnumerable<CustomAttributeData> attributes = SafeAttributes(member);
 
 			// For required members, the compiler pairs an [Obsolete] carrying a fixed marker message with
-			// [CompilerFeatureRequired] on the constructor; only that compiler-emitted [Obsolete] is skipped,
-			// an authored one (even on the same constructor) still counts.
+			// [CompilerFeatureRequired(nameof(RequiredMembers))] on the constructor; only that compiler-emitted
+			// [Obsolete] is skipped, an authored one (even on the same constructor) still counts.
 			bool hasCompilerFeatureRequired = attributes.Any(data
-				=> data.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute");
+				=> data.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute" &&
+				   IsRequiredMembersFeature(data));
 
 			// The compiler emits [DefaultMember("Item")] onto every type declaring an indexer; an authored
 			// [DefaultMember] cannot coexist with an indexer (CS0646), so it is only skipped in that case.
@@ -1316,8 +1317,29 @@ internal static class TypeHelpers
 
 			try
 			{
-				return data.ConstructorArguments.Count > 0 &&
-				       data.ConstructorArguments[0].Value is RequiredMembersObsoleteMessage;
+				// The compiler emits [Obsolete(message, error: true)]; requiring the error flag keeps an
+				// authored [Obsolete] counting even if it should repeat the marker message verbatim.
+				return data.ConstructorArguments.Count == 2 &&
+				       data.ConstructorArguments[0].Value is RequiredMembersObsoleteMessage &&
+				       data.ConstructorArguments[1].Value is true;
+			}
+			catch (Exception exception) when (IsUnresolvable(exception))
+			{
+				// When the arguments cannot be resolved, the compiler-emitted pairing is assumed.
+				return true;
+			}
+		}
+
+		/// <summary>
+		///     Checks whether the <c>[CompilerFeatureRequired]</c> names the <c>RequiredMembers</c> feature, so
+		///     that the gate for the paired <c>[Obsolete]</c> does not react to other compiler features.
+		/// </summary>
+		private static bool IsRequiredMembersFeature(CustomAttributeData data)
+		{
+			try
+			{
+				return data.ConstructorArguments.Count == 1 &&
+				       data.ConstructorArguments[0].Value is "RequiredMembers";
 			}
 			catch (Exception exception) when (IsUnresolvable(exception))
 			{

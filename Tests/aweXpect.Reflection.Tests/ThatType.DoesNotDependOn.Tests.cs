@@ -145,6 +145,38 @@ public sealed partial class ThatType
 				await That(Act).DoesNotThrow();
 			}
 
+			[Theory]
+			[InlineData(typeof(WithStructConstraint<>))]
+			[InlineData(typeof(WithUnmanagedConstraint<>))]
+			public async Task WhenStructConstraintCompilesIntoValueType_ShouldNotCountAsDependency(Type subject)
+			{
+				// `where T : struct` / `where T : unmanaged` compile into a System.ValueType constraint in
+				// metadata, which the author can never write directly (CS0702).
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Theory]
+			[InlineData(typeof(WithOutParameter))]
+			[InlineData(typeof(WithInParameter))]
+			[InlineData(typeof(WithRefReadonlyParameter))]
+			[InlineData(typeof(WithOptionalParameter))]
+			public async Task WhenParameterModifiersSurfaceAsPseudoAttributes_ShouldNotCountAsDependency(Type subject)
+			{
+				// `out`, `in`, `ref readonly` and optional parameters compile into metadata flags which
+				// reflection surfaces as the [Out]/[In]/[Optional] pseudo-attributes; `ref readonly`
+				// additionally emits [RequiresLocation]. None of them are authored.
+				async Task Act()
+				{
+					await That(subject).DoesNotDependOn("System.Runtime.InteropServices");
+					await That(subject).DoesNotDependOn("System.Runtime.CompilerServices");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
 			[Fact]
 			public async Task WhenInterfaceIsImplementedOnlyByBaseType_ShouldNotCountAsDependency()
 			{

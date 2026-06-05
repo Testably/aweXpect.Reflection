@@ -1012,7 +1012,11 @@ internal static class TypeHelpers
 			{
 				if (argument.IsGenericParameter)
 				{
-					AddAll(Safe(argument.GetGenericParameterConstraints));
+					// `where T : struct` / `where T : unmanaged` compile into a System.ValueType constraint
+					// the author can never write directly (CS0702); an authored `where T : Enum` (C# 7.3+)
+					// still counts.
+					AddAll(Safe(argument.GetGenericParameterConstraints)
+						.Where(constraint => constraint != typeof(object) && constraint != typeof(ValueType)));
 				}
 				else
 				{
@@ -1264,13 +1268,19 @@ internal static class TypeHelpers
 		///     Attributes the C# compiler emits onto authored code, which are therefore not dependencies the
 		///     author wrote: nullability metadata, required members, async/iterator state machines,
 		///     covariant-return overrides, extension methods, readonly/ref structs, fixed buffers, tuple names,
-		///     <c>params</c> arrays, <c>dynamic</c> and <c>decimal</c> constants.
+		///     <c>params</c> arrays, <c>dynamic</c> and <c>decimal</c> constants, <c>ref readonly</c> parameters
+		///     and the parameter pseudo-attributes.
 		/// </summary>
 		/// <remarks>
 		///     Only attribute types the author can never legally apply in the same situation belong here.
 		///     Attributes that can also be authored ([Obsolete], [DebuggerStepThrough], [DefaultMember]) are
 		///     instead skipped conditionally in <see cref="AddAttributes(MemberInfo)" />, based on the
 		///     co-occurrence pattern the compiler produces.
+		///     <para />
+		///     The parameter pseudo-attributes ([In], [Out], [Optional]) are metadata flags, not attribute
+		///     blobs: reflection surfaces the flags the compiler sets for <c>in</c>/<c>ref readonly</c>,
+		///     <c>out</c> and optional parameters as these attributes, indistinguishably from authored ones,
+		///     so they never count.
 		/// </remarks>
 		private static readonly HashSet<string> CompilerEmittedAttributes = new(StringComparer.Ordinal)
 		{
@@ -1286,6 +1296,7 @@ internal static class TypeHelpers
 			"System.Runtime.CompilerServices.IsReadOnlyAttribute",
 			"System.Runtime.CompilerServices.IsByRefLikeAttribute",
 			"System.Runtime.CompilerServices.IsUnmanagedAttribute",
+			"System.Runtime.CompilerServices.RequiresLocationAttribute",
 			"System.Runtime.CompilerServices.ScopedRefAttribute",
 			"System.Runtime.CompilerServices.ParamCollectionAttribute",
 			"System.Runtime.CompilerServices.TupleElementNamesAttribute",
@@ -1293,6 +1304,9 @@ internal static class TypeHelpers
 			"System.Runtime.CompilerServices.DecimalConstantAttribute",
 			"System.Runtime.CompilerServices.FixedBufferAttribute",
 			"System.ParamArrayAttribute",
+			"System.Runtime.InteropServices.InAttribute",
+			"System.Runtime.InteropServices.OutAttribute",
+			"System.Runtime.InteropServices.OptionalAttribute",
 		};
 
 		private static bool IsCompilerEmittedAttribute(Type attributeType)

@@ -232,6 +232,47 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 		}
 	}
 
+	// `where T : struct` / `where T : unmanaged` compile into a System.ValueType constraint in metadata,
+	// which the author can never write directly (CS0702).
+	public class WithStructConstraint<T>
+		where T : struct;
+
+	public class WithUnmanagedConstraint<T>
+		where T : unmanaged;
+
+	// `where T : Enum` (C# 7.3+) is authored, unlike the ValueType constraint above.
+	public class WithEnumConstraint<T>
+		where T : Enum;
+
+	// `out`, `in`, `ref readonly` and optional parameters compile into metadata flags which reflection
+	// surfaces as the [Out]/[In]/[Optional] pseudo-attributes; `ref readonly` additionally emits
+	// [RequiresLocation]. None of them are authored.
+	public class WithOutParameter
+	{
+		public static void Method(out int value) => value = 0;
+	}
+
+	public class WithInParameter
+	{
+		public static void Method(in int value)
+		{
+		}
+	}
+
+	public class WithRefReadonlyParameter
+	{
+		public static void Method(ref readonly int value)
+		{
+		}
+	}
+
+	public class WithOptionalParameter
+	{
+		public static void Method(int value = 5)
+		{
+		}
+	}
+
 #if NET8_0_OR_GREATER
 	// The compiler emits [PreserveBaseOverrides] onto covariant-return overrides (.NET 5+ only).
 	public class CovariantReturnBase

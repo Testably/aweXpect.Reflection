@@ -57,6 +57,18 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenEnumConstraintIsAuthored_ShouldCountAsDependency()
+			{
+				// Unlike the ValueType constraint `struct` compiles into, `where T : Enum` is authored.
+				Type subject = typeof(WithEnumConstraint<>);
+
+				async Task Act()
+					=> await That(subject).DependsOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenDelegateSignatureReferencesNamespace_ShouldSucceed()
 			{
 				// The authored Invoke signature (return type Layer1.TargetA, parameter Layer2.TargetB)
@@ -345,6 +357,7 @@ public sealed partial class ThatType
 				await That(Act).Throws<ArgumentNullException>()
 					.WithMessage("The namespaces must not contain null.*").AsWildcard();
 			}
+
 		}
 
 		public sealed class NegatedTests

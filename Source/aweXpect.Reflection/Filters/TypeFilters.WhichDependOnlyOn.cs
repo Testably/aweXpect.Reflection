@@ -18,7 +18,7 @@ public static partial class TypeFilters
 	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored, so
 	///     that framework namespaces do not have to be listed explicitly.
 	/// </remarks>
-	public static NamespaceDependencyFilterResult WhichDependOnlyOn(
+	public static Filtered.Types.NamespaceDependencyFilterResult WhichDependOnlyOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
 		=> new(new NamespaceDependencyOptions(namespaces),
 			options => @this.Which(Filter.Suffix<Type>(

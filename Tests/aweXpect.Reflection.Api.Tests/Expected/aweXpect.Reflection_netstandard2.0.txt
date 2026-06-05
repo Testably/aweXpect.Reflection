@@ -1585,9 +1585,9 @@ namespace aweXpect.Reflection
         public static aweXpect.Reflection.TypeFilters.TypesContainingMembers WhichContainFields(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Func<aweXpect.Reflection.Collections.Filtered.Fields, aweXpect.Reflection.Collections.Filtered.Fields> filter, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
         public static aweXpect.Reflection.TypeFilters.TypesContainingMembers WhichContainMethods(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Func<aweXpect.Reflection.Collections.Filtered.Methods, aweXpect.Reflection.Collections.Filtered.Methods> filter, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
         public static aweXpect.Reflection.TypeFilters.TypesContainingMembers WhichContainProperties(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Func<aweXpect.Reflection.Collections.Filtered.Properties, aweXpect.Reflection.Collections.Filtered.Properties> filter, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
-        public static aweXpect.Reflection.Collections.NamespaceDependencyFilterResult WhichDependOn(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Collections.Generic.IEnumerable<string> namespaces) { }
-        public static aweXpect.Reflection.Collections.NamespaceDependencyFilterResult WhichDependOnlyOn(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Collections.Generic.IEnumerable<string> namespaces) { }
-        public static aweXpect.Reflection.Collections.NamespaceDependencyFilterResult WhichDoNotDependOn(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Collections.Generic.IEnumerable<string> namespaces) { }
+        public static aweXpect.Reflection.Collections.Filtered.Types.NamespaceDependencyFilterResult WhichDependOn(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Collections.Generic.IEnumerable<string> namespaces) { }
+        public static aweXpect.Reflection.Collections.Filtered.Types.NamespaceDependencyFilterResult WhichDependOnlyOn(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Collections.Generic.IEnumerable<string> namespaces) { }
+        public static aweXpect.Reflection.Collections.Filtered.Types.NamespaceDependencyFilterResult WhichDoNotDependOn(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Collections.Generic.IEnumerable<string> namespaces) { }
         public static aweXpect.Reflection.Collections.Filtered.Types WhichDoNotHaveADefaultConstructor(this aweXpect.Reflection.Collections.Filtered.Types @this) { }
         public static aweXpect.Reflection.Collections.Filtered.Types WhichDoNotImplement(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Type interfaceType, bool forceDirect = false) { }
         public static aweXpect.Reflection.Collections.Filtered.Types WhichDoNotImplement<TInterface>(this aweXpect.Reflection.Collections.Filtered.Types @this, bool forceDirect = false) { }
@@ -1828,6 +1828,11 @@ namespace aweXpect.Reflection.Collections
             public string GetDescription() { }
             public aweXpect.Reflection.Collections.Filtered.Methods Methods(aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
             public aweXpect.Reflection.Collections.Filtered.Properties Properties(aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
+            public sealed class NamespaceDependencyFilterResult : aweXpect.Reflection.Collections.Filtered.Types
+            {
+                public aweXpect.Reflection.Collections.Filtered.Types.NamespaceDependencyFilterResult ExcludingSubNamespaces(aweXpect.Reflection.SubNamespaceExclusion exclusion = 1) { }
+                public aweXpect.Reflection.Collections.Filtered.Types.NamespaceDependencyFilterResult Or(System.Collections.Generic.IEnumerable<string> namespaces) { }
+            }
             public class StringEqualityResult : aweXpect.Reflection.Collections.Filtered.Types
             {
                 public aweXpect.Reflection.Collections.Filtered.Types.StringEqualityResult IgnoringCase(bool ignoreCase = true) { }
@@ -1948,11 +1953,6 @@ namespace aweXpect.Reflection.Collections
     {
         DeclaredOnly = 0,
         IncludingInherited = 1,
-    }
-    public sealed class NamespaceDependencyFilterResult : aweXpect.Reflection.Collections.Filtered.Types
-    {
-        public aweXpect.Reflection.Collections.NamespaceDependencyFilterResult ExcludingSubNamespaces(aweXpect.Reflection.SubNamespaceExclusion exclusion = 1) { }
-        public aweXpect.Reflection.Collections.NamespaceDependencyFilterResult Or(System.Collections.Generic.IEnumerable<string> namespaces) { }
     }
 }
 namespace aweXpect.Reflection.Options

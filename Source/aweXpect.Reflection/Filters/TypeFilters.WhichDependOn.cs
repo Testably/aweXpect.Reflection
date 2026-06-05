@@ -13,7 +13,7 @@ public static partial class TypeFilters
 	///     Filter for types which depend on (reference in their signature) at least one type in one of the
 	///     <paramref name="namespaces" /> (including sub-namespaces).
 	/// </summary>
-	public static NamespaceDependencyFilterResult WhichDependOn(
+	public static Filtered.Types.NamespaceDependencyFilterResult WhichDependOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
 		=> new(new NamespaceDependencyOptions(namespaces),
 			options => @this.Which(Filter.Suffix<Type>(
@@ -24,7 +24,7 @@ public static partial class TypeFilters
 	///     Filter for types which do not depend on (do not reference in their signature) any type in one of the
 	///     <paramref name="namespaces" /> (including sub-namespaces).
 	/// </summary>
-	public static NamespaceDependencyFilterResult WhichDoNotDependOn(
+	public static Filtered.Types.NamespaceDependencyFilterResult WhichDoNotDependOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
 		=> new(new NamespaceDependencyOptions(namespaces),
 			options => @this.Which(Filter.Suffix<Type>(

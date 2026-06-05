@@ -990,7 +990,7 @@ internal static class TypeHelpers
 			}
 		}
 
-		public IEnumerable<Type> Build(Type type)
+		public HashSet<Type> Build(Type type)
 		{
 			_dependencies.Remove(type);
 			return _dependencies;
@@ -1014,47 +1014,85 @@ internal static class TypeHelpers
 				}
 			}
 		}
-	}
 
-	/// <summary>
-	///     Unwraps the <paramref name="type" />: array/by-ref/pointer element types and generic type arguments are
-	///     flattened, open generic parameters are skipped, and generic types contribute their generic type definition.
-	/// </summary>
-	private static IEnumerable<Type> Unwrap(Type? type)
-	{
-		if (type is null)
+		/// <summary>
+		///     Unwraps the <paramref name="type" />: array/by-ref/pointer element types and generic type arguments are
+		///     flattened, open generic parameters are skipped, and generic types contribute their generic type definition.
+		/// </summary>
+		private static IEnumerable<Type> Unwrap(Type? type)
 		{
-			yield break;
-		}
-
-		while (type!.HasElementType)
-		{
-			type = type.GetElementType();
 			if (type is null)
 			{
 				yield break;
 			}
-		}
 
-		if (type.IsGenericParameter)
-		{
-			yield break;
-		}
-
-		if (type.IsGenericType)
-		{
-			yield return type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition();
-			foreach (Type argument in Safe(type.GetGenericArguments))
+			while (type!.HasElementType)
 			{
-				foreach (Type unwrapped in Unwrap(argument))
+				type = type.GetElementType();
+				if (type is null)
 				{
-					yield return unwrapped;
+					yield break;
 				}
 			}
+
+			if (type.IsGenericParameter)
+			{
+				yield break;
+			}
+
+			if (type.IsGenericType)
+			{
+				yield return type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition();
+				foreach (Type argument in Safe(type.GetGenericArguments))
+				{
+					foreach (Type unwrapped in Unwrap(argument))
+					{
+						yield return unwrapped;
+					}
+				}
+			}
+			else
+			{
+				yield return type;
+			}
 		}
-		else
+
+		private static IEnumerable<CustomAttributeData> SafeAttributes(MemberInfo member)
 		{
-			yield return type;
+			try
+			{
+				return member.GetCustomAttributesData();
+			}
+			catch (Exception exception) when (exception
+				                                  is TypeLoadException
+				                                  or FileNotFoundException
+				                                  or FileLoadException
+				                                  or BadImageFormatException)
+			{
+				return [];
+			}
+		}
+
+		private static List<CustomAttributeTypedArgument> SafeAttributeArguments(CustomAttributeData attribute)
+		{
+			try
+			{
+				List<CustomAttributeTypedArgument> arguments = [..attribute.ConstructorArguments,];
+				foreach (CustomAttributeNamedArgument namedArgument in attribute.NamedArguments)
+				{
+					arguments.Add(namedArgument.TypedValue);
+				}
+
+				return arguments;
+			}
+			catch (Exception exception) when (exception
+				                                  is TypeLoadException
+				                                  or FileNotFoundException
+				                                  or FileLoadException
+				                                  or BadImageFormatException)
+			{
+				return [];
+			}
 		}
 	}
 
@@ -1063,44 +1101,6 @@ internal static class TypeHelpers
 		try
 		{
 			return get();
-		}
-		catch (Exception exception) when (exception
-			                                  is TypeLoadException
-			                                  or FileNotFoundException
-			                                  or FileLoadException
-			                                  or BadImageFormatException)
-		{
-			return [];
-		}
-	}
-
-	private static IEnumerable<CustomAttributeData> SafeAttributes(MemberInfo member)
-	{
-		try
-		{
-			return member.GetCustomAttributesData();
-		}
-		catch (Exception exception) when (exception
-			                                  is TypeLoadException
-			                                  or FileNotFoundException
-			                                  or FileLoadException
-			                                  or BadImageFormatException)
-		{
-			return [];
-		}
-	}
-
-	private static IEnumerable<CustomAttributeTypedArgument> SafeAttributeArguments(CustomAttributeData attribute)
-	{
-		try
-		{
-			List<CustomAttributeTypedArgument> arguments = [..attribute.ConstructorArguments,];
-			foreach (CustomAttributeNamedArgument namedArgument in attribute.NamedArguments)
-			{
-				arguments.Add(namedArgument.TypedValue);
-			}
-
-			return arguments;
 		}
 		catch (Exception exception) when (exception
 			                                  is TypeLoadException

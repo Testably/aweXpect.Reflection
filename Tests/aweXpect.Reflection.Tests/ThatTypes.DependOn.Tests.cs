@@ -1,0 +1,64 @@
+using System.Collections.Generic;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+using Xunit.Sdk;
+
+namespace aweXpect.Reflection.Tests;
+
+public sealed partial class ThatTypes
+{
+	public sealed class DependOn
+	{
+		private const string Layer1Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1";
+
+		public sealed class Tests
+		{
+			[Fact]
+			public async Task WhenAllTypesDependOnNamespace_ShouldSucceed()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(ViaField),
+					typeof(ViaProperty),
+					typeof(OnlyLayer1),
+				];
+
+				async Task Act()
+					=> await That(subject).DependOn(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenSomeTypeDoesNotDependOnNamespace_ShouldFail()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(ViaField),
+					typeof(FrameworkConsumer),
+				];
+
+				async Task Act()
+					=> await That(subject).DependOn(Layer1Namespace);
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("*all depend on*but it contained types without the dependency*FrameworkConsumer*")
+					.AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithOr_ShouldSucceed()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(OnlyLayer1),
+					typeof(Layer1AndLayer2),
+				];
+
+				async Task Act()
+					=> await That(subject).DependOn("Non.Existent.Namespace").Or(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+		}
+	}
+}

@@ -1,0 +1,170 @@
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
+using Xunit.Sdk;
+
+namespace aweXpect.Reflection.Tests;
+
+public sealed partial class ThatType
+{
+	public sealed class DependsOn
+	{
+		private const string Layer1Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1";
+		private const string Layer2Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2";
+
+		public sealed class Tests
+		{
+			[Theory]
+			[InlineData(typeof(ViaBaseType))]
+			[InlineData(typeof(ViaInterface))]
+			[InlineData(typeof(ViaField))]
+			[InlineData(typeof(ViaProperty))]
+			[InlineData(typeof(ViaIndexer))]
+			[InlineData(typeof(ViaEvent))]
+			[InlineData(typeof(ViaMethodParameter))]
+			[InlineData(typeof(ViaMethodReturn))]
+			[InlineData(typeof(ViaGenericArgument))]
+			[InlineData(typeof(ViaAttribute))]
+			[InlineData(typeof(ViaGenericConstraint<>))]
+			public async Task WhenTypeReferencesNamespaceInSignature_ShouldSucceed(Type subject)
+			{
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeDoesNotDependOnNamespace_ShouldFail()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer2Namespace);
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              depends on namespace "{Layer2Namespace}",
+					              but it depended on *
+					              """).AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenSubNamespaceMatchesViaSubtree_ShouldSucceed()
+			{
+				Type subject = typeof(ViaSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenExcludingSubNamespaces_ShouldNotMatchSubNamespace()
+			{
+				Type subject = typeof(ViaSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace).ExcludingSubNamespaces();
+
+				await That(Act).Throws<XunitException>();
+			}
+
+			[Fact]
+			public async Task WhenAnyOfMultipleNamespacesMatches_ShouldSucceed()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer2Namespace, Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithOr_ShouldSucceed()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer2Namespace).Or(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenNamingFrameworkNamespace_ShouldSucceed()
+			{
+				Type subject = typeof(FrameworkConsumer);
+
+				async Task Act()
+					=> await That(subject).DependsOn("System.Collections.Generic");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeReferencesSpecificType_ShouldSucceed()
+			{
+				Type subject = typeof(ViaField);
+
+				async Task Act()
+					=> await That(subject).DependsOn<TargetA>();
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeDoesNotReferenceSpecificType_ShouldFail()
+			{
+				Type subject = typeof(ViaField);
+
+				async Task Act()
+					=> await That(subject).DependsOn<TargetB>();
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("*depends on type TargetB*").AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithOrType_ShouldSucceed()
+			{
+				Type subject = typeof(ViaField);
+
+				async Task Act()
+					=> await That(subject).DependsOn<TargetB>().Or<TargetA>();
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeIsNull_ShouldFail()
+			{
+				Type? subject = null;
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(Act).ThrowsException()
+					.WithMessage("*but it was <null>*").AsWildcard();
+			}
+		}
+
+		public sealed class NegatedTests
+		{
+			[Fact]
+			public async Task WhenTypeDependsOnNamespace_ShouldFail()
+			{
+				Type subject = typeof(ViaField);
+
+				async Task Act()
+					=> await That(subject).DoesNotComplyWith(it => it.DependsOn(Layer1Namespace));
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"*does not depend on namespace \"{Layer1Namespace}\"*").AsWildcard();
+			}
+		}
+	}
+}

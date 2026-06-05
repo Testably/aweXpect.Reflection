@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using aweXpect.Customization;
 using aweXpect.Reflection.Collections;
+using aweXpect.Reflection.Options;
 
 namespace aweXpect.Reflection.Helpers;
 
@@ -708,6 +709,330 @@ internal static class TypeHelpers
 		}
 
 		return false;
+	}
+
+	/// <summary>
+	///     Checks whether the <paramref name="actualNamespace" /> matches the <paramref name="expectedNamespace" />,
+	///     optionally including its sub-namespaces.
+	/// </summary>
+	/// <remarks>
+	///     The comparison is ordinal and case-sensitive. With <paramref name="includeSubNamespaces" />, <c>Foo.Bar</c>
+	///     also matches <c>Foo.Bar.Baz</c>, but never <c>Foo.BarBaz</c> (the next character must be a separator). A
+	///     <see langword="null" /> <paramref name="actualNamespace" /> (global namespace) never matches a named namespace.
+	/// </remarks>
+	internal static bool NamespaceMatches(string? actualNamespace, string expectedNamespace, bool includeSubNamespaces)
+	{
+		if (actualNamespace is null)
+		{
+			return false;
+		}
+
+		if (string.Equals(actualNamespace, expectedNamespace, StringComparison.Ordinal))
+		{
+			return true;
+		}
+
+		return includeSubNamespaces &&
+		       actualNamespace.StartsWith(expectedNamespace + ".", StringComparison.Ordinal);
+	}
+
+	/// <summary>
+	///     Checks whether the <paramref name="dependency" /> references the <paramref name="target" /> type.
+	/// </summary>
+	/// <remarks>
+	///     Generic types are matched on their generic type definition, so that <c>List&lt;Foo&gt;</c> and
+	///     <c>List&lt;Bar&gt;</c> both match a <c>List&lt;&gt;</c> target.
+	/// </remarks>
+	internal static bool MatchesType(Type dependency, Type target)
+	{
+		if (dependency == target)
+		{
+			return true;
+		}
+
+		Type normalizedTarget = target.IsGenericType ? target.GetGenericTypeDefinition() : target;
+		Type normalizedDependency = dependency.IsGenericType ? dependency.GetGenericTypeDefinition() : dependency;
+		return normalizedDependency == normalizedTarget;
+	}
+
+	/// <summary>
+	///     Determines whether the <paramref name="type" /> belongs to a framework assembly, i.e. its assembly name
+	///     starts with one of the <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" />.
+	/// </summary>
+	internal static bool IsFrameworkDependency(this Type type)
+	{
+		string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
+		string? assemblyName;
+		try
+		{
+			assemblyName = type.Assembly.GetName().Name;
+		}
+		catch (Exception exception) when (exception
+			                                  is TypeLoadException
+			                                  or FileNotFoundException
+			                                  or FileLoadException
+			                                  or BadImageFormatException)
+		{
+			return false;
+		}
+
+		return assemblyName is not null &&
+		       prefixes.Any(prefix => assemblyName.StartsWith(prefix, StringComparison.Ordinal));
+	}
+
+	/// <summary>
+	///     Collects the namespaces of the <paramref name="type" />'s dependencies that are not allowed by the
+	///     <paramref name="allowed" /> namespaces, the type's own namespace, or the framework rule.
+	/// </summary>
+	/// <remarks>
+	///     Framework dependencies are ignored. A dependency in the type's own namespace (and, unless
+	///     <see cref="NamespaceDependencyOptions.ExcludeSubNamespaces" />, its sub-namespaces) is implicitly allowed.
+	///     The global namespace is reported as <c>&lt;global namespace&gt;</c>. The result is de-duplicated.
+	/// </remarks>
+	internal static IReadOnlyList<string> GetDependencyNamespaceViolations(
+		this Type type, NamespaceDependencyOptions allowed)
+	{
+		string? ownNamespace = type.Namespace;
+		List<string> violations = [];
+		HashSet<string> seen = new(StringComparer.Ordinal);
+		foreach (Type dependency in type.ResolveDependencies())
+		{
+			if (dependency.IsFrameworkDependency())
+			{
+				continue;
+			}
+
+			string? dependencyNamespace = dependency.Namespace;
+			if (IsOwnNamespace(dependencyNamespace, ownNamespace, !allowed.ExcludeSubNamespaces) ||
+			    allowed.Matches(dependencyNamespace))
+			{
+				continue;
+			}
+
+			string display = dependencyNamespace ?? "<global namespace>";
+			if (seen.Add(display))
+			{
+				violations.Add(display);
+			}
+		}
+
+		return violations;
+	}
+
+	private static bool IsOwnNamespace(string? dependencyNamespace, string? ownNamespace, bool includeSubNamespaces)
+		=> ownNamespace is null
+			? dependencyNamespace is null
+			: NamespaceMatches(dependencyNamespace, ownNamespace, includeSubNamespaces);
+
+	/// <summary>
+	///     Resolves the dependencies of the <paramref name="type" /> through which all assertions and filters go.
+	/// </summary>
+	/// <remarks>
+	///     This is a seam: it currently materializes the (unwrapped and de-duplicated)
+	///     <see cref="GetSignatureDependencies" />, but is the single place a later, configurable resolver can hook into.
+	/// </remarks>
+	internal static Type[] ResolveDependencies(this Type type)
+		=> type.GetSignatureDependencies().ToArray();
+
+	/// <summary>
+	///     Collects the types referenced in the declared signature surface of the <paramref name="type" />.
+	/// </summary>
+	/// <remarks>
+	///     Considers the base type, implemented interfaces, generic arguments and parameter constraints, the types of
+	///     fields, properties (and indexer parameters), events, method return/parameter/generic types, constructor
+	///     parameters and the types of attributes applied to the type and its members (read via
+	///     <see cref="CustomAttributeData" /> without instantiating them). Compiler-generated members are excluded.
+	///     Array/by-ref/pointer element types and generic type arguments are unwrapped recursively, open generic
+	///     parameters are skipped (their constraints are kept), and the result is de-duplicated.
+	///     <para />
+	///     This is signature-level only: references that appear merely in method bodies (e.g. <c>new Infra.Foo()</c>,
+	///     static calls or locals) are not detected.
+	/// </remarks>
+	internal static IEnumerable<Type> GetSignatureDependencies(this Type type)
+	{
+		HashSet<Type> dependencies = [];
+
+		void Add(Type? candidate)
+		{
+			foreach (Type unwrapped in Unwrap(candidate))
+			{
+				dependencies.Add(unwrapped);
+			}
+		}
+
+		void AddGenericArgument(Type argument)
+		{
+			if (argument.IsGenericParameter)
+			{
+				foreach (Type constraint in Safe(argument.GetGenericParameterConstraints))
+				{
+					Add(constraint);
+				}
+			}
+			else
+			{
+				Add(argument);
+			}
+		}
+
+		void AddAttributes(MemberInfo member)
+		{
+			foreach (CustomAttributeData attribute in SafeAttributes(member))
+			{
+				// Compiler-generated/embedded attributes (e.g. the Nullable* attributes the compiler emits into the
+				// consuming assembly on frameworks that do not ship them) are not real dependencies.
+				if (!attribute.AttributeType.IsCompilerGenerated())
+				{
+					Add(attribute.AttributeType);
+				}
+			}
+		}
+
+		const BindingFlags flags = BindingFlags.Public |
+		                           BindingFlags.NonPublic |
+		                           BindingFlags.Instance |
+		                           BindingFlags.Static |
+		                           BindingFlags.DeclaredOnly;
+
+		Add(type.BaseType);
+		foreach (Type @interface in Safe(type.GetInterfaces))
+		{
+			Add(@interface);
+		}
+
+		foreach (Type argument in Safe(type.GetGenericArguments))
+		{
+			AddGenericArgument(argument);
+		}
+
+		AddAttributes(type);
+
+		foreach (FieldInfo field in Safe(() => type.GetFields(flags)).Where(m => !m.IsCompilerGenerated()))
+		{
+			Add(field.FieldType);
+			AddAttributes(field);
+		}
+
+		foreach (PropertyInfo property in Safe(() => type.GetProperties(flags)).Where(m => !m.IsCompilerGenerated()))
+		{
+			Add(property.PropertyType);
+			foreach (ParameterInfo parameter in Safe(property.GetIndexParameters))
+			{
+				Add(parameter.ParameterType);
+			}
+
+			AddAttributes(property);
+		}
+
+		foreach (EventInfo @event in Safe(() => type.GetEvents(flags)).Where(m => !m.IsCompilerGenerated()))
+		{
+			Add(@event.EventHandlerType);
+			AddAttributes(@event);
+		}
+
+		foreach (MethodInfo method in Safe(() => type.GetMethods(flags)).Where(m => !m.IsCompilerGenerated()))
+		{
+			Add(method.ReturnType);
+			foreach (ParameterInfo parameter in Safe(method.GetParameters))
+			{
+				Add(parameter.ParameterType);
+			}
+
+			foreach (Type argument in Safe(method.GetGenericArguments))
+			{
+				AddGenericArgument(argument);
+			}
+
+			AddAttributes(method);
+		}
+
+		foreach (ConstructorInfo constructor in Safe(() => type.GetConstructors(flags))
+			         .Where(m => !m.IsCompilerGenerated()))
+		{
+			foreach (ParameterInfo parameter in Safe(constructor.GetParameters))
+			{
+				Add(parameter.ParameterType);
+			}
+
+			AddAttributes(constructor);
+		}
+
+		dependencies.Remove(type);
+		return dependencies;
+	}
+
+	/// <summary>
+	///     Unwraps the <paramref name="type" />: array/by-ref/pointer element types and generic type arguments are
+	///     flattened, open generic parameters are skipped, and generic types contribute their generic type definition.
+	/// </summary>
+	private static IEnumerable<Type> Unwrap(Type? type)
+	{
+		if (type is null)
+		{
+			yield break;
+		}
+
+		while (type!.HasElementType)
+		{
+			type = type.GetElementType();
+			if (type is null)
+			{
+				yield break;
+			}
+		}
+
+		if (type.IsGenericParameter)
+		{
+			yield break;
+		}
+
+		if (type.IsGenericType)
+		{
+			yield return type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition();
+			foreach (Type argument in Safe(type.GetGenericArguments))
+			{
+				foreach (Type unwrapped in Unwrap(argument))
+				{
+					yield return unwrapped;
+				}
+			}
+		}
+		else
+		{
+			yield return type;
+		}
+	}
+
+	private static T[] Safe<T>(Func<T[]> get)
+	{
+		try
+		{
+			return get();
+		}
+		catch (Exception exception) when (exception
+			                                  is TypeLoadException
+			                                  or FileNotFoundException
+			                                  or FileLoadException
+			                                  or BadImageFormatException)
+		{
+			return [];
+		}
+	}
+
+	private static IEnumerable<CustomAttributeData> SafeAttributes(MemberInfo member)
+	{
+		try
+		{
+			return member.GetCustomAttributesData();
+		}
+		catch (Exception exception) when (exception
+			                                  is TypeLoadException
+			                                  or FileNotFoundException
+			                                  or FileLoadException
+			                                  or BadImageFormatException)
+		{
+			return [];
+		}
 	}
 
 	public static bool IsReallyClass(this Type? type)

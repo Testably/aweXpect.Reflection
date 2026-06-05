@@ -389,6 +389,63 @@ In.AllLoadedAssemblies().Methods()
     .WhichAreGeneric().WithArgument("TKey").AtIndex(0)
 ```
 
+### Type dependencies
+
+Layering and architecture rules over the types a type references **in its signature**:
+
+|                          | Filter                       | Assert (single)         | Assert (many)          |
+|--------------------------|------------------------------|-------------------------|------------------------|
+| depends on namespace     | `.WhichDependOn("x", …)`     | `.DependsOn("x", …)`    | `.DependOn("x", …)`    |
+| does not depend on       | `.WhichDoNotDependOn("x", …)`| `.DoesNotDependOn("x", …)` | `.DoNotDependOn("x", …)` |
+| depends only on set      | `.WhichDependOnlyOn("x", …)` | `.DependsOnlyOn("x", …)`| `.DependOnlyOn("x", …)`|
+
+```csharp
+// Presentation must not reference the data layer
+await Expect.That(In.Namespace("MyApp.Presentation").Types())
+    .DoNotDependOn("MyApp.Data");
+
+// The API layer may only reference the application and domain layers
+await Expect.That(In.Namespace("MyApp.Api").Types())
+    .DependOnlyOn("MyApp.Application", "MyApp.Domain");
+
+// Filter for the types that depend on a namespace
+In.AllLoadedAssemblies().Types().WhichDependOn("System.Data")
+```
+
+A type *depends on* every type referenced in its **declared signature**: the base type and implemented
+interfaces, generic arguments and parameter constraints, field/property/event types, indexer parameters,
+method return/parameter/generic-argument types, constructor parameters and the types of attributes applied to
+the type and its members. Element types of arrays/pointers/by-ref and generic type arguments are unwrapped
+(`List<Infra.Foo>` depends on both `List<>` and `Infra.Foo`), and compiler-generated members are ignored.
+
+> **Signature-level only:** dependencies are computed from reflection metadata, so body-level references such
+> as `new Infra.Foo()`, static calls and local variables are **not** detected.
+
+Namespace matching is ordinal and case-sensitive and, like `WithinNamespace`, includes sub-namespaces by
+default (so `Foo.Bar` matches `Foo.Bar.Baz` but not `Foo.BarBaz`). Each result is chainable:
+
+```csharp
+// Widen the set with .Or(…)
+await Expect.That(In.Namespace("MyApp.Api").Types())
+    .DependOnlyOn("MyApp.Application").Or("MyApp.Domain");
+
+// Opt out of sub-namespace matching for the whole expression
+await Expect.That(types).DoNotDependOn("MyApp.Data").ExcludingSubNamespaces();
+```
+
+`DependsOn` and `DoesNotDependOn` (single types only) also accept a **specific type** via `<T>()` or
+`(Type)`, with `.Or<T>()` / `.Or(Type)` to widen:
+
+```csharp
+await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().Or<SqlConnection>();
+```
+
+> **Framework dependencies are ignored unless you name one explicitly.** `DependOnlyOn` ignores dependencies
+> whose assembly name starts with one of the
+> [`ExcludedAssemblyPrefixes`](#assembly-exclusions) (so you never have to whitelist `System.*`), while a
+> type's **own namespace** is always allowed. `DependsOn` / `DoesNotDependOn` / `WhichDependOn` still match a
+> framework namespace when you name it explicitly (e.g. `DoesNotDependOn("System.Data")`).
+
 ### Methods
 
 In addition to [access modifiers](#access-modifiers),

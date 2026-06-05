@@ -1,6 +1,7 @@
 ﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -50,6 +51,63 @@ public sealed partial class ThatType
 
 				async Task Act()
 					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenCompilerEmitsAttributesForRequiredMember_ShouldNotCountAsDependency()
+			{
+				// `required` makes the compiler emit [RequiredMember] on the type and property and
+				// [Obsolete] + [CompilerFeatureRequired] on the constructor; none of these are authored.
+				Type subject = typeof(WithRequiredProperty);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenCompilerEmitsAttributesForAsyncMethod_ShouldNotCountAsDependency()
+			{
+				// An async method makes the compiler emit [AsyncStateMachine(typeof(<M>d__0))] and
+				// [DebuggerStepThrough]; neither attribute is authored. (The authored `void` return type
+				// still counts as a reference to "System", so the attribute namespaces are asserted.)
+				Type subject = typeof(WithAsyncMethod);
+
+				async Task Act()
+				{
+					await That(subject).DoesNotDependOn("System.Runtime.CompilerServices");
+					await That(subject).DoesNotDependOn("System.Diagnostics");
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenCompilerEmitsStateMachineForAsyncMethod_ShouldNotCountAsDependency()
+			{
+				// The nested <MethodAsync>d__0 state machine lives in the type's own namespace; the
+				// typeof(...) argument of [AsyncStateMachine] must not surface it as a dependency.
+				Type subject = typeof(WithAsyncMethod);
+
+				async Task Act()
+					=> await That(subject)
+						.DoesNotDependOn("aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenCompilerEmitsAttributesForIteratorMethod_ShouldNotCountAsDependency()
+			{
+				// An iterator method makes the compiler emit [IteratorStateMachine(typeof(<M>d__0))];
+				// the authored IEnumerable<int> return type lives in System.Collections.Generic, not here.
+				Type subject = typeof(WithIteratorMethod);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System.Runtime.CompilerServices");
 
 				await That(Act).DoesNotThrow();
 			}

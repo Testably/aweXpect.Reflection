@@ -844,8 +844,8 @@ internal static class TypeHelpers
 	///     parameters and the types of attributes applied to the type and its members (read via
 	///     <see cref="CustomAttributeData" /> without instantiating them). Compiler-generated members are excluded, as
 	///     are purely synthetic references that the author never wrote: the implicit <see cref="object" /> /
-	///     <see cref="ValueType" /> / <see cref="System.Enum" /> base type and the compiler-emitted nullability
-	///     attributes (<c>NullableAttribute</c> / <c>NullableContextAttribute</c>).
+	///     <see cref="ValueType" /> / <see cref="System.Enum" /> base type and the attributes the compiler emits
+	///     onto authored code (nullability metadata, required members, async/iterator state machines, ...).
 	///     Array/by-ref/pointer element types and generic type arguments are unwrapped recursively, open generic
 	///     parameters are skipped (their constraints are kept), and the result is de-duplicated.
 	///     <para />
@@ -924,11 +924,20 @@ internal static class TypeHelpers
 
 		public void AddAttributes(MemberInfo member)
 		{
-			// Neither compiler-generated/embedded attributes nor the compiler-emitted nullability attributes
-			// (which on modern .NET are real BCL types, not compiler-generated) are dependencies the author wrote.
-			foreach (CustomAttributeData attribute in SafeAttributes(member)
+			// Neither compiler-generated/embedded attributes nor the BCL attributes the compiler emits onto
+			// authored code (nullability, required members, async/iterator state machines, ...) are
+			// dependencies the author wrote.
+			IEnumerable<CustomAttributeData> attributes = SafeAttributes(member);
+
+			// For required members, the compiler pairs [Obsolete] with [CompilerFeatureRequired] on the
+			// constructor; only that compiler-emitted [Obsolete] is skipped, an authored one still counts.
+			bool hasCompilerFeatureRequired = attributes.Any(data
+				=> data.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute");
+
+			foreach (CustomAttributeData attribute in attributes
 				         .Where(data => !data.AttributeType.IsCompilerGenerated() &&
-				                        !IsSyntheticNullabilityAttribute(data.AttributeType)))
+				                        !IsCompilerEmittedAttribute(data.AttributeType) &&
+				                        !(hasCompilerFeatureRequired && data.AttributeType == typeof(ObsoleteAttribute))))
 			{
 				Add(attribute.AttributeType);
 
@@ -1015,15 +1024,45 @@ internal static class TypeHelpers
 			return _dependencies;
 		}
 
-		private static bool IsSyntheticNullabilityAttribute(Type attributeType)
-			=> attributeType.FullName is "System.Runtime.CompilerServices.NullableAttribute"
-				or "System.Runtime.CompilerServices.NullableContextAttribute";
+		/// <summary>
+		///     Attributes the C# compiler emits onto authored code, which are therefore not dependencies the
+		///     author wrote: nullability metadata, required members, async/iterator state machines, extension
+		///     methods, readonly/ref structs, tuple names, <c>dynamic</c> and <c>decimal</c> constants.
+		/// </summary>
+		private static readonly HashSet<string> CompilerEmittedAttributes = new(StringComparer.Ordinal)
+		{
+			"System.Runtime.CompilerServices.NullableAttribute",
+			"System.Runtime.CompilerServices.NullableContextAttribute",
+			"System.Runtime.CompilerServices.RequiredMemberAttribute",
+			"System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute",
+			"System.Runtime.CompilerServices.AsyncStateMachineAttribute",
+			"System.Runtime.CompilerServices.IteratorStateMachineAttribute",
+			"System.Runtime.CompilerServices.AsyncIteratorStateMachineAttribute",
+			"System.Runtime.CompilerServices.ExtensionAttribute",
+			"System.Runtime.CompilerServices.IsReadOnlyAttribute",
+			"System.Runtime.CompilerServices.IsByRefLikeAttribute",
+			"System.Runtime.CompilerServices.IsUnmanagedAttribute",
+			"System.Runtime.CompilerServices.ScopedRefAttribute",
+			"System.Runtime.CompilerServices.ParamCollectionAttribute",
+			"System.Runtime.CompilerServices.TupleElementNamesAttribute",
+			"System.Runtime.CompilerServices.DynamicAttribute",
+			"System.Runtime.CompilerServices.DecimalConstantAttribute",
+			"System.Diagnostics.DebuggerStepThroughAttribute",
+		};
+
+		private static bool IsCompilerEmittedAttribute(Type attributeType)
+			=> attributeType.FullName is { } fullName && CompilerEmittedAttributes.Contains(fullName);
 
 		private void AddAttributeArgument(CustomAttributeTypedArgument argument)
 		{
 			if (argument.Value is Type typeArgument)
 			{
-				Add(typeArgument);
+				// A typeof(...) referencing a compiler-generated type (e.g. the state machine in
+				// [AsyncStateMachine(typeof(<M>d__0))]) is not a dependency the author wrote.
+				if (!typeArgument.IsCompilerGenerated())
+				{
+					Add(typeArgument);
+				}
 			}
 			else if (argument.Value is IReadOnlyList<CustomAttributeTypedArgument> arrayArgument)
 			{

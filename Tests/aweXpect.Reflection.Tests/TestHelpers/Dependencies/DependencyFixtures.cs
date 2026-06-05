@@ -143,3 +143,29 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers.OwnSub
 {
 	public class OwnSubTarget;
 }
+
+// Types whose only "System" surface is what the compiler emits onto authored code; kept in a separate
+// namespace so that the Consumers-based filter tests are unaffected.
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
+{
+	using System.Threading.Tasks;
+	using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
+
+	public class WithRequiredProperty
+	{
+		public required TargetA Target { get; set; }
+	}
+
+	public class WithAsyncMethod
+	{
+		public async void MethodAsync() => await Task.CompletedTask;
+	}
+
+	public class WithIteratorMethod
+	{
+		public IEnumerable<int> Numbers()
+		{
+			yield return 1;
+		}
+	}
+}

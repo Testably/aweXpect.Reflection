@@ -718,13 +718,14 @@ internal static class TypeHelpers
 	/// <remarks>
 	///     The comparison is ordinal and case-sensitive. With <paramref name="includeSubNamespaces" />, <c>Foo.Bar</c>
 	///     also matches <c>Foo.Bar.Baz</c>, but never <c>Foo.BarBaz</c> (the next character must be a separator). A
-	///     <see langword="null" /> <paramref name="actualNamespace" /> (global namespace) never matches a named namespace.
+	///     <see langword="null" /> <paramref name="actualNamespace" /> (global namespace) matches only the empty
+	///     string, which targets exactly the global namespace (without sub-namespace semantics).
 	/// </remarks>
 	internal static bool NamespaceMatches(string? actualNamespace, string expectedNamespace, bool includeSubNamespaces)
 	{
 		if (actualNamespace is null)
 		{
-			return false;
+			return expectedNamespace.Length == 0;
 		}
 
 		if (string.Equals(actualNamespace, expectedNamespace, StringComparison.Ordinal))
@@ -794,7 +795,8 @@ internal static class TypeHelpers
 	/// <remarks>
 	///     Framework dependencies are ignored. A dependency in the type's own namespace (and, unless
 	///     <see cref="NamespaceDependencyOptions.ExcludeSubNamespaces" />, its sub-namespaces) is implicitly allowed.
-	///     The global namespace is reported as <c>&lt;global namespace&gt;</c>. The result is de-duplicated.
+	///     The global namespace is reported as <c>&lt;global namespace&gt;</c> and can be allowed by specifying an
+	///     empty string. The result is de-duplicated.
 	/// </remarks>
 	internal static IReadOnlyList<string> GetDependencyNamespaceViolations(
 		this Type type, NamespaceDependencyOptions allowed)

@@ -145,6 +145,18 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenGlobalNamespaceIsAllowedWithEmptyString_ShouldSucceed()
+			{
+				// An empty string targets exactly the global namespace.
+				Type subject = typeof(ReferencesGlobal);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Layer1Namespace, "");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenSubjectIsInGlobalNamespaceAndDependsOnlyOnFramework_ShouldSucceed()
 			{
 				Type subject = typeof(GlobalNamespaceTarget);

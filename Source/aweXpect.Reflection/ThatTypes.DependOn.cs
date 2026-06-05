@@ -84,6 +84,11 @@ public static partial class ThatTypes
 	private static bool DependsOnNamespace(Type? type, NamespaceDependencyOptions options)
 		=> type is not null && options.IsMatchedBy(type);
 
+	// A null item's dependencies cannot be verified, so it fails the negative assertion just like the
+	// positive one (and like DependOnlyOn), instead of slipping through as "does not depend".
+	private static bool DoesNotDependOnNamespace(Type? type, NamespaceDependencyOptions options)
+		=> type is not null && !options.IsMatchedBy(type);
+
 	private sealed class DependOnConstraint(
 		string it,
 		ExpectationGrammars grammars,
@@ -133,11 +138,11 @@ public static partial class ThatTypes
 	{
 #if NET8_0_OR_GREATER
 		public async Task<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, type => !DependsOnNamespace(type, options));
+			=> await SetAsyncValue(actual, type => DoesNotDependOnNamespace(type, options));
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, type => !DependsOnNamespace(type, options));
+			=> SetValue(actual, type => DoesNotDependOnNamespace(type, options));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all do not depend on ").Append(options.Describe());

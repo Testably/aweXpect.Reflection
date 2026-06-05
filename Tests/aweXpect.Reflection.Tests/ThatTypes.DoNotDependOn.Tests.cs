@@ -49,6 +49,30 @@ public sealed partial class ThatTypes
 					              ]
 					              """);
 			}
+
+			[Fact]
+			public async Task WhenCollectionContainsNull_ShouldFail()
+			{
+				// A null item's dependencies cannot be verified, so it fails the negative assertion just
+				// like it fails DependOn and DependOnlyOn, instead of slipping through.
+				IEnumerable<Type?> subject =
+				[
+					typeof(OnlyLayer1),
+					null,
+				];
+
+				async Task Act()
+					=> await That(subject).DoNotDependOn(Layer2Namespace);
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              all do not depend on namespace "{Layer2Namespace}",
+					              but it contained types with the dependency [
+					                <null>
+					              ]
+					              """);
+			}
 		}
 	}
 }

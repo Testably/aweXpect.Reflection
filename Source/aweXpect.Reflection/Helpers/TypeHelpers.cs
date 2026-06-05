@@ -851,14 +851,24 @@ internal static class TypeHelpers
 			: NamespaceMatches(dependencyNamespace, ownNamespace, includeSubNamespaces);
 
 	/// <summary>
+	///     Caches the resolved dependencies per <see cref="Type" />: the signature surface of a type cannot change
+	///     at runtime and the raw dependency set is independent of any customization (the
+	///     <c>ExcludedAssemblyPrefixes</c> are applied on top of it by the callers), so chained filters and
+	///     assertions do not have to repeat the reflection walk. The weak table does not pin types from
+	///     collectible <c>AssemblyLoadContext</c>s.
+	/// </summary>
+	private static readonly ConditionalWeakTable<Type, Type[]> ResolvedDependencies = new();
+
+	/// <summary>
 	///     Resolves the dependencies of the <paramref name="type" /> through which all assertions and filters go.
 	/// </summary>
 	/// <remarks>
 	///     This is a seam: it currently materializes the (unwrapped and de-duplicated)
-	///     <see cref="GetSignatureDependencies" />, but is the single place a later, configurable resolver can hook into.
+	///     <see cref="GetSignatureDependencies" /> with per-type memoization, but is the single place a later,
+	///     configurable resolver can hook into. Callers must not mutate the returned array.
 	/// </remarks>
 	internal static Type[] ResolveDependencies(this Type type)
-		=> type.GetSignatureDependencies().ToArray();
+		=> ResolvedDependencies.GetValue(type, static t => t.GetSignatureDependencies().ToArray());
 
 	/// <summary>
 	///     Collects the types referenced in the declared signature surface of the <paramref name="type" />.

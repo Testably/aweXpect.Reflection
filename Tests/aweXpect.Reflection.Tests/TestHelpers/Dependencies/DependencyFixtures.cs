@@ -144,8 +144,8 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers.OwnSub
 	public class OwnSubTarget;
 }
 
-// Types whose only "System" surface is what the compiler emits onto authored code; kept in a separate
-// namespace so that the Consumers-based filter tests are unaffected.
+// Types whose only "System" or Layer1 surface is what the compiler or the inheritance chain contributes;
+// kept in a separate namespace so that the Consumers-based filter tests are unaffected.
 namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 {
 	using System.Threading.Tasks;
@@ -155,6 +155,12 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 	{
 		public required TargetA Target { get; set; }
 	}
+
+	public class BaseWithLayer1Interface : ITargetInterface;
+
+	public class DerivedWithoutOwnReferences : BaseWithLayer1Interface;
+
+	public record RecordWithLayer1Target(TargetA Target);
 
 	public class WithAsyncMethod
 	{

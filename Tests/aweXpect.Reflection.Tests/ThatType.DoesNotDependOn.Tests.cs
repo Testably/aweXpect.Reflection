@@ -113,6 +113,31 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenInterfaceIsImplementedOnlyByBaseType_ShouldNotCountAsDependency()
+			{
+				// GetInterfaces() returns the transitive closure: DerivedWithoutOwnReferences inherits
+				// ITargetInterface from its base type without writing the reference itself.
+				Type subject = typeof(DerivedWithoutOwnReferences);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenRecordSynthesizesEquatableInterface_ShouldNotCountAsDependency()
+			{
+				// The compiler synthesizes IEquatable<T> for records; the author never wrote that reference.
+				Type subject = typeof(RecordWithLayer1Target);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenNamingFrameworkNamespaceThatIsReferenced_ShouldFail()
 			{
 				Type subject = typeof(FrameworkConsumer);

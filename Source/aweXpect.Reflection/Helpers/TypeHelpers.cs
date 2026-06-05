@@ -863,7 +863,7 @@ internal static class TypeHelpers
 		{
 			collector.Add(baseType);
 		}
-		collector.AddAll(Safe(type.GetInterfaces));
+		collector.AddAll(GetDeclaredInterfaces(type));
 		collector.AddGenericArguments(Safe(type.GetGenericArguments));
 		collector.AddAttributes(type);
 		collector.AddFields(type);
@@ -872,6 +872,55 @@ internal static class TypeHelpers
 		collector.AddMethods(type);
 		collector.AddConstructors(type);
 		return collector.Build(type);
+	}
+
+	/// <summary>
+	///     Returns only the interfaces the author wrote on the <paramref name="type" /> itself.
+	/// </summary>
+	/// <remarks>
+	///     <see cref="Type.GetInterfaces" /> returns the transitive closure, so interfaces inherited from the base
+	///     type or from other interfaces are subtracted (an interface that is both inherited and explicitly
+	///     re-declared cannot be distinguished in metadata and is treated as inherited). The compiler-synthesized
+	///     <see cref="IEquatable{T}" /> implementation of records is also skipped.
+	/// </remarks>
+	private static IEnumerable<Type> GetDeclaredInterfaces(Type type)
+	{
+		Type[] interfaces = Safe(type.GetInterfaces);
+		HashSet<Type> inherited = [];
+		if (SafeOrNull(() => type.BaseType) is { } baseType)
+		{
+			inherited.UnionWith(Safe(baseType.GetInterfaces));
+		}
+
+		foreach (Type @interface in interfaces)
+		{
+			inherited.UnionWith(Safe(@interface.GetInterfaces));
+		}
+
+		bool isRecord = type.IsRecordClass() || type.IsRecordStruct();
+		foreach (Type @interface in interfaces)
+		{
+			if (inherited.Contains(@interface) ||
+			    (isRecord && IsSynthesizedEquatable(@interface, type)))
+			{
+				continue;
+			}
+
+			yield return @interface;
+		}
+	}
+
+	private static bool IsSynthesizedEquatable(Type @interface, Type type)
+	{
+		if (!@interface.IsGenericType || @interface.GetGenericTypeDefinition() != typeof(IEquatable<>))
+		{
+			return false;
+		}
+
+		Type argument = @interface.GetGenericArguments()[0];
+		return argument == type ||
+		       (argument.IsGenericType && type.IsGenericTypeDefinition &&
+		        argument.GetGenericTypeDefinition() == type);
 	}
 
 	/// <summary>

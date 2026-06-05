@@ -769,11 +769,7 @@ internal static class TypeHelpers
 		{
 			assemblyName = type.Assembly.GetName().Name;
 		}
-		catch (Exception exception) when (exception
-			                                  is TypeLoadException
-			                                  or FileNotFoundException
-			                                  or FileLoadException
-			                                  or BadImageFormatException)
+		catch (Exception exception) when (IsUnresolvable(exception))
 		{
 			return false;
 		}
@@ -1141,11 +1137,7 @@ internal static class TypeHelpers
 
 				return false;
 			}
-			catch (Exception exception) when (exception
-				                                  is TypeLoadException
-				                                  or FileNotFoundException
-				                                  or FileLoadException
-				                                  or BadImageFormatException)
+			catch (Exception exception) when (IsUnresolvable(exception))
 			{
 				return true;
 			}
@@ -1247,11 +1239,7 @@ internal static class TypeHelpers
 			{
 				Add(get());
 			}
-			catch (Exception exception) when (exception
-				                                  is TypeLoadException
-				                                  or FileNotFoundException
-				                                  or FileLoadException
-				                                  or BadImageFormatException)
+			catch (Exception exception) when (IsUnresolvable(exception))
 			{
 				// The member's signature type could not be resolved, for example when its assembly is not
 				// deployed, so this member is skipped, consistent with GetDeclaredFields/Methods/Properties.
@@ -1331,11 +1319,7 @@ internal static class TypeHelpers
 				return data.ConstructorArguments.Count > 0 &&
 				       data.ConstructorArguments[0].Value is RequiredMembersObsoleteMessage;
 			}
-			catch (Exception exception) when (exception
-				                                  is TypeLoadException
-				                                  or FileNotFoundException
-				                                  or FileLoadException
-				                                  or BadImageFormatException)
+			catch (Exception exception) when (IsUnresolvable(exception))
 			{
 				// When the arguments cannot be resolved, the compiler-emitted pairing is assumed.
 				return true;
@@ -1429,11 +1413,7 @@ internal static class TypeHelpers
 			{
 				return member.GetCustomAttributesData();
 			}
-			catch (Exception exception) when (exception
-				                                  is TypeLoadException
-				                                  or FileNotFoundException
-				                                  or FileLoadException
-				                                  or BadImageFormatException)
+			catch (Exception exception) when (IsUnresolvable(exception))
 			{
 				return [];
 			}
@@ -1445,11 +1425,7 @@ internal static class TypeHelpers
 			{
 				return parameter.GetCustomAttributesData();
 			}
-			catch (Exception exception) when (exception
-				                                  is TypeLoadException
-				                                  or FileNotFoundException
-				                                  or FileLoadException
-				                                  or BadImageFormatException)
+			catch (Exception exception) when (IsUnresolvable(exception))
 			{
 				return [];
 			}
@@ -1467,16 +1443,26 @@ internal static class TypeHelpers
 
 				return arguments;
 			}
-			catch (Exception exception) when (exception
-				                                  is TypeLoadException
-				                                  or FileNotFoundException
-				                                  or FileLoadException
-				                                  or BadImageFormatException)
+			catch (Exception exception) when (IsUnresolvable(exception))
 			{
 				return [];
 			}
 		}
 	}
+
+	/// <summary>
+	///     Checks whether the <paramref name="exception" /> marks a member, attribute or assembly as unresolvable,
+	///     so that the element is skipped instead of failing the whole assertion: the type-load family (missing or
+	///     unloadable assemblies) and <see cref="CustomAttributeFormatException" />, which custom attribute blob
+	///     parsing throws (mostly on .NET Framework) for malformed or exotic blobs.
+	/// </summary>
+	private static bool IsUnresolvable(Exception exception)
+		=> exception
+			is TypeLoadException
+			or FileNotFoundException
+			or FileLoadException
+			or BadImageFormatException
+			or CustomAttributeFormatException;
 
 	private static T[] Safe<T>(Func<T[]> get)
 	{
@@ -1484,11 +1470,7 @@ internal static class TypeHelpers
 		{
 			return get();
 		}
-		catch (Exception exception) when (exception
-			                                  is TypeLoadException
-			                                  or FileNotFoundException
-			                                  or FileLoadException
-			                                  or BadImageFormatException)
+		catch (Exception exception) when (IsUnresolvable(exception))
 		{
 			return [];
 		}
@@ -1500,11 +1482,7 @@ internal static class TypeHelpers
 		{
 			return get();
 		}
-		catch (Exception exception) when (exception
-			                                  is TypeLoadException
-			                                  or FileNotFoundException
-			                                  or FileLoadException
-			                                  or BadImageFormatException)
+		catch (Exception exception) when (IsUnresolvable(exception))
 		{
 			return null;
 		}

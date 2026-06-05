@@ -192,7 +192,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ViaGenericArgument);
 
 				async Task Act()
-					=> await That(subject).DependsOn(typeof(List<TargetA>));
+					=> await That(subject).DependsOn<List<TargetA>>();
 
 				await That(Act).DoesNotThrow();
 			}
@@ -215,7 +215,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ViaGenericArgument);
 
 				async Task Act()
-					=> await That(subject).DependsOn(typeof(List<TargetB>));
+					=> await That(subject).DependsOn<List<TargetB>>();
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
@@ -234,8 +234,8 @@ public sealed partial class ThatType
 
 				async Task Act()
 				{
-					await That(subject).DependsOn(typeof(TargetA[]));
-					await That(subject).DependsOn(typeof(TargetA));
+					await That(subject).DependsOn<TargetA[]>();
+					await That(subject).DependsOn<TargetA>();
 				}
 
 				await That(Act).DoesNotThrow();

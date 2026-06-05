@@ -1094,8 +1094,8 @@ internal static class TypeHelpers
 				                                  or FileLoadException
 				                                  or BadImageFormatException)
 			{
-				// The member's signature type could not be resolved (e.g. its assembly is not deployed);
-				// skip just this member, consistent with GetDeclaredFields/Methods/Properties.
+				// The member's signature type could not be resolved, for example when its assembly is not
+				// deployed, so this member is skipped, consistent with GetDeclaredFields/Methods/Properties.
 			}
 		}
 

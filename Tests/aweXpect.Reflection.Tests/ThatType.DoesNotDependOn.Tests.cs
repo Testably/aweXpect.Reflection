@@ -159,7 +159,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ViaGenericArgument);
 
 				async Task Act()
-					=> await That(subject).DoesNotDependOn(typeof(List<TargetB>));
+					=> await That(subject).DoesNotDependOn<List<TargetB>>();
 
 				await That(Act).DoesNotThrow();
 			}
@@ -172,7 +172,7 @@ public sealed partial class ThatType
 				Type subject = typeof(WithArrayField);
 
 				async Task Act()
-					=> await That(subject).DoesNotDependOn(typeof(TargetA[]));
+					=> await That(subject).DoesNotDependOn<TargetA[]>();
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""

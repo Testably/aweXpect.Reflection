@@ -188,12 +188,12 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 
 	public class WithAsyncMethod
 	{
-		public async void MethodAsync() => await Task.CompletedTask;
+		public static async void MethodAsync() => await Task.CompletedTask;
 	}
 
 	public class WithIteratorMethod
 	{
-		public IEnumerable<int> Numbers()
+		public static IEnumerable<int> Numbers()
 		{
 			yield return 1;
 		}

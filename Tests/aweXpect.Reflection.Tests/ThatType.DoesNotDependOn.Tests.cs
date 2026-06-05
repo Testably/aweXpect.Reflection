@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using aweXpect.Customization;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
@@ -71,6 +72,28 @@ public sealed partial class ThatType
 					=> await That(subject).DoesNotDependOn("System");
 
 				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenAttributeTypeIsExcludedViaCustomization_ShouldNotCountAsDependency()
+			{
+				// The built-in compiler-emitted attribute set can be extended via customization, e.g. for a
+				// marker attribute of a future compiler version; outside the scope the attribute counts again.
+				Type subject = typeof(ViaAttribute);
+
+				using (Customize.aweXpect.Reflection().ExcludedAttributeTypes()
+					       .Set([typeof(TargetAttribute).FullName!,]))
+				{
+					async Task Act()
+						=> await That(subject).DoesNotDependOn(Layer1Namespace);
+
+					await That(Act).DoesNotThrow();
+				}
+
+				async Task ActOutsideScope()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(ActOutsideScope).DoesNotThrow();
 			}
 
 			[Fact]

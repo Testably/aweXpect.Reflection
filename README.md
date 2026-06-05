@@ -424,8 +424,11 @@ compiler-generated members, the implicit `object`/`ValueType`/`Enum` base type, 
 base type, records' synthesized `IEquatable<T>`, delegates' runtime infrastructure (only the `Invoke`
 signature counts), enums' underlying-value plumbing and the attributes the compiler emits onto authored code
 (nullability metadata, required members, async/iterator state machines, …) — so the compiler's own plumbing
-never counts. Types you write in authored signatures always do, including primitives and `void` return types
-(namespace `System`) — in practice, almost every type with members *does* depend on `System`.
+never counts. Should a future compiler version emit a marker attribute this library does not know about yet,
+exclude it yourself via `Customize.aweXpect.Reflection().ExcludedAttributeTypes()` (full attribute type names;
+extends the built-in set). Types you write in authored signatures always do count, including primitives and
+`void` return types (namespace `System`) — in practice, almost every type with members *does* depend on
+`System`.
 
 > **Signature-level only:** dependencies are computed from reflection metadata, so body-level references such
 > as `new Infra.Foo()`, static calls and local variables are **not** detected. Function-pointer signatures

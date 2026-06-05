@@ -872,7 +872,8 @@ internal static class TypeHelpers
 	/// <summary>
 	///     Caches the resolved dependencies per <see cref="Type" />: the signature surface of a type cannot change
 	///     at runtime and the raw dependency set is independent of any customization (the
-	///     <c>ExcludedAssemblyPrefixes</c> are applied on top of it by the callers), so chained filters and
+	///     <c>ExcludedAssemblyPrefixes</c> are applied on top of it by the callers, and a customized
+	///     <c>ExcludedAttributeTypes</c> set bypasses the cache), so chained filters and
 	///     assertions do not have to repeat the reflection walk. The weak table does not pin types from
 	///     collectible <c>AssemblyLoadContext</c>s.
 	/// </summary>
@@ -887,7 +888,17 @@ internal static class TypeHelpers
 	///     configurable resolver can hook into. Callers must not mutate the returned array.
 	/// </remarks>
 	internal static Type[] ResolveDependencies(this Type type)
-		=> ResolvedDependencies.GetValue(type, static t => t.GetSignatureDependencies().ToArray());
+	{
+		string[] excludedAttributeTypes = Customize.aweXpect.Reflection().ExcludedAttributeTypes().Get();
+		if (excludedAttributeTypes.Length > 0)
+		{
+			// A customized attribute exclusion changes the dependency set, so it must not be baked into the
+			// customization-independent cache; the (rare) customized path recomputes instead.
+			return type.GetSignatureDependencies(excludedAttributeTypes).ToArray();
+		}
+
+		return ResolvedDependencies.GetValue(type, static t => t.GetSignatureDependencies([]).ToArray());
+	}
 
 	/// <summary>
 	///     Collects the types referenced in the declared signature surface of the <paramref name="type" />.
@@ -910,9 +921,9 @@ internal static class TypeHelpers
 	///     not decomposed either: the parameter and return types inside them are invisible to dependency
 	///     assertions (the reflection APIs to traverse them only exist on .NET 8+).
 	/// </remarks>
-	internal static IEnumerable<Type> GetSignatureDependencies(this Type type)
+	internal static IEnumerable<Type> GetSignatureDependencies(this Type type, string[] excludedAttributeTypes)
 	{
-		SignatureDependencyCollector collector = new();
+		SignatureDependencyCollector collector = new(excludedAttributeTypes);
 
 		if (type.IsDelegate())
 		{
@@ -999,7 +1010,7 @@ internal static class TypeHelpers
 	///     Extracted from <see cref="GetSignatureDependencies" /> so that each member kind is collected in its own
 	///     small method instead of one large one.
 	/// </remarks>
-	private sealed class SignatureDependencyCollector
+	private sealed class SignatureDependencyCollector(string[] excludedAttributeTypes)
 	{
 		private const BindingFlags Flags = BindingFlags.Public |
 		                                    BindingFlags.NonPublic |
@@ -1147,7 +1158,7 @@ internal static class TypeHelpers
 			return (bool)DebugBuilt.GetValue(assembly, static a => DetermineIsDebugBuilt(a));
 		}
 
-		private static object DetermineIsDebugBuilt(Assembly assembly)
+		private static bool DetermineIsDebugBuilt(Assembly assembly)
 		{
 			try
 			{
@@ -1333,8 +1344,10 @@ internal static class TypeHelpers
 			"System.Runtime.InteropServices.OptionalAttribute",
 		};
 
-		private static bool IsCompilerEmittedAttribute(Type attributeType)
-			=> attributeType.FullName is { } fullName && CompilerEmittedAttributes.Contains(fullName);
+		private bool IsCompilerEmittedAttribute(Type attributeType)
+			=> attributeType.FullName is { } fullName &&
+			   (CompilerEmittedAttributes.Contains(fullName) ||
+			    excludedAttributeTypes.Contains(fullName, StringComparer.Ordinal));
 
 		/// <summary>
 		///     The marker message Roslyn puts into the <see cref="ObsoleteAttribute" /> it emits (next to

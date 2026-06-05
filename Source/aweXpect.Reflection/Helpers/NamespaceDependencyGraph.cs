@@ -14,9 +14,10 @@ namespace aweXpect.Reflection.Helpers;
 ///     never create an edge, consistent with the namespace dependency assertions. Self-edges (<c>A → A</c>) are ignored,
 ///     so a single namespace referencing itself is not a cycle.
 ///     <para />
-///     By default a namespace and its sub-namespaces are treated as one family, so a reference between a node and its
-///     ancestor or descendant never creates an edge either (only references between unrelated namespaces do). Passing
-///     <c>excludeSubNamespaces</c> opts into strict per-namespace edges, so a namespace referencing one of its
+///     By default a namespace and its sub-namespaces collapse into a single node (a "family"), so references between
+///     them never create an edge — and, because they are one node rather than merely an unconnected pair, an indirect
+///     cycle that re-enters the family through a different sub-namespace is detected too. Passing
+///     <c>excludeSubNamespaces</c> opts into strict per-namespace nodes, so a namespace referencing one of its
 ///     sub-namespaces can then form a cycle.
 ///     <para />
 ///     Dependencies are read exclusively through <see cref="TypeHelpers.ResolveDependencies" />, so a configured custom
@@ -40,54 +41,108 @@ internal sealed class NamespaceDependencyGraph
 	///     Builds the graph for the <paramref name="types" />, grouping namespaces into slices below
 	///     <paramref name="sliceRoot" /> when it is not <see langword="null" /> (a namespace below the root collapses
 	///     to the root plus its next segment), and detects all dependency cycles. Unless
-	///     <paramref name="excludeSubNamespaces" /> is set, a node and its ancestor/descendant nodes are treated as one
-	///     family and references between them never create an edge.
+	///     <paramref name="excludeSubNamespaces" /> is set (or a slice root is given), a namespace and its
+	///     sub-namespaces collapse into one node, so references within that family never create an edge.
 	/// </summary>
 	public static NamespaceDependencyGraph Build(IEnumerable<Type?> types, string? sliceRoot, bool excludeSubNamespaces)
 	{
-		Dictionary<string, HashSet<string>> adjacency = new(StringComparer.Ordinal);
 		List<Type> nodes = [];
-
-		// First pass: every node that the analyzed types occupy (the only legal edge endpoints).
 		foreach (Type? type in types)
 		{
-			if (type is null)
+			if (type is not null)
 			{
-				continue;
+				nodes.Add(type);
 			}
+		}
 
-			nodes.Add(type);
-			string node = SliceKey(type.Namespace, sliceRoot);
+		Func<string?, string> nodeKey = CreateNodeKeySelector(nodes, sliceRoot, excludeSubNamespaces);
+		return new NamespaceDependencyGraph(DetectCycles(BuildAdjacency(nodes, nodeKey)));
+	}
+
+	/// <summary>
+	///     Builds the directed graph: every node the analyzed types occupy (the only legal edge endpoints), plus an
+	///     edge <c>from → to</c> for every resolved dependency that lands on another in-set node (self-edges and
+	///     dependencies outside the analyzed set are ignored).
+	/// </summary>
+	private static Dictionary<string, HashSet<string>> BuildAdjacency(
+		IReadOnlyList<Type> nodes, Func<string?, string> nodeKey)
+	{
+		Dictionary<string, HashSet<string>> adjacency = new(StringComparer.Ordinal);
+		foreach (Type type in nodes)
+		{
+			string node = nodeKey(type.Namespace);
 			if (!adjacency.ContainsKey(node))
 			{
 				adjacency[node] = new HashSet<string>(StringComparer.Ordinal);
 			}
 		}
 
-		// Second pass: edges between nodes (ignoring self-edges and dependencies outside the analyzed set).
 		foreach (Type type in nodes)
 		{
-			string from = SliceKey(type.Namespace, sliceRoot);
+			string from = nodeKey(type.Namespace);
 			foreach (Type dependency in type.ResolveDependencies())
 			{
-				string to = SliceKey(dependency.Namespace, sliceRoot);
-				if (string.Equals(from, to, StringComparison.Ordinal) || !adjacency.ContainsKey(to))
+				string to = nodeKey(dependency.Namespace);
+				if (!string.Equals(from, to, StringComparison.Ordinal) && adjacency.ContainsKey(to))
 				{
-					continue;
+					adjacency[from].Add(to);
 				}
-
-				// By default a namespace and its sub-namespaces are one family, so a reference between a node and its
-				// ancestor/descendant never forms an edge; excludeSubNamespaces opts into strict per-namespace edges.
-				if (!excludeSubNamespaces && AreInSameFamily(from, to))
-				{
-					continue;
-				}
-
-				adjacency[from].Add(to);
 			}
 		}
 
-		return new NamespaceDependencyGraph(DetectCycles(adjacency));
+		return adjacency;
+	}
+
+	/// <summary>
+	///     Builds the function that maps a type's namespace to its graph node. With a <paramref name="sliceRoot" />
+	///     the node is the slice; otherwise it is the namespace itself, except that — unless
+	///     <paramref name="excludeSubNamespaces" /> is set — a namespace is merged into the shortest namespace of the
+	///     analyzed set that is an ancestor of it, so a namespace and its sub-namespaces collapse into one node. The
+	///     merge (rather than a mere edge suppression) is what lets an indirect cycle that re-enters the family through
+	///     a different sub-namespace be detected.
+	/// </summary>
+	private static Func<string?, string> CreateNodeKeySelector(
+		IReadOnlyList<Type> nodes, string? sliceRoot, bool excludeSubNamespaces)
+	{
+		if (sliceRoot is not null || excludeSubNamespaces)
+		{
+			return @namespace => SliceKey(@namespace, sliceRoot);
+		}
+
+		Dictionary<string, string> family =
+			BuildFamilyMap(nodes.Select(node => SliceKey(node.Namespace, sliceRoot)));
+		return @namespace =>
+		{
+			string key = SliceKey(@namespace, sliceRoot);
+			return family.TryGetValue(key, out string? representative) ? representative : key;
+		};
+	}
+
+	/// <summary>
+	///     Maps every distinct namespace of the analyzed set to its family representative — the shortest namespace in
+	///     the set that is an ancestor of it (or itself when none is shorter) — so a namespace and its sub-namespaces
+	///     share one node. The global-namespace node is never in a family with a real namespace.
+	/// </summary>
+	private static Dictionary<string, string> BuildFamilyMap(IEnumerable<string> namespaces)
+	{
+		List<string> present = namespaces.Distinct(StringComparer.Ordinal).ToList();
+		Dictionary<string, string> map = new(StringComparer.Ordinal);
+		foreach (string key in present)
+		{
+			string representative = key;
+			foreach (string candidate in present)
+			{
+				if (candidate.Length < representative.Length &&
+				    TypeHelpers.NamespaceMatches(key, candidate, includeSubNamespaces: true))
+				{
+					representative = candidate;
+				}
+			}
+
+			map[key] = representative;
+		}
+
+		return map;
 	}
 
 	/// <summary>
@@ -112,14 +167,6 @@ internal sealed class NamespaceDependencyGraph
 		int nextDot = @namespace.IndexOf('.', segmentStart);
 		return nextDot < 0 ? @namespace : @namespace.Substring(0, nextDot);
 	}
-
-	/// <summary>
-	///     Checks whether the two nodes belong to the same namespace family, i.e. one is the other or a sub-namespace of
-	///     the other (the global-namespace node is never in a family with a real namespace).
-	/// </summary>
-	private static bool AreInSameFamily(string from, string to)
-		=> TypeHelpers.NamespaceMatches(from, to, includeSubNamespaces: true) ||
-		   TypeHelpers.NamespaceMatches(to, from, includeSubNamespaces: true);
 
 	/// <summary>
 	///     Returns the strongly-connected components with more than one node (the cycles), each rendered as a path
@@ -147,7 +194,7 @@ internal sealed class NamespaceDependencyGraph
 	///     Finds the shortest cycle through the ordinally smallest node of the strongly-connected
 	///     <paramref name="component" /> via a breadth-first search over the component-internal edges.
 	/// </summary>
-	private static IReadOnlyList<string> ExtractCyclePath(
+	private static List<string> ExtractCyclePath(
 		HashSet<string> component, Dictionary<string, HashSet<string>> adjacency)
 	{
 		string start = component.OrderBy(node => node, StringComparer.Ordinal).First();
@@ -215,13 +262,14 @@ internal sealed class NamespaceDependencyGraph
 
 		public List<HashSet<string>> StronglyConnectedComponents()
 		{
-			// The Where must stay after the (eagerly-buffering) OrderBy so its predicate is evaluated lazily per
-			// node: StrongConnect mutates _indices during the walk, so already-visited nodes must be skipped.
-			foreach (string node in adjacency.Keys
-				         .OrderBy(node => node, StringComparer.Ordinal)
-				         .Where(node => !_indices.ContainsKey(node)))
+			// StrongConnect mutates _indices during the walk, so the already-visited check is done inside the loop
+			// (evaluated per node) rather than as a Where over the ordered keys.
+			foreach (string node in adjacency.Keys.OrderBy(node => node, StringComparer.Ordinal))
 			{
-				StrongConnect(node);
+				if (!_indices.ContainsKey(node))
+				{
+					StrongConnect(node);
+				}
 			}
 
 			return _components;

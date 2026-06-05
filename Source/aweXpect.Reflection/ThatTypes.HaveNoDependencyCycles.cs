@@ -23,9 +23,11 @@ public static partial class ThatTypes
 	///     i.e. no set of namespaces (transitively) depends on each other.
 	/// </summary>
 	/// <remarks>
-	///     A namespace <c>A</c> depends on a namespace <c>B</c> when some type in <c>A</c> references (in its signature)
-	///     a type in <c>B</c>. Only namespaces present in the collection form nodes, so dependencies on framework or
-	///     otherwise out-of-set namespaces never create an edge; self-references are ignored.
+	///     A namespace <c>A</c> depends on a namespace <c>B</c> when some type in <c>A</c> references a type in <c>B</c>,
+	///     read through the same dependency resolver as the other dependency assertions (the signature-level default,
+	///     unless a custom resolver is configured). Only namespaces present in the collection form nodes, so
+	///     dependencies on framework or otherwise out-of-set namespaces never create an edge; self-references are
+	///     ignored.
 	///     <para />
 	///     A namespace and its sub-namespaces are treated as one family, so references within a family never create an
 	///     edge. Use <see cref="DependencyCyclesResult{TThat}.ExcludingSubNamespaces" /> to treat every namespace as its
@@ -49,10 +51,11 @@ public static partial class ThatTypes
 	///     <c>MyApp.Orders</c>.
 	/// </summary>
 	/// <remarks>
-	///     A slice <c>A</c> depends on a slice <c>B</c> when some type in <c>A</c> references (in its signature) a type
-	///     in <c>B</c>. Only slices present in the collection form nodes, so dependencies on framework or otherwise
-	///     out-of-set namespaces never create an edge; references within the same slice (or, by default, between a slice
-	///     and its ancestor/descendant slice) are ignored.
+	///     A slice <c>A</c> depends on a slice <c>B</c> when some type in <c>A</c> references a type in <c>B</c>, read
+	///     through the same dependency resolver as the other dependency assertions (the signature-level default, unless
+	///     a custom resolver is configured). Only slices present in the collection form nodes, so dependencies on
+	///     framework or otherwise out-of-set namespaces never create an edge; references within the same slice are
+	///     ignored.
 	/// </remarks>
 	public static DependencyCyclesResult<IEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IEnumerable<Type?>> subject, string sliceRoot)
@@ -105,8 +108,11 @@ public static partial class ThatTypes
 
 		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
 		{
-			Actual = actual;
-			return SetResult(actual);
+			// Materialize once: the source (e.g. In.Namespace(...)) may be lazy and re-scan assemblies on every
+			// enumeration, while both the cycle detection and the later result formatting read Actual.
+			List<Type?> materialized = [.. actual];
+			Actual = materialized;
+			return SetResult(materialized);
 		}
 
 #if NET8_0_OR_GREATER

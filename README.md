@@ -502,11 +502,13 @@ node is reported as a cycle, e.g. `MyApp.Orders -> MyApp.Billing -> MyApp.Orders
 the analyzed set form nodes, so dependencies on framework or otherwise out-of-set namespaces never create an
 edge, and a namespace referencing itself is not a cycle.
 
-By default a namespace and its sub-namespaces are treated as one family — consistent with how the other
-dependency assertions treat a type's own sub-namespaces — so a reference between a namespace and its
-ancestor/descendant (e.g. `MyApp.Orders` ↔ `MyApp.Orders.Domain`) never creates an edge and cannot form a cycle;
-only references between *unrelated* namespaces do. Use `ExcludingSubNamespaces()` to treat every namespace as its
-own node, so that such a parent/child reference becomes an edge (and can form a cycle):
+By default a namespace and its sub-namespaces collapse into a single node — a family — consistent with how the
+other dependency assertions treat a type's own sub-namespaces. So a reference between a namespace and its
+ancestor/descendant (e.g. `MyApp.Orders` ↔ `MyApp.Orders.Domain`) never creates an edge and cannot by itself form
+a cycle. But because the family is one node (not just a suppressed pair of edges), a cycle that leaves the family
+and returns through a *different* member of it (e.g. `MyApp.Orders -> MyApp.Billing -> MyApp.Orders.Domain`) is
+still detected. Use `ExcludingSubNamespaces()` to treat every namespace as its own node, so that such a
+parent/child reference becomes an edge (and can form a cycle):
 
 ```csharp
 // Treat every namespace as its own node (MyApp.Orders ↔ MyApp.Orders.Domain can now form a cycle)

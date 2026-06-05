@@ -161,6 +161,31 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Family.Inner
 	}
 }
 
+// An indirect family cycle: Parent (with a type directly in it) references Other, and Other references a type in the
+// sub-namespace Parent.Child. By default Parent and Parent.Child are one node, so this forms a Parent <-> Other cycle
+// that a mere edge-suppression (instead of node-merging) would miss; ExcludingSubNamespaces() splits the family again,
+// so the back-reference lands on a different node and no cycle remains.
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Indirect.Parent
+{
+	public class IndirectParentType
+	{
+		private Other.IndirectOtherType _other;
+	}
+}
+
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Indirect.Parent.Child
+{
+	public class IndirectChildType;
+}
+
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Indirect.Other
+{
+	public class IndirectOtherType
+	{
+		private Parent.Child.IndirectChildType _child;
+	}
+}
+
 #pragma warning disable CA1050 // Declare types in namespaces
 
 // This type intentionally lives in the global namespace to exercise global-namespace cycle rendering.

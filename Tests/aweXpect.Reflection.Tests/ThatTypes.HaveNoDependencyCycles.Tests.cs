@@ -20,6 +20,9 @@ using ThreeB = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Three.B
 using ThreeC = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Three.C;
 using TwoBilling = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Two.Billing;
 using TwoOrders = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Two.Orders;
+using IndirectOther = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Indirect.Other;
+using IndirectParent = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Indirect.Parent;
+using IndirectParentChild = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Indirect.Parent.Child;
 
 namespace aweXpect.Reflection.Tests;
 
@@ -376,6 +379,48 @@ public sealed partial class ThatTypes
 					              but it had a dependency cycle:
 					                {Prefix}.Family -> {Prefix}.Family.Inner -> {Prefix}.Family
 					              """);
+			}
+
+			[Fact]
+			public async Task WhenCycleReentersFamilyThroughSubNamespace_ShouldDetectItByDefault()
+			{
+				// Parent -> Other -> Parent.Child: because Parent and Parent.Child are one node by default, this is a
+				// Parent <-> Other cycle. A mere edge-suppression (that did not merge the nodes) would miss it.
+				IEnumerable<Type?> subject =
+				[
+					typeof(IndirectParent.IndirectParentType),
+					typeof(IndirectParentChild.IndirectChildType),
+					typeof(IndirectOther.IndirectOtherType),
+				];
+
+				async Task Act()
+					=> await That(subject).HaveNoDependencyCycles();
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              have no dependency cycles,
+					              but it had a dependency cycle:
+					                {Prefix}.Indirect.Other -> {Prefix}.Indirect.Parent -> {Prefix}.Indirect.Other
+					              """);
+			}
+
+			[Fact]
+			public async Task WhenExcludingSubNamespaces_TheReentryLandsOnAnotherNode_ShouldSucceed()
+			{
+				// With every namespace its own node, the back-reference lands on Parent.Child (not Parent), so the
+				// path Parent -> Other -> Parent.Child dead-ends and there is no cycle.
+				IEnumerable<Type?> subject =
+				[
+					typeof(IndirectParent.IndirectParentType),
+					typeof(IndirectParentChild.IndirectChildType),
+					typeof(IndirectOther.IndirectOtherType),
+				];
+
+				async Task Act()
+					=> await That(subject).HaveNoDependencyCycles().ExcludingSubNamespaces();
+
+				await That(Act).DoesNotThrow();
 			}
 		}
 	}

@@ -104,6 +104,16 @@ public class AssemblyHelpersTests
 
 		await That(result).IsFalse();
 	}
+
+	[Fact]
+	public async Task IsExcludedAssemblyName_WhenPrefixIsEmpty_ShouldBeIgnored()
+	{
+		// An empty prefix cannot identify an assembly; it must neither exclude everything
+		// (the old StartsWith behavior) nor be silently evaluated against the boundary check.
+		bool result = "AnyAssembly".IsExcludedAssemblyName(["",]);
+
+		await That(result).IsFalse();
+	}
 }
 
 #pragma warning restore CA2263 // Prefer generic overload when type is known

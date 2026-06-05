@@ -98,11 +98,15 @@ internal static class AssemblyHelpers
 	///     <para />
 	///     A prefix that already ends with the <c>.</c> separator (e.g. a customized <c>MyCompany.</c>) is
 	///     boundary-safe by construction and matches everything that starts with it.
+	///     <para />
+	///     An empty prefix is ignored: it cannot identify an assembly and would otherwise silently exclude
+	///     either everything or nothing.
 	/// </remarks>
 	public static bool IsExcludedAssemblyName(this string? assemblyName, string[] excludedPrefixes)
 		=> assemblyName is not null &&
 		   excludedPrefixes.Any(prefix
-			   => assemblyName.StartsWith(prefix, StringComparison.Ordinal) &&
+			   => prefix.Length > 0 &&
+			      assemblyName.StartsWith(prefix, StringComparison.Ordinal) &&
 			      (prefix.EndsWith(".", StringComparison.Ordinal) ||
 			       assemblyName.Length == prefix.Length ||
 			       assemblyName[prefix.Length] == '.'));

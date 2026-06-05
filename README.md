@@ -821,7 +821,7 @@ Both the assembly scanning and the dependency assertions (`DependsOnlyOn` / `Dep
 `WhichDependOnlyOn`, on both assemblies and types) use the same prefixes with the same matching: a prefix
 matches at a name-segment boundary, so `System` covers `System` and `System.Text.Json`, but not an assembly
 named `SystemsBiology`. A prefix written with a trailing dot (e.g. `MyCompany.`) is boundary-safe by
-construction and covers everything starting with it.
+construction and covers everything starting with it. Empty prefixes are ignored.
 
 Customize this via `Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes`. `Set(…)` replaces the
 list and returns a scope that restores the previous value when disposed:

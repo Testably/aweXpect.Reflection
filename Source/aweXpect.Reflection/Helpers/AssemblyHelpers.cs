@@ -91,13 +91,17 @@ internal static class AssemblyHelpers
 	/// <remarks>
 	///     The boundary check prevents unrelated assemblies from being swallowed by a framework prefix:
 	///     <c>System</c> matches <c>System</c> and <c>System.Text.Json</c>, but not <c>SystemsBiology.Core</c>.
+	///     <para />
+	///     A prefix that already ends with the <c>.</c> separator (e.g. a customized <c>MyCompany.</c>) is
+	///     boundary-safe by construction and matches everything that starts with it.
 	/// </remarks>
 	public static bool IsExcludedAssemblyName(this string? assemblyName, string[] excludedPrefixes)
 		=> assemblyName is not null &&
 		   excludedPrefixes.Any(prefix
-			   => assemblyName.Length >= prefix.Length &&
-			      (assemblyName.Length == prefix.Length || assemblyName[prefix.Length] == '.') &&
-			      assemblyName.StartsWith(prefix, StringComparison.Ordinal));
+			   => assemblyName.StartsWith(prefix, StringComparison.Ordinal) &&
+			      (prefix.EndsWith(".", StringComparison.Ordinal) ||
+			       assemblyName.Length == prefix.Length ||
+			       assemblyName[prefix.Length] == '.'));
 
 	/// <summary>
 	///     Checks if the <paramref name="assembly" /> is strong named.

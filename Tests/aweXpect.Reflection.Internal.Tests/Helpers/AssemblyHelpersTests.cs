@@ -76,6 +76,34 @@ public class AssemblyHelpersTests
 
 		await That(result).IsEqualTo("SomethingWithoutAVersion");
 	}
+
+	[Theory]
+	[InlineData("System", "System", true)]
+	[InlineData("System.Text.Json", "System", true)]
+	[InlineData("SystemsBiology.Core", "System", false)]
+	[InlineData("SystemsBiology", "System", false)]
+	// A customized prefix written with a trailing dot is boundary-safe by construction.
+	[InlineData("MyCompany.Domain", "MyCompany.", true)]
+	[InlineData("MyCompany.", "MyCompany.", true)]
+	[InlineData("MyCompany", "MyCompany.", false)]
+	[InlineData("MyCompanyOther", "MyCompany.", false)]
+	public async Task IsExcludedAssemblyName_ShouldMatchAtNameSegmentBoundary(
+		string assemblyName, string prefix, bool expected)
+	{
+		bool result = assemblyName.IsExcludedAssemblyName([prefix,]);
+
+		await That(result).IsEqualTo(expected);
+	}
+
+	[Fact]
+	public async Task IsExcludedAssemblyName_WhenAssemblyNameIsNull_ShouldReturnFalse()
+	{
+		string? assemblyName = null;
+
+		bool result = assemblyName.IsExcludedAssemblyName(["System",]);
+
+		await That(result).IsFalse();
+	}
 }
 
 #pragma warning restore CA2263 // Prefer generic overload when type is known

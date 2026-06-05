@@ -201,6 +201,22 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenArrayTargetIsUsed_ShouldMatchElementType()
+			{
+				// Dependencies are collected with array wrappers stripped, so an array target is
+				// unwrapped symmetrically: typeof(TargetA[]) matches like typeof(TargetA).
+				Type subject = typeof(WithArrayField);
+
+				async Task Act()
+				{
+					await That(subject).DependsOn(typeof(TargetA[]));
+					await That(subject).DependsOn(typeof(TargetA));
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenWidenedWithOrType_ShouldSucceed()
 			{
 				Type subject = typeof(ViaField);

@@ -164,6 +164,11 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 
 	public delegate TargetA TargetProviderDelegate(Layer2.TargetB input);
 
+	public class WithArrayField
+	{
+		private TargetA[] _targets;
+	}
+
 	public class WithAsyncMethod
 	{
 		public async void MethodAsync() => await Task.CompletedTask;

@@ -742,9 +742,16 @@ internal static class TypeHelpers
 	/// <remarks>
 	///     A constructed generic target (e.g. <c>List&lt;Foo&gt;</c>) only matches that exact construction,
 	///     while a generic type definition target (<c>List&lt;&gt;</c>) matches any construction of it.
+	///     Array/by-ref/pointer wrappers are stripped from dependencies at collection time, so the target is
+	///     unwrapped symmetrically: <c>typeof(Foo[])</c> matches like <c>typeof(Foo)</c>.
 	/// </remarks>
 	internal static bool MatchesType(Type dependency, Type target)
 	{
+		while (target.HasElementType && target.GetElementType() is { } elementType)
+		{
+			target = elementType;
+		}
+
 		if (dependency == target)
 		{
 			return true;

@@ -165,6 +165,24 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenArrayTargetIsUsed_ShouldMatchElementType()
+			{
+				// The array wrapper is unwrapped on both sides: WithArrayField references TargetA[],
+				// so it depends on typeof(TargetA[]) just like on typeof(TargetA).
+				Type subject = typeof(WithArrayField);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn(typeof(TargetA[]));
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             does not depend on type TargetA[],
+					             but it depended on [TargetA]
+					             """);
+			}
+
+			[Fact]
 			public async Task WhenNamingFrameworkNamespaceThatIsReferenced_ShouldFail()
 			{
 				Type subject = typeof(FrameworkConsumer);

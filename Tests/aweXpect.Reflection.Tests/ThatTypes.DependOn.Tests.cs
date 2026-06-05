@@ -41,8 +41,13 @@ public sealed partial class ThatTypes
 					=> await That(subject).DependOn(Layer1Namespace);
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("*all depend on*but it contained types without the dependency*FrameworkConsumer*")
-					.AsWildcard();
+					.WithMessage($"""
+					              Expected that subject
+					              all depend on namespace "{Layer1Namespace}",
+					              but it contained types without the dependency [
+					                FrameworkConsumer
+					              ]
+					              """);
 			}
 
 			[Fact]

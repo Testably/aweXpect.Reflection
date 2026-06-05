@@ -42,11 +42,15 @@ public sealed partial class ThatType
 				async Task Act()
 					=> await That(subject).DependsOn(Layer2Namespace);
 
+				// The full dependency-namespace list also contains framework namespaces (System via the implicit
+				// object base type and System.Runtime.CompilerServices via the compiler-emitted nullable attributes
+				// on .NET, but not on .NET Framework where they are compiler-generated and excluded), so only the
+				// bracketed list itself is wildcarded.
 				await That(Act).Throws<XunitException>()
 					.WithMessage($"""
 					              Expected that subject
 					              depends on namespace "{Layer2Namespace}",
-					              but it depended on *
+					              but it depended on [*]
 					              """).AsWildcard();
 			}
 
@@ -117,6 +121,17 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTypeReferencesTypeOnlyViaAttributeArgument_ShouldSucceed()
+			{
+				Type subject = typeof(ViaAttributeArgument);
+
+				async Task Act()
+					=> await That(subject).DependsOn<TargetB>();
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeDoesNotReferenceSpecificType_ShouldFail()
 			{
 				Type subject = typeof(ViaField);
@@ -125,7 +140,11 @@ public sealed partial class ThatType
 					=> await That(subject).DependsOn<TargetB>();
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("*depends on type TargetB*").AsWildcard();
+					.WithMessage("""
+					             Expected that subject
+					             depends on type TargetB,
+					             but it did not
+					             """);
 			}
 
 			[Fact]
@@ -148,7 +167,11 @@ public sealed partial class ThatType
 					=> await That(subject).DependsOn(Layer1Namespace);
 
 				await That(Act).ThrowsException()
-					.WithMessage("*but it was <null>*").AsWildcard();
+					.WithMessage($"""
+					              Expected that subject
+					              depends on namespace "{Layer1Namespace}",
+					              but it was <null>
+					              """);
 			}
 		}
 
@@ -163,7 +186,11 @@ public sealed partial class ThatType
 					=> await That(subject).DoesNotComplyWith(it => it.DependsOn(Layer1Namespace));
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage($"*does not depend on namespace \"{Layer1Namespace}\"*").AsWildcard();
+					.WithMessage($"""
+					              Expected that subject
+					              does not depend on namespace "{Layer1Namespace}",
+					              but it depended on ["{Layer1Namespace}"]
+					              """);
 			}
 		}
 	}

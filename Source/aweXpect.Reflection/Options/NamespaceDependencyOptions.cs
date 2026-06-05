@@ -20,6 +20,18 @@ internal sealed class NamespaceDependencyOptions
 	public NamespaceDependencyOptions(IEnumerable<string> namespaces)
 		=> _namespaces.AddRange(namespaces);
 
+	private NamespaceDependencyOptions(IEnumerable<string> namespaces, bool excludeSubNamespaces)
+	{
+		_namespaces.AddRange(namespaces);
+		_excludeSubNamespaces = excludeSubNamespaces;
+	}
+
+	/// <summary>
+	///     Creates an independent copy, so that refining a (reusable) filter does not mutate the shared instance.
+	/// </summary>
+	public NamespaceDependencyOptions Copy()
+		=> new(_namespaces, _excludeSubNamespaces);
+
 	/// <summary>
 	///     The namespaces that are targeted (for depends-on / does-not-depend-on) or allowed (for depends-only-on).
 	/// </summary>

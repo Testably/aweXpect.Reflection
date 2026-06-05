@@ -42,8 +42,13 @@ public sealed partial class ThatTypes
 					=> await That(subject).DependOnlyOn(Layer1Namespace);
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage($"*contained types with disallowed dependencies*Layer1AndLayer2 depends on*{Layer2Namespace}*")
-					.AsWildcard();
+					.WithMessage($"""
+					              Expected that subject
+					              all depend only on namespace "{Layer1Namespace}",
+					              but it contained types with disallowed dependencies [
+					                Layer1AndLayer2 depends on ["{Layer2Namespace}"]
+					              ]
+					              """);
 			}
 
 			[Fact]

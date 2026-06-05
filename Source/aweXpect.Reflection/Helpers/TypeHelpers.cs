@@ -816,6 +816,7 @@ internal static class TypeHelpers
 			}
 		}
 
+		violations.Sort(StringComparer.Ordinal);
 		return violations;
 	}
 
@@ -850,115 +851,154 @@ internal static class TypeHelpers
 	/// </remarks>
 	internal static IEnumerable<Type> GetSignatureDependencies(this Type type)
 	{
-		HashSet<Type> dependencies = [];
+		SignatureDependencyCollector collector = new();
+		collector.Add(type.BaseType);
+		collector.AddAll(Safe(type.GetInterfaces));
+		collector.AddGenericArguments(Safe(type.GetGenericArguments));
+		collector.AddAttributes(type);
+		collector.AddFields(type);
+		collector.AddProperties(type);
+		collector.AddEvents(type);
+		collector.AddMethods(type);
+		collector.AddConstructors(type);
+		return collector.Build(type);
+	}
 
-		void Add(Type? candidate)
+	/// <summary>
+	///     Accumulates the (unwrapped, de-duplicated) signature dependencies of a type, one member kind at a time.
+	/// </summary>
+	/// <remarks>
+	///     Extracted from <see cref="GetSignatureDependencies" /> so that each member kind is collected in its own
+	///     small method instead of one large one.
+	/// </remarks>
+	private sealed class SignatureDependencyCollector
+	{
+		private const BindingFlags Flags = BindingFlags.Public |
+		                                    BindingFlags.NonPublic |
+		                                    BindingFlags.Instance |
+		                                    BindingFlags.Static |
+		                                    BindingFlags.DeclaredOnly;
+
+		private readonly HashSet<Type> _dependencies = [];
+
+		public void Add(Type? candidate)
 		{
 			foreach (Type unwrapped in Unwrap(candidate))
 			{
-				dependencies.Add(unwrapped);
+				_dependencies.Add(unwrapped);
 			}
 		}
 
-		void AddGenericArgument(Type argument)
+		public void AddAll(IEnumerable<Type> candidates)
 		{
-			if (argument.IsGenericParameter)
+			foreach (Type candidate in candidates)
 			{
-				foreach (Type constraint in Safe(argument.GetGenericParameterConstraints))
+				Add(candidate);
+			}
+		}
+
+		public void AddGenericArguments(IEnumerable<Type> arguments)
+		{
+			foreach (Type argument in arguments)
+			{
+				if (argument.IsGenericParameter)
 				{
-					Add(constraint);
+					AddAll(Safe(argument.GetGenericParameterConstraints));
 				}
-			}
-			else
-			{
-				Add(argument);
-			}
-		}
-
-		void AddAttributes(MemberInfo member)
-		{
-			foreach (CustomAttributeData attribute in SafeAttributes(member))
-			{
-				// Compiler-generated/embedded attributes (e.g. the Nullable* attributes the compiler emits into the
-				// consuming assembly on frameworks that do not ship them) are not real dependencies.
-				if (!attribute.AttributeType.IsCompilerGenerated())
+				else
 				{
-					Add(attribute.AttributeType);
+					Add(argument);
 				}
 			}
 		}
 
-		const BindingFlags flags = BindingFlags.Public |
-		                           BindingFlags.NonPublic |
-		                           BindingFlags.Instance |
-		                           BindingFlags.Static |
-		                           BindingFlags.DeclaredOnly;
-
-		Add(type.BaseType);
-		foreach (Type @interface in Safe(type.GetInterfaces))
+		public void AddAttributes(MemberInfo member)
 		{
-			Add(@interface);
-		}
-
-		foreach (Type argument in Safe(type.GetGenericArguments))
-		{
-			AddGenericArgument(argument);
-		}
-
-		AddAttributes(type);
-
-		foreach (FieldInfo field in Safe(() => type.GetFields(flags)).Where(m => !m.IsCompilerGenerated()))
-		{
-			Add(field.FieldType);
-			AddAttributes(field);
-		}
-
-		foreach (PropertyInfo property in Safe(() => type.GetProperties(flags)).Where(m => !m.IsCompilerGenerated()))
-		{
-			Add(property.PropertyType);
-			foreach (ParameterInfo parameter in Safe(property.GetIndexParameters))
+			// Compiler-generated/embedded attributes (e.g. the Nullable* attributes the compiler emits into the
+			// consuming assembly on frameworks that do not ship them) are not real dependencies.
+			foreach (CustomAttributeData attribute in SafeAttributes(member)
+				         .Where(data => !data.AttributeType.IsCompilerGenerated()))
 			{
-				Add(parameter.ParameterType);
-			}
+				Add(attribute.AttributeType);
 
-			AddAttributes(property);
+				// A typeof(...) used as a constructor or named argument is a real signature dependency
+				// (e.g. [JsonConverter(typeof(FooConverter))] depends on FooConverter).
+				foreach (CustomAttributeTypedArgument argument in SafeAttributeArguments(attribute))
+				{
+					AddAttributeArgument(argument);
+				}
+			}
 		}
 
-		foreach (EventInfo @event in Safe(() => type.GetEvents(flags)).Where(m => !m.IsCompilerGenerated()))
+		public void AddFields(Type type)
 		{
-			Add(@event.EventHandlerType);
-			AddAttributes(@event);
+			foreach (FieldInfo field in Safe(() => type.GetFields(Flags)).Where(m => !m.IsCompilerGenerated()))
+			{
+				Add(field.FieldType);
+				AddAttributes(field);
+			}
 		}
 
-		foreach (MethodInfo method in Safe(() => type.GetMethods(flags)).Where(m => !m.IsCompilerGenerated()))
+		public void AddProperties(Type type)
 		{
-			Add(method.ReturnType);
-			foreach (ParameterInfo parameter in Safe(method.GetParameters))
+			foreach (PropertyInfo property in Safe(() => type.GetProperties(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
-				Add(parameter.ParameterType);
+				Add(property.PropertyType);
+				AddAll(Safe(property.GetIndexParameters).Select(parameter => parameter.ParameterType));
+				AddAttributes(property);
 			}
-
-			foreach (Type argument in Safe(method.GetGenericArguments))
-			{
-				AddGenericArgument(argument);
-			}
-
-			AddAttributes(method);
 		}
 
-		foreach (ConstructorInfo constructor in Safe(() => type.GetConstructors(flags))
-			         .Where(m => !m.IsCompilerGenerated()))
+		public void AddEvents(Type type)
 		{
-			foreach (ParameterInfo parameter in Safe(constructor.GetParameters))
+			foreach (EventInfo @event in Safe(() => type.GetEvents(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
-				Add(parameter.ParameterType);
+				Add(@event.EventHandlerType);
+				AddAttributes(@event);
 			}
-
-			AddAttributes(constructor);
 		}
 
-		dependencies.Remove(type);
-		return dependencies;
+		public void AddMethods(Type type)
+		{
+			foreach (MethodInfo method in Safe(() => type.GetMethods(Flags)).Where(m => !m.IsCompilerGenerated()))
+			{
+				Add(method.ReturnType);
+				AddAll(Safe(method.GetParameters).Select(parameter => parameter.ParameterType));
+				AddGenericArguments(Safe(method.GetGenericArguments));
+				AddAttributes(method);
+			}
+		}
+
+		public void AddConstructors(Type type)
+		{
+			foreach (ConstructorInfo constructor in Safe(() => type.GetConstructors(Flags))
+				         .Where(m => !m.IsCompilerGenerated()))
+			{
+				AddAll(Safe(constructor.GetParameters).Select(parameter => parameter.ParameterType));
+				AddAttributes(constructor);
+			}
+		}
+
+		public IEnumerable<Type> Build(Type type)
+		{
+			_dependencies.Remove(type);
+			return _dependencies;
+		}
+
+		private void AddAttributeArgument(CustomAttributeTypedArgument argument)
+		{
+			if (argument.Value is Type typeArgument)
+			{
+				Add(typeArgument);
+			}
+			else if (argument.Value is IReadOnlyList<CustomAttributeTypedArgument> arrayArgument)
+			{
+				foreach (CustomAttributeTypedArgument element in arrayArgument)
+				{
+					AddAttributeArgument(element);
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -1024,6 +1064,28 @@ internal static class TypeHelpers
 		try
 		{
 			return member.GetCustomAttributesData();
+		}
+		catch (Exception exception) when (exception
+			                                  is TypeLoadException
+			                                  or FileNotFoundException
+			                                  or FileLoadException
+			                                  or BadImageFormatException)
+		{
+			return [];
+		}
+	}
+
+	private static IEnumerable<CustomAttributeTypedArgument> SafeAttributeArguments(CustomAttributeData attribute)
+	{
+		try
+		{
+			List<CustomAttributeTypedArgument> arguments = [..attribute.ConstructorArguments,];
+			foreach (CustomAttributeNamedArgument namedArgument in attribute.NamedArguments)
+			{
+				arguments.Add(namedArgument.TypedValue);
+			}
+
+			return arguments;
 		}
 		catch (Exception exception) when (exception
 			                                  is TypeLoadException

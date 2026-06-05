@@ -41,8 +41,13 @@ public sealed partial class ThatTypes
 					=> await That(subject).DoNotDependOn(Layer2Namespace);
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("*all do not depend on*but it contained types with the dependency*Layer1AndLayer2*")
-					.AsWildcard();
+					.WithMessage($"""
+					              Expected that subject
+					              all do not depend on namespace "{Layer2Namespace}",
+					              but it contained types with the dependency [
+					                Layer1AndLayer2
+					              ]
+					              """);
 			}
 		}
 	}

@@ -35,8 +35,8 @@ public sealed partial class ThatType
 					.WithMessage($"""
 					              Expected that subject
 					              depends only on namespace "{Layer1Namespace}",
-					              but it also depended on *{Layer2Namespace}*
-					              """).AsWildcard();
+					              but it also depended on ["{Layer2Namespace}"]
+					              """);
 			}
 
 			[Fact]
@@ -92,7 +92,11 @@ public sealed partial class ThatType
 					=> await That(subject).DependsOnlyOn(Layer1Namespace);
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("*<global namespace>*").AsWildcard();
+					.WithMessage($"""
+					              Expected that subject
+					              depends only on namespace "{Layer1Namespace}",
+					              but it also depended on ["<global namespace>"]
+					              """);
 			}
 
 			[Fact]

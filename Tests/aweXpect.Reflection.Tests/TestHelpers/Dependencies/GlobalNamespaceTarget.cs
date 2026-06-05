@@ -2,6 +2,8 @@
 
 #pragma warning disable CS0169 // field is never used
 #pragma warning disable CS8618 // non-nullable field must contain a non-null value
+// This type intentionally lives in the global namespace to exercise global-namespace dependency assertions.
+#pragma warning disable CA1050 // Declare types in namespaces
 
 using System;
 

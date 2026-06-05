@@ -109,11 +109,13 @@ public static partial class ThatType
 			_dependencyNamespaces = dependencies
 				.Select(dependency => dependency.Namespace ?? "<global namespace>")
 				.Distinct(StringComparer.Ordinal)
+				.OrderBy(@namespace => @namespace, StringComparer.Ordinal)
 				.ToArray();
 			_matchingNamespaces = dependencies
 				.Where(dependency => options.Matches(dependency.Namespace))
 				.Select(dependency => dependency.Namespace ?? "<global namespace>")
 				.Distinct(StringComparer.Ordinal)
+				.OrderBy(@namespace => @namespace, StringComparer.Ordinal)
 				.ToArray();
 			Outcome = _matchingNamespaces.Length > 0 ? Outcome.Success : Outcome.Failure;
 			return this;
@@ -159,6 +161,7 @@ public static partial class ThatType
 			_matchingTypes = actual.ResolveDependencies()
 				.Where(options.Matches)
 				.Distinct()
+				.OrderBy(type => type.FullName ?? type.Name, StringComparer.Ordinal)
 				.ToArray();
 			Outcome = _matchingTypes.Length > 0 ? Outcome.Success : Outcome.Failure;
 			return this;

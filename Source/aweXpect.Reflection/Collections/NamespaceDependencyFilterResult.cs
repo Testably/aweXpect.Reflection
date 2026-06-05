@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using aweXpect.Reflection.Options;
 
@@ -7,13 +8,24 @@ namespace aweXpect.Reflection.Collections;
 ///     A filtered collection of <see cref="System.Type" /> from a namespace-based dependency filter, allowing to
 ///     widen the targeted/allowed namespaces and to opt out of sub-namespace matching.
 /// </summary>
+/// <remarks>
+///     Like all filtered collections, this is an immutable value object: <see cref="Or" /> and
+///     <see cref="ExcludingSubNamespaces" /> do not mutate this instance but rebuild a fresh filter from the original
+///     base collection, so deriving multiple views from the same instance cannot corrupt each other.
+/// </remarks>
 public sealed class NamespaceDependencyFilterResult : Filtered.Types
 {
+	private readonly Func<NamespaceDependencyOptions, Filtered.Types> _build;
 	private readonly NamespaceDependencyOptions _options;
 
-	internal NamespaceDependencyFilterResult(Filtered.Types inner, NamespaceDependencyOptions options)
-		: base(inner)
-		=> _options = options;
+	internal NamespaceDependencyFilterResult(
+		NamespaceDependencyOptions options,
+		Func<NamespaceDependencyOptions, Filtered.Types> build)
+		: base(build(options))
+	{
+		_options = options;
+		_build = build;
+	}
 
 	/// <summary>
 	///     Widens the filter by the given <paramref name="namespaces" /> (including sub-namespaces unless
@@ -21,8 +33,9 @@ public sealed class NamespaceDependencyFilterResult : Filtered.Types
 	/// </summary>
 	public NamespaceDependencyFilterResult Or(params IEnumerable<string> namespaces)
 	{
-		_options.Or(namespaces);
-		return this;
+		NamespaceDependencyOptions widened = _options.Copy();
+		widened.Or(namespaces);
+		return new NamespaceDependencyFilterResult(widened, _build);
 	}
 
 	/// <summary>
@@ -35,7 +48,8 @@ public sealed class NamespaceDependencyFilterResult : Filtered.Types
 	/// </remarks>
 	public NamespaceDependencyFilterResult ExcludingSubNamespaces(bool exclude = true)
 	{
-		_options.ExcludingSubNamespaces(exclude);
-		return this;
+		NamespaceDependencyOptions refined = _options.Copy();
+		refined.ExcludingSubNamespaces(exclude);
+		return new NamespaceDependencyFilterResult(refined, _build);
 	}
 }

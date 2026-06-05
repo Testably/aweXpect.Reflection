@@ -15,13 +15,10 @@ public static partial class TypeFilters
 	/// </summary>
 	public static NamespaceDependencyFilterResult WhichDependOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
-	{
-		NamespaceDependencyOptions options = new(namespaces);
-		return new NamespaceDependencyFilterResult(@this.Which(Filter.Suffix<Type>(
+		=> new(new NamespaceDependencyOptions(namespaces),
+			options => @this.Which(Filter.Suffix<Type>(
 				type => type.ResolveDependencies().Any(dependency => options.Matches(dependency.Namespace)),
-				() => $"which depend on {options.Describe()} ")),
-			options);
-	}
+				() => $"which depend on {options.Describe()} ")));
 
 	/// <summary>
 	///     Filter for types which do not depend on (do not reference in their signature) any type in one of the
@@ -29,11 +26,8 @@ public static partial class TypeFilters
 	/// </summary>
 	public static NamespaceDependencyFilterResult WhichDoNotDependOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
-	{
-		NamespaceDependencyOptions options = new(namespaces);
-		return new NamespaceDependencyFilterResult(@this.Which(Filter.Suffix<Type>(
+		=> new(new NamespaceDependencyOptions(namespaces),
+			options => @this.Which(Filter.Suffix<Type>(
 				type => !type.ResolveDependencies().Any(dependency => options.Matches(dependency.Namespace)),
-				() => $"which do not depend on {options.Describe()} ")),
-			options);
-	}
+				() => $"which do not depend on {options.Describe()} ")));
 }

@@ -15,7 +15,14 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1
 
 	public interface ITargetInterface;
 
+	[AttributeUsage(AttributeTargets.All)]
 	public sealed class TargetAttribute : Attribute;
+
+	[AttributeUsage(AttributeTargets.All)]
+	public sealed class TargetTypeAttribute(Type type) : Attribute
+	{
+		public Type Type { get; } = type;
+	}
 
 	public delegate void TargetEventHandler();
 
@@ -63,14 +70,14 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers
 
 	public class ViaMethodParameter
 	{
-		public void Method(TargetA target)
+		public static void Method(TargetA target)
 		{
 		}
 	}
 
 	public class ViaMethodReturn
 	{
-		public TargetA Method() => null!;
+		public static TargetA Method() => null!;
 	}
 
 	public class ViaGenericArgument
@@ -80,6 +87,11 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers
 
 	[Target]
 	public class ViaAttribute;
+
+	// Layer2's TargetB is referenced ONLY through the attribute's typeof(...) argument; the attribute type
+	// TargetTypeAttribute itself lives in Layer1.
+	[TargetType(typeof(TargetB))]
+	public class ViaAttributeArgument;
 
 	public class ViaGenericConstraint<T>
 		where T : TargetA;
@@ -92,6 +104,11 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers
 	public class OnlyLayer1
 	{
 		private TargetA _target;
+	}
+
+	public class OnlyLayer2
+	{
+		private TargetB _target;
 	}
 
 	public class Layer1AndLayer2

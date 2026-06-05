@@ -20,11 +20,8 @@ public static partial class TypeFilters
 	/// </remarks>
 	public static NamespaceDependencyFilterResult WhichDependOnlyOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
-	{
-		NamespaceDependencyOptions options = new(namespaces);
-		return new NamespaceDependencyFilterResult(@this.Which(Filter.Suffix<Type>(
+		=> new(new NamespaceDependencyOptions(namespaces),
+			options => @this.Which(Filter.Suffix<Type>(
 				type => type.GetDependencyNamespaceViolations(options).Count == 0,
-				() => $"which depend only on {options.Describe()} ")),
-			options);
-	}
+				() => $"which depend only on {options.Describe()} ")));
 }

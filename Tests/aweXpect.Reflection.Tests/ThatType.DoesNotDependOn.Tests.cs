@@ -37,8 +37,8 @@ public sealed partial class ThatType
 					.WithMessage($"""
 					              Expected that subject
 					              does not depend on namespace "{Layer1Namespace}",
-					              but it depended on *
-					              """).AsWildcard();
+					              but it depended on ["{Layer1Namespace}"]
+					              """);
 			}
 
 			[Fact]
@@ -49,7 +49,12 @@ public sealed partial class ThatType
 				async Task Act()
 					=> await That(subject).DoesNotDependOn("System.Collections.Generic");
 
-				await That(Act).Throws<XunitException>();
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             does not depend on namespace "System.Collections.Generic",
+					             but it depended on ["System.Collections.Generic"]
+					             """);
 			}
 
 			[Fact]
@@ -72,7 +77,11 @@ public sealed partial class ThatType
 					=> await That(subject).DoesNotDependOn<TargetA>();
 
 				await That(Act).Throws<XunitException>()
-					.WithMessage("*does not depend on type TargetA*").AsWildcard();
+					.WithMessage("""
+					             Expected that subject
+					             does not depend on type TargetA,
+					             but it depended on [TargetA]
+					             """);
 			}
 
 			[Fact]
@@ -83,7 +92,12 @@ public sealed partial class ThatType
 				async Task Act()
 					=> await That(subject).DoesNotDependOn(Layer2Namespace).Or(Layer1Namespace);
 
-				await That(Act).Throws<XunitException>();
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              does not depend on namespace "{Layer2Namespace}" or "{Layer1Namespace}",
+					              but it depended on ["{Layer1Namespace}", "{Layer2Namespace}"]
+					              """);
 			}
 		}
 

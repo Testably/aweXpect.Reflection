@@ -33,10 +33,10 @@ public sealed partial class TypeFilters
 			}
 
 			[Fact]
-			public async Task WhenWidenedWithOr_ShouldMatchEither()
+			public async Task WhenWidenedWithOrOn_ShouldMatchEither()
 			{
 				Filtered.Types types = In.Namespace(ConsumersNamespace)
-					.WhichDependOn("Non.Existent.Namespace").Or(Layer1Namespace);
+					.WhichDependOn("Non.Existent.Namespace").OrOn(Layer1Namespace);
 
 				await That(types).Contains(typeof(ViaField));
 			}

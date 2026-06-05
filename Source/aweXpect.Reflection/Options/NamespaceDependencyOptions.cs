@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using aweXpect.Core;
@@ -11,12 +11,13 @@ namespace aweXpect.Reflection.Options;
 /// </summary>
 /// <remarks>
 ///     The instance is shared between the chainable result and the underlying constraint/filter, so that
-///     <c>Or(…)</c> and <c>ExcludingSubNamespaces(…)</c> widen or refine the (lazily evaluated) expression.
+///     <c>OrOn(…)</c> and <c>ExcludingSubNamespaces(…)</c> widen or refine the (lazily evaluated) expression.
 /// </remarks>
 internal sealed class NamespaceDependencyOptions
 {
 	private readonly List<string> _namespaces = [];
-	private SubNamespaceExclusion _subNamespaceExclusion = SubNamespaceExclusion.None;
+	private bool _excludeOwnSubNamespaces;
+	private bool _excludeSubNamespaces;
 
 	public NamespaceDependencyOptions(IEnumerable<string> namespaces)
 	{
@@ -27,17 +28,19 @@ internal sealed class NamespaceDependencyOptions
 		}
 	}
 
-	private NamespaceDependencyOptions(IEnumerable<string> namespaces, SubNamespaceExclusion subNamespaceExclusion)
+	private NamespaceDependencyOptions(IEnumerable<string> namespaces, bool excludeSubNamespaces,
+		bool excludeOwnSubNamespaces)
 	{
 		_namespaces.AddRange(namespaces);
-		_subNamespaceExclusion = subNamespaceExclusion;
+		_excludeSubNamespaces = excludeSubNamespaces;
+		_excludeOwnSubNamespaces = excludeOwnSubNamespaces;
 	}
 
 	/// <summary>
 	///     Creates an independent copy, so that refining a (reusable) filter does not mutate the shared instance.
 	/// </summary>
 	public NamespaceDependencyOptions Copy()
-		=> new(_namespaces, _subNamespaceExclusion);
+		=> new(_namespaces, _excludeSubNamespaces, _excludeOwnSubNamespaces);
 
 	/// <summary>
 	///     The namespaces that are targeted (for depends-on / does-not-depend-on) or allowed (for depends-only-on).
@@ -47,21 +50,21 @@ internal sealed class NamespaceDependencyOptions
 	/// <summary>
 	///     Indicates whether sub-namespaces are excluded from matching.
 	/// </summary>
-	public bool ExcludeSubNamespaces => _subNamespaceExclusion != SubNamespaceExclusion.None;
+	public bool ExcludeSubNamespaces => _excludeSubNamespaces;
 
 	/// <summary>
 	///     Indicates whether sub-namespaces of the type's own namespace are still allowed (for depends-only-on).
 	/// </summary>
 	/// <remarks>
 	///     The type's own namespace is always allowed; its sub-namespaces stay allowed unless the caller opted into
-	///     <see cref="SubNamespaceExclusion.IncludingOwnNamespace" />.
+	///     <see cref="ExcludingOwnSubNamespaces" />.
 	/// </remarks>
-	public bool IncludeOwnSubNamespaces => _subNamespaceExclusion != SubNamespaceExclusion.IncludingOwnNamespace;
+	public bool IncludeOwnSubNamespaces => !_excludeOwnSubNamespaces;
 
 	/// <summary>
 	///     Widens the set of targeted/allowed namespaces by the given <paramref name="namespaces" />.
 	/// </summary>
-	public void Or(IEnumerable<string> namespaces)
+	public void OrOn(IEnumerable<string> namespaces)
 	{
 		int countBefore = _namespaces.Count;
 		_namespaces.AddRange(namespaces);
@@ -72,10 +75,16 @@ internal sealed class NamespaceDependencyOptions
 	}
 
 	/// <summary>
-	///     Sets how sub-namespaces are excluded for the whole expression.
+	///     Excludes sub-namespaces of the targeted/allowed namespaces from matching for the whole expression.
 	/// </summary>
-	public void ExcludingSubNamespaces(SubNamespaceExclusion subNamespaceExclusion)
-		=> _subNamespaceExclusion = subNamespaceExclusion;
+	public void ExcludingSubNamespaces()
+		=> _excludeSubNamespaces = true;
+
+	/// <summary>
+	///     Excludes sub-namespaces of the type's own namespace from being implicitly allowed (for depends-only-on).
+	/// </summary>
+	public void ExcludingOwnSubNamespaces()
+		=> _excludeOwnSubNamespaces = true;
 
 	/// <summary>
 	///     Checks whether the <paramref name="dependencyNamespace" /> matches any of the configured namespaces.

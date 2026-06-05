@@ -10,6 +10,8 @@ public sealed partial class ThatType
 		private const string Layer1Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1";
 		private const string Layer2Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2";
 
+		private const string ConsumersNamespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers";
+
 		private const string OwnSubNamespace =
 			"aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers.OwnSub";
 
@@ -54,12 +56,12 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
-			public async Task WhenWidenedWithOr_ShouldSucceed()
+			public async Task WhenWidenedWithOrOn_ShouldSucceed()
 			{
 				Type subject = typeof(Layer1AndLayer2);
 
 				async Task Act()
-					=> await That(subject).DependsOnlyOn(Layer1Namespace).Or(Layer2Namespace);
+					=> await That(subject).DependsOnlyOn(Layer1Namespace).OrOn(Layer2Namespace);
 
 				await That(Act).DoesNotThrow();
 			}
@@ -101,13 +103,13 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
-			public async Task WhenExcludingSubNamespacesIncludingOwnNamespace_OwnSubNamespaceBecomesViolation()
+			public async Task WhenExcludingOwnSubNamespaces_OwnSubNamespaceBecomesViolation()
 			{
 				Type subject = typeof(ReferencesOwnSubNamespace);
 
 				async Task Act()
 					=> await That(subject).DependsOnlyOn(Layer1Namespace)
-						.ExcludingSubNamespaces(SubNamespaceExclusion.IncludingOwnNamespace);
+						.ExcludingSubNamespaces().ExcludingOwnSubNamespaces();
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage($"""
@@ -115,6 +117,19 @@ public sealed partial class ThatType
 					              depends only on namespace "{Layer1Namespace}",
 					              but it also depended on ["{OwnSubNamespace}"]
 					              """);
+			}
+
+			[Fact]
+			public async Task WhenOnlyExcludingOwnSubNamespaces_AllowedSubNamespacesStayIncluded()
+			{
+				// The two toggles are independent: the own sub-namespace is no longer implicitly allowed, but
+				// the allowed namespaces still include their sub-namespaces, which covers it explicitly.
+				Type subject = typeof(ReferencesOwnSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(ConsumersNamespace).ExcludingOwnSubNamespaces();
+
+				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]

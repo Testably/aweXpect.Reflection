@@ -23,18 +23,18 @@ public sealed class TypeDependencyResult<TThat>
 	/// <summary>
 	///     Widens the expression by the type <typeparamref name="T" />.
 	/// </summary>
-	public new TypeDependencyResult<TThat> Or<T>()
+	public TypeDependencyResult<TThat> OrOn<T>()
 	{
-		_options.Or(typeof(T));
+		_options.OrOn(typeof(T));
 		return this;
 	}
 
 	/// <summary>
 	///     Widens the expression by the <paramref name="type" />.
 	/// </summary>
-	public new TypeDependencyResult<TThat> Or(Type type)
+	public TypeDependencyResult<TThat> OrOn(Type type)
 	{
-		_options.Or(type);
+		_options.OrOn(type);
 		return this;
 	}
 }

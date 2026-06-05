@@ -32,11 +32,11 @@ public static partial class ThatTypes
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
-	public static NamespaceDependencyResult<IEnumerable<Type?>> DependOnlyOn(
+	public static NamespaceDependencyOnlyOnResult<IEnumerable<Type?>> DependOnlyOn(
 		this IThat<IEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
 		NamespaceDependencyOptions options = new(namespaces);
-		return new NamespaceDependencyResult<IEnumerable<Type?>>(subject.Get().ExpectationBuilder
+		return new NamespaceDependencyOnlyOnResult<IEnumerable<Type?>>(subject.Get().ExpectationBuilder
 				.AddConstraint<IEnumerable<Type?>>((it, grammars)
 					=> new DependOnlyOnConstraint(it, grammars, options)),
 			subject,
@@ -58,11 +58,11 @@ public static partial class ThatTypes
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
-	public static NamespaceDependencyResult<IAsyncEnumerable<Type?>> DependOnlyOn(
+	public static NamespaceDependencyOnlyOnResult<IAsyncEnumerable<Type?>> DependOnlyOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
 		NamespaceDependencyOptions options = new(namespaces);
-		return new NamespaceDependencyResult<IAsyncEnumerable<Type?>>(subject.Get().ExpectationBuilder
+		return new NamespaceDependencyOnlyOnResult<IAsyncEnumerable<Type?>>(subject.Get().ExpectationBuilder
 				.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
 					=> new DependOnlyOnConstraint(it, grammars, options)),
 			subject,

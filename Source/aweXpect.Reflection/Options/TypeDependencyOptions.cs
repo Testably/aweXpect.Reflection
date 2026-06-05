@@ -11,7 +11,7 @@ namespace aweXpect.Reflection.Options;
 /// </summary>
 /// <remarks>
 ///     The instance is shared between the chainable result and the underlying constraint, so that
-///     <c>Or&lt;T&gt;()</c> / <c>Or(Type)</c> widen the (lazily evaluated) expression.
+///     <c>OrOn&lt;T&gt;()</c> / <c>OrOn(Type)</c> widen the (lazily evaluated) expression.
 /// </remarks>
 internal sealed class TypeDependencyOptions
 {
@@ -28,7 +28,7 @@ internal sealed class TypeDependencyOptions
 	/// <summary>
 	///     Widens the set of targeted types by the given <paramref name="type" />.
 	/// </summary>
-	public void Or(Type type)
+	public void OrOn(Type type)
 		=> _types.Add(type ?? throw new ArgumentNullException(nameof(type)));
 
 	/// <summary>

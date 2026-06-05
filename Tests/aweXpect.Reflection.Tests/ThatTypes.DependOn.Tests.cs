@@ -63,7 +63,7 @@ public sealed partial class ThatTypes
 			}
 
 			[Fact]
-			public async Task WhenWidenedWithOr_ShouldSucceed()
+			public async Task WhenWidenedWithOrOn_ShouldSucceed()
 			{
 				IEnumerable<Type?> subject =
 				[
@@ -72,7 +72,7 @@ public sealed partial class ThatTypes
 				];
 
 				async Task Act()
-					=> await That(subject).DependOn("Non.Existent.Namespace").Or(Layer1Namespace);
+					=> await That(subject).DependOn("Non.Existent.Namespace").OrOn(Layer1Namespace);
 
 				await That(Act).DoesNotThrow();
 			}

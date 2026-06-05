@@ -155,7 +155,7 @@ public sealed class FilteredReuseIndependenceTests
 	}
 
 	[Fact]
-	public async Task TypesWhichDependOn_WidenedWithOr_ShouldNotAffectBranchedView()
+	public async Task TypesWhichDependOn_WidenedWithOrOn_ShouldNotAffectBranchedView()
 	{
 		const string layer1 = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1";
 		const string layer2 = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2";
@@ -165,7 +165,7 @@ public sealed class FilteredReuseIndependenceTests
 
 		// Branch a separate view off the base, then widen the base. The branch must not see the widening.
 		Filtered.Types branch = @base.Which(_ => true);
-		Filtered.Types widened = @base.Or(layer2);
+		Filtered.Types widened = @base.OrOn(layer2);
 
 		await That(branch).Contains(typeof(OnlyLayer1));
 		await That(branch).DoesNotContain(typeof(OnlyLayer2));

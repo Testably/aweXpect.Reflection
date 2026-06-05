@@ -106,12 +106,12 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
-			public async Task WhenWidenedWithOr_ShouldSucceed()
+			public async Task WhenWidenedWithOrOn_ShouldSucceed()
 			{
 				Type subject = typeof(OnlyLayer1);
 
 				async Task Act()
-					=> await That(subject).DependsOn(Layer2Namespace).Or(Layer1Namespace);
+					=> await That(subject).DependsOn(Layer2Namespace).OrOn(Layer1Namespace);
 
 				await That(Act).DoesNotThrow();
 			}
@@ -284,12 +284,12 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
-			public async Task WhenWidenedWithOrType_ShouldSucceed()
+			public async Task WhenWidenedWithOrOnType_ShouldSucceed()
 			{
 				Type subject = typeof(ViaField);
 
 				async Task Act()
-					=> await That(subject).DependsOn<TargetB>().Or<TargetA>();
+					=> await That(subject).DependsOn<TargetB>().OrOn<TargetA>();
 
 				await That(Act).DoesNotThrow();
 			}

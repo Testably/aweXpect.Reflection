@@ -401,11 +401,11 @@ Layering and architecture rules over the types a type references **in its signat
 
 ```csharp
 // Presentation must not reference the data layer
-await Expect.That(In.Namespace("MyApp.Presentation").Types())
+await Expect.That(In.Namespace("MyApp.Presentation"))
     .DoNotDependOn("MyApp.Data");
 
 // The API layer may only reference the application and domain layers
-await Expect.That(In.Namespace("MyApp.Api").Types())
+await Expect.That(In.Namespace("MyApp.Api"))
     .DependOnlyOn("MyApp.Application", "MyApp.Domain");
 
 // Filter for the types that depend on a namespace
@@ -436,27 +436,28 @@ default (so `Foo.Bar` matches `Foo.Bar.Baz` but not `Foo.BarBaz`). A dependency 
 can be targeted or allowed with an empty string (`""`). Each result is chainable:
 
 ```csharp
-// Widen the set with .Or(…)
-await Expect.That(In.Namespace("MyApp.Api").Types())
-    .DependOnlyOn("MyApp.Application").Or("MyApp.Domain");
+// Widen the set with .OrOn(…)
+await Expect.That(In.Namespace("MyApp.Api"))
+    .DependOnlyOn("MyApp.Application").OrOn("MyApp.Domain");
 
 // Opt out of sub-namespace matching for the whole expression
 await Expect.That(types).DoNotDependOn("MyApp.Data").ExcludingSubNamespaces();
 ```
 
-For `DependsOnlyOn` a type's own namespace is always allowed, and by default so are its sub-namespaces. Pass
-`SubNamespaceExclusion.IncludingOwnNamespace` to also forbid references into a type's own sub-namespaces:
+For `DependsOnlyOn` a type's own namespace is always allowed, and by default so are its sub-namespaces. Use
+`.ExcludingOwnSubNamespaces()` (only available on the *only-on* family) to also forbid references into a
+type's own sub-namespaces:
 
 ```csharp
-await Expect.That(In.Namespace("MyApp.Domain").Types())
-    .DependOnlyOn("MyApp.Domain").ExcludingSubNamespaces(SubNamespaceExclusion.IncludingOwnNamespace);
+await Expect.That(In.Namespace("MyApp.Domain"))
+    .DependOnlyOn("MyApp.Domain").ExcludingSubNamespaces().ExcludingOwnSubNamespaces();
 ```
 
 `DependsOn` and `DoesNotDependOn` (single types only) also accept a **specific type** via `<T>()` or
-`(Type)`, with `.Or<T>()` / `.Or(Type)` to widen:
+`(Type)`, with `.OrOn<T>()` / `.OrOn(Type)` to widen:
 
 ```csharp
-await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().Or<SqlConnection>();
+await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().OrOn<SqlConnection>();
 ```
 
 > **Framework dependencies are ignored unless you name one explicitly.** `DependOnlyOn` ignores dependencies

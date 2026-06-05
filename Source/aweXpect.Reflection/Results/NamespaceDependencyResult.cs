@@ -25,29 +25,22 @@ public sealed class NamespaceDependencyResult<TThat>
 	///     Widens the expression by the given <paramref name="namespaces" /> (including sub-namespaces unless
 	///     <see cref="ExcludingSubNamespaces" /> is used).
 	/// </summary>
-	public new NamespaceDependencyResult<TThat> Or(params IEnumerable<string> namespaces)
+	public NamespaceDependencyResult<TThat> OrOn(params IEnumerable<string> namespaces)
 	{
-		_options.Or(namespaces);
+		_options.OrOn(namespaces);
 		return this;
 	}
 
 	/// <summary>
-	///     Excludes sub-namespaces from matching for the whole expression (including any <see cref="Or" /> additions),
-	///     according to the <paramref name="exclusion" /> parameter.
+	///     Excludes sub-namespaces from matching for the whole expression (including any <see cref="OrOn" /> additions).
 	/// </summary>
 	/// <remarks>
 	///     Without this call, a namespace matches itself and all its sub-namespaces (so <c>Foo.Bar</c> includes
 	///     <c>Foo.Bar.Baz</c> but not <c>Foo.BarBaz</c>).
-	///     <para />
-	///     For <c>DependsOnlyOn</c>, the type's own namespace is always allowed; with the default
-	///     <see cref="SubNamespaceExclusion.ExceptOwnNamespace" /> its sub-namespaces stay allowed too. Use
-	///     <see cref="SubNamespaceExclusion.IncludingOwnNamespace" /> to also exclude the own sub-namespaces, or
-	///     <see cref="SubNamespaceExclusion.None" /> to keep including sub-namespaces.
 	/// </remarks>
-	public NamespaceDependencyResult<TThat> ExcludingSubNamespaces(
-		SubNamespaceExclusion exclusion = SubNamespaceExclusion.ExceptOwnNamespace)
+	public NamespaceDependencyResult<TThat> ExcludingSubNamespaces()
 	{
-		_options.ExcludingSubNamespaces(exclusion);
+		_options.ExcludingSubNamespaces();
 		return this;
 	}
 }

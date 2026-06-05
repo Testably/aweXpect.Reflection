@@ -25,11 +25,11 @@ public static partial class ThatType
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoesNotDependOn</c> or customize the prefixes.
 	/// </remarks>
-	public static NamespaceDependencyResult<Type?> DependsOnlyOn(
+	public static NamespaceDependencyOnlyOnResult<Type?> DependsOnlyOn(
 		this IThat<Type?> subject, params IEnumerable<string> namespaces)
 	{
 		NamespaceDependencyOptions options = new(namespaces);
-		return new NamespaceDependencyResult<Type?>(subject.Get().ExpectationBuilder
+		return new NamespaceDependencyOnlyOnResult<Type?>(subject.Get().ExpectationBuilder
 				.AddConstraint((it, grammars)
 					=> new DependsOnlyOnConstraint(it, grammars, options)),
 			subject,

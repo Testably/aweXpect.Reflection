@@ -270,12 +270,12 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
-			public async Task WhenWidenedWithOr_ShouldFailIfAnyMatches()
+			public async Task WhenWidenedWithOrOn_ShouldFailIfAnyMatches()
 			{
 				Type subject = typeof(Layer1AndLayer2);
 
 				async Task Act()
-					=> await That(subject).DoesNotDependOn(Layer2Namespace).Or(Layer1Namespace);
+					=> await That(subject).DoesNotDependOn(Layer2Namespace).OrOn(Layer1Namespace);
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage($"""

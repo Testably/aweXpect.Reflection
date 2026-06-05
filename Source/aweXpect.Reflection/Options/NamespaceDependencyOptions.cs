@@ -64,6 +64,11 @@ internal sealed class NamespaceDependencyOptions
 	/// </remarks>
 	public void OrOn(IEnumerable<string> namespaces)
 	{
+		if (namespaces is null)
+		{
+			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not be null.");
+		}
+
 		List<string> added = namespaces.ToList();
 		if (added.Count == 0)
 		{

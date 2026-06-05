@@ -348,6 +348,30 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenNamespacesEnumerableIsNull_ShouldThrowArgumentNullException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn((IEnumerable<string>)null!);
+
+				await That(Act).Throws<ArgumentNullException>()
+					.WithMessage("The namespaces must not be null.*").AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithNullNamespacesEnumerable_ShouldThrowArgumentNullException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace).OrOn((IEnumerable<string>)null!);
+
+				await That(Act).Throws<ArgumentNullException>()
+					.WithMessage("The namespaces must not be null.*").AsWildcard();
+			}
+
+			[Fact]
 			public async Task WhenNamespaceIsNull_ShouldThrowArgumentNullException()
 			{
 				Type subject = typeof(OnlyLayer1);

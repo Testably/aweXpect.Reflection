@@ -483,6 +483,39 @@ await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().OrOn<SqlCon
 > customize the [`ExcludedAssemblyPrefixes`](#assembly-exclusions). Note that the customization also affects
 > assembly scanning and assembly-level dependency assertions.
 
+#### Dependency cycles
+
+The "slices should be free of cycles" architecture rule: assert that the namespaces of a set of types do not
+(transitively) depend on each other.
+
+```csharp
+// No dependency cycles among the namespaces under MyApp
+await Expect.That(In.Namespace("MyApp"))
+    .HaveNoDependencyCycles();
+```
+
+A namespace `A` *depends on* a namespace `B` when some type in `A` references a type in `B` (in its
+[signature](#type-dependencies), read through the same resolver as the other dependency assertions). The
+namespaces of the analyzed types form the nodes of a directed graph, and each
+[strongly-connected component](https://en.wikipedia.org/wiki/Strongly_connected_component) with more than one
+node is reported as a cycle, e.g. `MyApp.Orders -> MyApp.Billing -> MyApp.Orders`. Only namespaces present in
+the analyzed set form nodes, so dependencies on framework or otherwise out-of-set namespaces never create an
+edge, and a namespace referencing itself is not a cycle.
+
+By default every distinct namespace is its own node. Pass a **slice root** to group all namespaces below it into
+one slice each — by the namespace segment immediately following the root — so that, for example, `MyApp.Orders`,
+`MyApp.Orders.Domain` and `MyApp.Orders.Api` collapse into the single slice `MyApp.Orders`:
+
+```csharp
+// Group MyApp.Orders.* / MyApp.Billing.* / … into one slice each before looking for cycles
+await Expect.That(In.Namespace("MyApp"))
+    .HaveNoDependencyCycles("MyApp");
+```
+
+Because the edges come from the same dependency resolution as the other dependency assertions, configuring a
+[custom dependency resolver](#dependency-resolver) (e.g. an IL-level one) also sharpens cycle
+detection: body-level references it surfaces can complete a cycle that the signature-level default cannot see.
+
 ### Methods
 
 In addition to [access modifiers](#access-modifiers),

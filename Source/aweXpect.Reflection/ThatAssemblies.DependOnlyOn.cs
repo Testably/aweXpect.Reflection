@@ -98,27 +98,13 @@ public static partial class ThatAssemblies
 				return false;
 			}
 
-			string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
-			List<string?> violations = [];
-			foreach (AssemblyName dependency in assembly.GetReferencedAssemblies())
+			string?[] violations = await assembly.GetDisallowedAssemblyDependencies(allowed, options);
+			if (violations.Length > 0)
 			{
-				if (dependency.Name.IsExcludedAssemblyName(prefixes))
-				{
-					continue;
-				}
-
-				if (!await allowed.AnyAsync(expected => options.AreConsideredEqual(dependency.Name, expected)))
-				{
-					violations.Add(dependency.Name);
-				}
+				_disallowedDependencies[assembly] = violations;
 			}
 
-			if (violations.Count > 0)
-			{
-				_disallowedDependencies[assembly] = violations.ToArray();
-			}
-
-			return violations.Count == 0;
+			return violations.Length == 0;
 		}
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)

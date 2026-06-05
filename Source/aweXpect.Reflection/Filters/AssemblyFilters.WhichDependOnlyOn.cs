@@ -25,13 +25,8 @@ public static partial class AssemblyFilters
 	{
 		StringEqualityOptions options = new();
 		return new Filtered.Assemblies.StringEqualityResultType(@this.Which(Filter.Suffix<Assembly>(
-				assembly =>
-				{
-					string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
-					return assembly.GetReferencedAssemblies().AllAsync(async dependency =>
-						dependency.Name.IsExcludedAssemblyName(prefixes) ||
-						await allowed.AnyAsync(expected => options.AreConsideredEqual(dependency.Name, expected)));
-				},
+				async assembly
+					=> (await assembly.GetDisallowedAssemblyDependencies(allowed, options)).Length == 0,
 				() => allowed.Length == 0
 					? " which have dependencies only on no assemblies"
 					: $" which have dependencies only on assemblies {string.Join(" or ", allowed.Select(expected => options.GetExpectation(expected, ExpectationGrammars.None)))}")),

@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Threading.Tasks;
+using aweXpect.Customization;
+using aweXpect.Options;
 
 namespace aweXpect.Reflection.Helpers;
 
@@ -102,6 +106,37 @@ internal static class AssemblyHelpers
 			      (prefix.EndsWith(".", StringComparison.Ordinal) ||
 			       assemblyName.Length == prefix.Length ||
 			       assemblyName[prefix.Length] == '.'));
+
+	/// <summary>
+	///     Returns the names of all assemblies the <paramref name="assembly" /> references which are neither
+	///     covered by the
+	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> nor
+	///     considered equal to one of the <paramref name="allowed" /> names.
+	/// </summary>
+	/// <remarks>
+	///     Shared by the single-assembly and collection assertions and the assembly filter, so that the three
+	///     code paths cannot drift apart in how a disallowed dependency is determined.
+	/// </remarks>
+	public static async Task<string?[]> GetDisallowedAssemblyDependencies(this Assembly assembly,
+		string[] allowed, StringEqualityOptions options)
+	{
+		string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
+		List<string?> violations = [];
+		foreach (AssemblyName dependency in assembly.GetReferencedAssemblies())
+		{
+			if (dependency.Name.IsExcludedAssemblyName(prefixes))
+			{
+				continue;
+			}
+
+			if (!await allowed.AnyAsync(expected => options.AreConsideredEqual(dependency.Name, expected)))
+			{
+				violations.Add(dependency.Name);
+			}
+		}
+
+		return violations.ToArray();
+	}
 
 	/// <summary>
 	///     Checks if the <paramref name="assembly" /> is strong named.

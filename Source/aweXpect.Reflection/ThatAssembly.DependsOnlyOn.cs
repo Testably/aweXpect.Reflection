@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -58,22 +56,7 @@ public static partial class ThatAssembly
 				return this;
 			}
 
-			string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
-			List<string?> violations = [];
-			foreach (AssemblyName dependency in actual.GetReferencedAssemblies())
-			{
-				if (dependency.Name.IsExcludedAssemblyName(prefixes))
-				{
-					continue;
-				}
-
-				if (!await allowed.AnyAsync(expected => options.AreConsideredEqual(dependency.Name, expected)))
-				{
-					violations.Add(dependency.Name);
-				}
-			}
-
-			_violations = violations.ToArray();
+			_violations = await actual.GetDisallowedAssemblyDependencies(allowed, options);
 			Outcome = _violations.Length == 0 ? Outcome.Success : Outcome.Failure;
 			return this;
 		}

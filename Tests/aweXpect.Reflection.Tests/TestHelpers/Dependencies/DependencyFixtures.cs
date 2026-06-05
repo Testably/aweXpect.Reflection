@@ -195,6 +195,16 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 		private TargetA[] _targets;
 	}
 
+	// Layer1 is referenced ONLY inside the nested type; nested types are separate types with their own
+	// dependency surface, so the declaring type's signature does not include this reference.
+	public class WithLayer1OnlyInNestedType
+	{
+		private sealed class Nested
+		{
+			private TargetA _target;
+		}
+	}
+
 	// Layer2's TargetSeverity is referenced ONLY through the attribute's enum argument; the attribute
 	// type TargetSeverityAttribute itself lives in Layer1.
 	[TargetSeverity(Layer2.TargetSeverity.High)]

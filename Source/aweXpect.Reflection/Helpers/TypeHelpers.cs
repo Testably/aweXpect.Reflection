@@ -919,7 +919,9 @@ internal static class TypeHelpers
 	///     This is signature-level only: references that appear merely in method bodies (e.g. <c>new Infra.Foo()</c>,
 	///     static calls or locals) are not detected. Function-pointer signatures (<c>delegate*&lt;…&gt;</c>) are
 	///     not decomposed either: the parameter and return types inside them are invisible to dependency
-	///     assertions (the reflection APIs to traverse them only exist on .NET 8+).
+	///     assertions (the reflection APIs to traverse them only exist on .NET 8+). Nested types are not
+	///     traversed: they are separate types with their own dependency surface (the type collections
+	///     enumerate them individually).
 	/// </remarks>
 	internal static IEnumerable<Type> GetSignatureDependencies(this Type type, string[] excludedAttributeTypes)
 	{

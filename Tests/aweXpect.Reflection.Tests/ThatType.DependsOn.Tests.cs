@@ -348,6 +348,20 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenOnlyANestedTypeReferencesNamespace_ShouldFail()
+			{
+				// Nested types are separate types with their own dependency surface; the declaring type's
+				// signature does not include what its nested types reference. The collection-based
+				// assertions enumerate nested types as their own items and cover them there.
+				Type subject = typeof(WithLayer1OnlyInNestedType);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(Act).Throws<XunitException>();
+			}
+
+			[Fact]
 			public async Task WhenNamespacesEnumerableIsNull_ShouldThrowArgumentNullException()
 			{
 				Type subject = typeof(OnlyLayer1);

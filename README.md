@@ -433,6 +433,9 @@ extends the built-in set). Types you write in authored signatures always do coun
 > **Signature-level only:** dependencies are computed from reflection metadata, so body-level references such
 > as `new Infra.Foo()`, static calls and local variables are **not** detected. Function-pointer signatures
 > (`delegate*<…>`) are not decomposed either — the types inside them are invisible to dependency assertions.
+> Nested types are separate types with their own dependency surface: asserting on `typeof(Outer)` does not
+> include what `Outer.Inner` references. The collection-based assertions (e.g. over `In.Namespace(…)`)
+> enumerate nested types as their own items and therefore cover them.
 
 Namespace matching is ordinal and case-sensitive and, like `WithinNamespace`, includes sub-namespaces by
 default (so `Foo.Bar` matches `Foo.Bar.Baz` but not `Foo.BarBaz`). A dependency in the **global namespace**

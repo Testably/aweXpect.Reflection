@@ -14,6 +14,11 @@ namespace aweXpect.Reflection.Helpers;
 ///     never create an edge, consistent with the namespace dependency assertions. Self-edges (<c>A → A</c>) are ignored,
 ///     so a single namespace referencing itself is not a cycle.
 ///     <para />
+///     By default a namespace and its sub-namespaces are treated as one family, so a reference between a node and its
+///     ancestor or descendant never creates an edge either (only references between unrelated namespaces do). Passing
+///     <c>excludeSubNamespaces</c> opts into strict per-namespace edges, so a namespace referencing one of its
+///     sub-namespaces can then form a cycle.
+///     <para />
 ///     Dependencies are read exclusively through <see cref="TypeHelpers.ResolveDependencies" />, so a configured custom
 ///     dependency resolver automatically sharpens the cycle detection too.
 ///     <para />
@@ -34,9 +39,11 @@ internal sealed class NamespaceDependencyGraph
 	/// <summary>
 	///     Builds the graph for the <paramref name="types" />, grouping namespaces into slices below
 	///     <paramref name="sliceRoot" /> when it is not <see langword="null" /> (a namespace below the root collapses
-	///     to the root plus its next segment), and detects all dependency cycles.
+	///     to the root plus its next segment), and detects all dependency cycles. Unless
+	///     <paramref name="excludeSubNamespaces" /> is set, a node and its ancestor/descendant nodes are treated as one
+	///     family and references between them never create an edge.
 	/// </summary>
-	public static NamespaceDependencyGraph Build(IEnumerable<Type?> types, string? sliceRoot)
+	public static NamespaceDependencyGraph Build(IEnumerable<Type?> types, string? sliceRoot, bool excludeSubNamespaces)
 	{
 		Dictionary<string, HashSet<string>> adjacency = new(StringComparer.Ordinal);
 		List<Type> nodes = [];
@@ -64,10 +71,19 @@ internal sealed class NamespaceDependencyGraph
 			foreach (Type dependency in type.ResolveDependencies())
 			{
 				string to = SliceKey(dependency.Namespace, sliceRoot);
-				if (!string.Equals(from, to, StringComparison.Ordinal) && adjacency.ContainsKey(to))
+				if (string.Equals(from, to, StringComparison.Ordinal) || !adjacency.ContainsKey(to))
 				{
-					adjacency[from].Add(to);
+					continue;
 				}
+
+				// By default a namespace and its sub-namespaces are one family, so a reference between a node and its
+				// ancestor/descendant never forms an edge; excludeSubNamespaces opts into strict per-namespace edges.
+				if (!excludeSubNamespaces && AreInSameFamily(from, to))
+				{
+					continue;
+				}
+
+				adjacency[from].Add(to);
 			}
 		}
 
@@ -96,6 +112,14 @@ internal sealed class NamespaceDependencyGraph
 		int nextDot = @namespace.IndexOf('.', segmentStart);
 		return nextDot < 0 ? @namespace : @namespace.Substring(0, nextDot);
 	}
+
+	/// <summary>
+	///     Checks whether the two nodes belong to the same namespace family, i.e. one is the other or a sub-namespace of
+	///     the other (the global-namespace node is never in a family with a real namespace).
+	/// </summary>
+	private static bool AreInSameFamily(string from, string to)
+		=> TypeHelpers.NamespaceMatches(from, to, includeSubNamespaces: true) ||
+		   TypeHelpers.NamespaceMatches(to, from, includeSubNamespaces: true);
 
 	/// <summary>
 	///     Returns the strongly-connected components with more than one node (the cycles), each rendered as a path

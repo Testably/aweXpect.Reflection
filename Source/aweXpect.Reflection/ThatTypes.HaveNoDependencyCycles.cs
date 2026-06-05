@@ -5,7 +5,8 @@ using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
 using aweXpect.Reflection.Helpers;
-using aweXpect.Results;
+using aweXpect.Reflection.Options;
+using aweXpect.Reflection.Results;
 #if NET8_0_OR_GREATER
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,12 +26,21 @@ public static partial class ThatTypes
 	///     A namespace <c>A</c> depends on a namespace <c>B</c> when some type in <c>A</c> references (in its signature)
 	///     a type in <c>B</c>. Only namespaces present in the collection form nodes, so dependencies on framework or
 	///     otherwise out-of-set namespaces never create an edge; self-references are ignored.
+	///     <para />
+	///     A namespace and its sub-namespaces are treated as one family, so references within a family never create an
+	///     edge. Use <see cref="DependencyCyclesResult{TThat}.ExcludingSubNamespaces" /> to treat every namespace as its
+	///     own node instead.
 	/// </remarks>
-	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveNoDependencyCycles(
+	public static DependencyCyclesResult<IEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IEnumerable<Type?>> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new HaveNoDependencyCyclesConstraint(it, grammars, null)),
-			subject);
+	{
+		DependencyCyclesOptions options = new(null);
+		return new DependencyCyclesResult<IEnumerable<Type?>>(subject.Get().ExpectationBuilder
+				.AddConstraint<IEnumerable<Type?>>((it, grammars)
+					=> new HaveNoDependencyCyclesConstraint(it, grammars, options)),
+			subject,
+			options);
+	}
 
 	/// <summary>
 	///     Verifies that the namespaces of the filtered collection of <see cref="Type" /> are free of dependency cycles,
@@ -41,34 +51,50 @@ public static partial class ThatTypes
 	/// <remarks>
 	///     A slice <c>A</c> depends on a slice <c>B</c> when some type in <c>A</c> references (in its signature) a type
 	///     in <c>B</c>. Only slices present in the collection form nodes, so dependencies on framework or otherwise
-	///     out-of-set namespaces never create an edge; references within the same slice are ignored.
+	///     out-of-set namespaces never create an edge; references within the same slice (or, by default, between a slice
+	///     and its ancestor/descendant slice) are ignored.
 	/// </remarks>
-	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveNoDependencyCycles(
+	public static DependencyCyclesResult<IEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IEnumerable<Type?>> subject, string sliceRoot)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new HaveNoDependencyCyclesConstraint(it, grammars, sliceRoot)),
-			subject);
+	{
+		DependencyCyclesOptions options = new(sliceRoot);
+		return new DependencyCyclesResult<IEnumerable<Type?>>(subject.Get().ExpectationBuilder
+				.AddConstraint<IEnumerable<Type?>>((it, grammars)
+					=> new HaveNoDependencyCyclesConstraint(it, grammars, options)),
+			subject,
+			options);
+	}
 
 #if NET8_0_OR_GREATER
 	/// <inheritdoc cref="HaveNoDependencyCycles(IThat{IEnumerable{Type}})" />
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveNoDependencyCycles(
+	public static DependencyCyclesResult<IAsyncEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IAsyncEnumerable<Type?>> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveNoDependencyCyclesConstraint(it, grammars, null)),
-			subject);
+	{
+		DependencyCyclesOptions options = new(null);
+		return new DependencyCyclesResult<IAsyncEnumerable<Type?>>(subject.Get().ExpectationBuilder
+				.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+					=> new HaveNoDependencyCyclesConstraint(it, grammars, options)),
+			subject,
+			options);
+	}
 
 	/// <inheritdoc cref="HaveNoDependencyCycles(IThat{IEnumerable{Type}},string)" />
-	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveNoDependencyCycles(
+	public static DependencyCyclesResult<IAsyncEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IAsyncEnumerable<Type?>> subject, string sliceRoot)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new HaveNoDependencyCyclesConstraint(it, grammars, sliceRoot)),
-			subject);
+	{
+		DependencyCyclesOptions options = new(sliceRoot);
+		return new DependencyCyclesResult<IAsyncEnumerable<Type?>>(subject.Get().ExpectationBuilder
+				.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+					=> new HaveNoDependencyCyclesConstraint(it, grammars, options)),
+			subject,
+			options);
+	}
 #endif
 
 	private sealed class HaveNoDependencyCyclesConstraint(
 		string it,
 		ExpectationGrammars grammars,
-		string? sliceRoot)
+		DependencyCyclesOptions options)
 		: ConstraintResult.WithNotNullValue<IEnumerable<Type?>>(it, grammars),
 			IValueConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
@@ -99,7 +125,7 @@ public static partial class ThatTypes
 
 		private HaveNoDependencyCyclesConstraint SetResult(IEnumerable<Type?> types)
 		{
-			_cycles = NamespaceDependencyGraph.Build(types, sliceRoot).Cycles
+			_cycles = NamespaceDependencyGraph.Build(types, options.SliceRoot, options.ExcludeSubNamespaces).Cycles
 				.Select(cycle => string.Join(" -> ", cycle))
 				.ToList();
 			Outcome = _cycles.Count == 0 ? Outcome.Success : Outcome.Failure;
@@ -142,9 +168,9 @@ public static partial class ThatTypes
 
 		private void AppendSliceInfo(StringBuilder stringBuilder)
 		{
-			if (sliceRoot is not null)
+			if (options.SliceRoot is not null)
 			{
-				stringBuilder.Append(" when grouped into slices under ").Append(Formatter.Format(sliceRoot));
+				stringBuilder.Append(" when grouped into slices under ").Append(Formatter.Format(options.SliceRoot));
 			}
 		}
 	}

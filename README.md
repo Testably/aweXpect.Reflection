@@ -502,9 +502,21 @@ node is reported as a cycle, e.g. `MyApp.Orders -> MyApp.Billing -> MyApp.Orders
 the analyzed set form nodes, so dependencies on framework or otherwise out-of-set namespaces never create an
 edge, and a namespace referencing itself is not a cycle.
 
-By default every distinct namespace is its own node. Pass a **slice root** to group all namespaces below it into
-one slice each — by the namespace segment immediately following the root — so that, for example, `MyApp.Orders`,
-`MyApp.Orders.Domain` and `MyApp.Orders.Api` collapse into the single slice `MyApp.Orders`:
+By default a namespace and its sub-namespaces are treated as one family — consistent with how the other
+dependency assertions treat a type's own sub-namespaces — so a reference between a namespace and its
+ancestor/descendant (e.g. `MyApp.Orders` ↔ `MyApp.Orders.Domain`) never creates an edge and cannot form a cycle;
+only references between *unrelated* namespaces do. Use `ExcludingSubNamespaces()` to treat every namespace as its
+own node, so that such a parent/child reference becomes an edge (and can form a cycle):
+
+```csharp
+// Treat every namespace as its own node (MyApp.Orders ↔ MyApp.Orders.Domain can now form a cycle)
+await Expect.That(In.Namespace("MyApp"))
+    .HaveNoDependencyCycles().ExcludingSubNamespaces();
+```
+
+Pass a **slice root** to group all namespaces below it into one slice each — by the namespace segment immediately
+following the root — so that, for example, `MyApp.Orders`, `MyApp.Orders.Domain` and `MyApp.Orders.Api` collapse
+into the single slice `MyApp.Orders`:
 
 ```csharp
 // Group MyApp.Orders.* / MyApp.Billing.* / … into one slice each before looking for cycles

@@ -143,6 +143,24 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.GlobalRing
 	}
 }
 
+// A parent namespace and one of its sub-namespaces reference each other: by default they are one family (no cycle),
+// but with ExcludingSubNamespaces() every namespace is its own node, so they form a cycle.
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Family
+{
+	public class FamilyParent
+	{
+		private Inner.FamilyChild _child;
+	}
+}
+
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Family.Inner
+{
+	public class FamilyChild
+	{
+		private FamilyParent _parent;
+	}
+}
+
 #pragma warning disable CA1050 // Declare types in namespaces
 
 // This type intentionally lives in the global namespace to exercise global-namespace cycle rendering.

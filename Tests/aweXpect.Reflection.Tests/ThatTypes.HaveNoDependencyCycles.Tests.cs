@@ -4,6 +4,8 @@ using aweXpect.Customization;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Acyclic.High;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Acyclic.Low;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.External;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Family;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Family.Inner;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.GlobalRing;
 using Xunit.Sdk;
 using ResolverA = aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Resolver.A;
@@ -331,6 +333,48 @@ public sealed partial class ThatTypes
 					              have no dependency cycles when grouped into slices under "{Prefix}.Grouped",
 					              but it had a dependency cycle:
 					                {Prefix}.Grouped.Billing -> {Prefix}.Grouped.Orders -> {Prefix}.Grouped.Billing
+					              """);
+			}
+		}
+
+		public sealed class SubNamespaceTests
+		{
+			private const string Prefix = HaveNoDependencyCycles.Prefix;
+
+			[Fact]
+			public async Task WhenParentAndChildReferenceEachOther_ShouldSucceedByDefault()
+			{
+				// By default a namespace and its sub-namespaces are one family, so the references do not form a cycle.
+				IEnumerable<Type?> subject =
+				[
+					typeof(FamilyParent),
+					typeof(FamilyChild),
+				];
+
+				async Task Act()
+					=> await That(subject).HaveNoDependencyCycles();
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenExcludingSubNamespaces_ShouldDetectTheFamilyCycle()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(FamilyParent),
+					typeof(FamilyChild),
+				];
+
+				async Task Act()
+					=> await That(subject).HaveNoDependencyCycles().ExcludingSubNamespaces();
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              have no dependency cycles,
+					              but it had a dependency cycle:
+					                {Prefix}.Family -> {Prefix}.Family.Inner -> {Prefix}.Family
 					              """);
 			}
 		}

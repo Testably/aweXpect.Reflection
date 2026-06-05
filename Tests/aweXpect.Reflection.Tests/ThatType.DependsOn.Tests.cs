@@ -383,6 +383,39 @@ public sealed partial class ThatType
 				await That(Act).Throws<ArgumentException>()
 					.WithMessage("The namespaces must not end with a dot (sub-namespaces are matched automatically).");
 			}
+
+			[Theory]
+			[InlineData(".Layer2")]
+			[InlineData("Layer1..Layer2")]
+			[InlineData("Layer2 ")]
+			[InlineData(" Layer2")]
+			[InlineData("Layer2\tSub")]
+			public async Task WhenNamespaceCouldNeverMatch_ShouldThrowArgumentException(string @namespace)
+			{
+				// Leading dots, empty segments and whitespace cannot occur in a real namespace, so such an
+				// input would make negative assertions pass vacuously, just like the trailing dot above.
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(@namespace);
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage(
+						"The namespaces must not contain empty segments or whitespace (such a namespace could never match).");
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithNamespaceThatCouldNeverMatch_ShouldThrowArgumentException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace).OrOn($".{Layer2Namespace}");
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage(
+						"The namespaces must not contain empty segments or whitespace (such a namespace could never match).");
+			}
 		}
 
 		public sealed class NegatedTests

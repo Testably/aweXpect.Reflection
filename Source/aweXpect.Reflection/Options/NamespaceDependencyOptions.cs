@@ -20,20 +20,7 @@ internal sealed class NamespaceDependencyOptions
 	private bool _excludeSubNamespaces;
 
 	public NamespaceDependencyOptions(IEnumerable<string> namespaces)
-	{
-		_namespaces.AddRange(namespaces);
-		if (_namespaces.Count == 0)
-		{
-			throw new ArgumentException("At least one namespace must be specified.");
-		}
-
-		if (_namespaces.Contains(null!))
-		{
-			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not contain null.");
-		}
-
-		ThrowOnTrailingDot(_namespaces);
-	}
+		=> OrOn(namespaces);
 
 	private NamespaceDependencyOptions(IEnumerable<string> namespaces, bool excludeSubNamespaces,
 		bool excludeOwnSubNamespaces)
@@ -71,6 +58,10 @@ internal sealed class NamespaceDependencyOptions
 	/// <summary>
 	///     Widens the set of targeted/allowed namespaces by the given <paramref name="namespaces" />.
 	/// </summary>
+	/// <remarks>
+	///     The public constructor delegates here, so that the validation cannot diverge between the two
+	///     entry points.
+	/// </remarks>
 	public void OrOn(IEnumerable<string> namespaces)
 	{
 		List<string> added = namespaces.ToList();
@@ -84,22 +75,39 @@ internal sealed class NamespaceDependencyOptions
 			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not contain null.");
 		}
 
-		ThrowOnTrailingDot(added);
+		ThrowOnUnmatchableNamespace(added);
 		_namespaces.AddRange(added);
 	}
 
 	/// <summary>
-	///     A namespace with a trailing dot could never match (real namespaces do not end with a dot, and the
-	///     sub-namespace boundary check expects the dot after the given namespace), so negative assertions
-	///     would silently pass; it is rejected to avoid confusion with the trailing-dot convention of the
-	///     excluded assembly prefixes.
+	///     A namespace that could never match any real namespace would make negative assertions silently pass,
+	///     so it is rejected upfront: real namespaces do not end with a dot (the sub-namespace boundary check
+	///     expects the dot after the given namespace, and the trailing-dot convention belongs to the excluded
+	///     assembly prefixes), nor do they contain empty segments or whitespace. The empty string stays allowed
+	///     and targets exactly the global namespace.
 	/// </summary>
-	private static void ThrowOnTrailingDot(IEnumerable<string> namespaces)
+	private static void ThrowOnUnmatchableNamespace(IEnumerable<string> namespaces)
 	{
-		if (namespaces.Any(@namespace => @namespace.EndsWith(".", StringComparison.Ordinal)))
+		foreach (string @namespace in namespaces)
 		{
-			throw new ArgumentException(
-				"The namespaces must not end with a dot (sub-namespaces are matched automatically).");
+			if (@namespace.Length == 0)
+			{
+				continue;
+			}
+
+			if (@namespace.EndsWith(".", StringComparison.Ordinal))
+			{
+				throw new ArgumentException(
+					"The namespaces must not end with a dot (sub-namespaces are matched automatically).");
+			}
+
+			if (@namespace[0] == '.' ||
+			    @namespace.Contains("..") ||
+			    @namespace.Any(char.IsWhiteSpace))
+			{
+				throw new ArgumentException(
+					"The namespaces must not contain empty segments or whitespace (such a namespace could never match).");
+			}
 		}
 	}
 

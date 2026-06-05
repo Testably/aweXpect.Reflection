@@ -1,4 +1,5 @@
-﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+﻿using System.Collections.Generic;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
@@ -146,6 +147,19 @@ public sealed partial class ThatType
 
 				async Task Act()
 					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenOnlyOtherConstructionOfGenericIsReferenced_ShouldSucceed()
+			{
+				// ViaGenericArgument references List<TargetA>; List<TargetB> is a different construction
+				// and must not be reported as a dependency.
+				Type subject = typeof(ViaGenericArgument);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn(typeof(List<TargetB>));
 
 				await That(Act).DoesNotThrow();
 			}

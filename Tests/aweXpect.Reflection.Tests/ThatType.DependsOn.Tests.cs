@@ -1,4 +1,5 @@
-﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+﻿using System.Collections.Generic;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
@@ -156,6 +157,45 @@ public sealed partial class ThatType
 					.WithMessage("""
 					             Expected that subject
 					             depends on type TargetB,
+					             but it did not
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenExactGenericConstructionIsReferenced_ShouldSucceed()
+			{
+				Type subject = typeof(ViaGenericArgument);
+
+				async Task Act()
+					=> await That(subject).DependsOn(typeof(List<TargetA>));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenGenericTypeDefinitionIsTargeted_ShouldMatchAnyConstruction()
+			{
+				Type subject = typeof(ViaGenericArgument);
+
+				async Task Act()
+					=> await That(subject).DependsOn(typeof(List<>));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenOnlyOtherConstructionOfGenericIsReferenced_ShouldFail()
+			{
+				// ViaGenericArgument references List<TargetA>; List<TargetB> is a different construction.
+				Type subject = typeof(ViaGenericArgument);
+
+				async Task Act()
+					=> await That(subject).DependsOn(typeof(List<TargetB>));
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that subject
+					             depends on type List<TargetB>,
 					             but it did not
 					             """);
 			}

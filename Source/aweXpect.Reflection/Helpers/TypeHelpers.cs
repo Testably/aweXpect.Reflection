@@ -740,8 +740,8 @@ internal static class TypeHelpers
 	///     Checks whether the <paramref name="dependency" /> references the <paramref name="target" /> type.
 	/// </summary>
 	/// <remarks>
-	///     Generic types are matched on their generic type definition, so that <c>List&lt;Foo&gt;</c> and
-	///     <c>List&lt;Bar&gt;</c> both match a <c>List&lt;&gt;</c> target.
+	///     A constructed generic target (e.g. <c>List&lt;Foo&gt;</c>) only matches that exact construction,
+	///     while a generic type definition target (<c>List&lt;&gt;</c>) matches any construction of it.
 	/// </remarks>
 	internal static bool MatchesType(Type dependency, Type target)
 	{
@@ -750,9 +750,9 @@ internal static class TypeHelpers
 			return true;
 		}
 
-		Type normalizedTarget = target.IsGenericType ? target.GetGenericTypeDefinition() : target;
-		Type normalizedDependency = dependency.IsGenericType ? dependency.GetGenericTypeDefinition() : dependency;
-		return normalizedDependency == normalizedTarget;
+		return target.IsGenericTypeDefinition &&
+		       dependency.IsGenericType &&
+		       dependency.GetGenericTypeDefinition() == target;
 	}
 
 	/// <summary>
@@ -1147,7 +1147,9 @@ internal static class TypeHelpers
 
 		/// <summary>
 		///     Unwraps the <paramref name="type" />: array/by-ref/pointer element types and generic type arguments are
-		///     flattened, open generic parameters are skipped, and generic types contribute their generic type definition.
+		///     flattened and open generic parameters are skipped. Constructed generic types are kept as written
+		///     (e.g. <c>List&lt;Foo&gt;</c>), so that they can be matched exactly; their generic type arguments are
+		///     additionally contributed as separate dependencies.
 		/// </summary>
 		private static IEnumerable<Type> Unwrap(Type? type)
 		{
@@ -1172,7 +1174,7 @@ internal static class TypeHelpers
 
 			if (type.IsGenericType)
 			{
-				yield return type.IsGenericTypeDefinition ? type : type.GetGenericTypeDefinition();
+				yield return type;
 				foreach (Type argument in Safe(type.GetGenericArguments))
 				{
 					foreach (Type unwrapped in Unwrap(argument))

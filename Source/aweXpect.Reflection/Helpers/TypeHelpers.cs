@@ -737,10 +737,7 @@ internal static class TypeHelpers
 	/// </remarks>
 	internal static bool MatchesType(Type dependency, Type target)
 	{
-		while (target.HasElementType && target.GetElementType() is { } elementType)
-		{
-			target = elementType;
-		}
+		target = StripElementTypes(target);
 
 		if (dependency == target)
 		{
@@ -750,6 +747,24 @@ internal static class TypeHelpers
 		return target.IsGenericTypeDefinition &&
 		       dependency.IsGenericType &&
 		       dependency.GetGenericTypeDefinition() == target;
+	}
+
+	/// <summary>
+	///     Strips array/by-ref/pointer wrappers from the <paramref name="type" />, returning the innermost
+	///     element type.
+	/// </summary>
+	/// <remarks>
+	///     Shared between dependency collection (<c>SignatureDependencyCollector.Unwrap</c>) and target matching
+	///     (<see cref="MatchesType" />), so that the two sides of the documented symmetry cannot drift apart.
+	/// </remarks>
+	private static Type StripElementTypes(Type type)
+	{
+		while (type.HasElementType && type.GetElementType() is { } elementType)
+		{
+			type = elementType;
+		}
+
+		return type;
 	}
 
 	/// <summary>
@@ -1398,14 +1413,7 @@ internal static class TypeHelpers
 				yield break;
 			}
 
-			while (type!.HasElementType)
-			{
-				type = type.GetElementType();
-				if (type is null)
-				{
-					yield break;
-				}
-			}
+			type = StripElementTypes(type);
 
 			if (type.IsGenericParameter)
 			{

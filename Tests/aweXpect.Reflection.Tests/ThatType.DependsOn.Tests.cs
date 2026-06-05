@@ -42,16 +42,12 @@ public sealed partial class ThatType
 				async Task Act()
 					=> await That(subject).DependsOn(Layer2Namespace);
 
-				// The full dependency-namespace list also contains framework namespaces (System via the implicit
-				// object base type and System.Runtime.CompilerServices via the compiler-emitted nullable attributes
-				// on .NET, but not on .NET Framework where they are compiler-generated and excluded), so only the
-				// bracketed list itself is wildcarded.
 				await That(Act).Throws<XunitException>()
 					.WithMessage($"""
 					              Expected that subject
 					              depends on namespace "{Layer2Namespace}",
-					              but it depended on [*]
-					              """).AsWildcard();
+					              but it depended on ["{Layer1Namespace}"]
+					              """);
 			}
 
 			[Fact]

@@ -842,7 +842,10 @@ internal static class TypeHelpers
 	///     Considers the base type, implemented interfaces, generic arguments and parameter constraints, the types of
 	///     fields, properties (and indexer parameters), events, method return/parameter/generic types, constructor
 	///     parameters and the types of attributes applied to the type and its members (read via
-	///     <see cref="CustomAttributeData" /> without instantiating them). Compiler-generated members are excluded.
+	///     <see cref="CustomAttributeData" /> without instantiating them). Compiler-generated members are excluded, as
+	///     are purely synthetic references that the author never wrote: the implicit <see cref="object" /> /
+	///     <see cref="ValueType" /> / <see cref="System.Enum" /> base type and the compiler-emitted nullability
+	///     attributes (<c>NullableAttribute</c> / <c>NullableContextAttribute</c>).
 	///     Array/by-ref/pointer element types and generic type arguments are unwrapped recursively, open generic
 	///     parameters are skipped (their constraints are kept), and the result is de-duplicated.
 	///     <para />
@@ -852,7 +855,14 @@ internal static class TypeHelpers
 	internal static IEnumerable<Type> GetSignatureDependencies(this Type type)
 	{
 		SignatureDependencyCollector collector = new();
-		collector.Add(type.BaseType);
+
+		// The implicit object/ValueType/Enum base type is not a dependency the author wrote, so it is skipped to
+		// avoid every type trivially "depending on" System.
+		if (type.BaseType is { } baseType &&
+		    baseType != typeof(object) && baseType != typeof(ValueType) && baseType != typeof(Enum))
+		{
+			collector.Add(baseType);
+		}
 		collector.AddAll(Safe(type.GetInterfaces));
 		collector.AddGenericArguments(Safe(type.GetGenericArguments));
 		collector.AddAttributes(type);
@@ -914,10 +924,11 @@ internal static class TypeHelpers
 
 		public void AddAttributes(MemberInfo member)
 		{
-			// Compiler-generated/embedded attributes (e.g. the Nullable* attributes the compiler emits into the
-			// consuming assembly on frameworks that do not ship them) are not real dependencies.
+			// Neither compiler-generated/embedded attributes nor the compiler-emitted nullability attributes
+			// (which on modern .NET are real BCL types, not compiler-generated) are dependencies the author wrote.
 			foreach (CustomAttributeData attribute in SafeAttributes(member)
-				         .Where(data => !data.AttributeType.IsCompilerGenerated()))
+				         .Where(data => !data.AttributeType.IsCompilerGenerated() &&
+				                        !IsSyntheticNullabilityAttribute(data.AttributeType)))
 			{
 				Add(attribute.AttributeType);
 
@@ -984,6 +995,10 @@ internal static class TypeHelpers
 			_dependencies.Remove(type);
 			return _dependencies;
 		}
+
+		private static bool IsSyntheticNullabilityAttribute(Type attributeType)
+			=> attributeType.FullName is "System.Runtime.CompilerServices.NullableAttribute"
+				or "System.Runtime.CompilerServices.NullableContextAttribute";
 
 		private void AddAttributeArgument(CustomAttributeTypedArgument argument)
 		{

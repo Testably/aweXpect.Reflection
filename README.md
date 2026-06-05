@@ -417,7 +417,9 @@ interfaces, generic arguments and parameter constraints, field/property/event ty
 method return/parameter/generic-argument types, constructor parameters and the types of attributes applied to
 the type and its members (including the types passed as `typeof(…)` attribute arguments). Element types of
 arrays/pointers/by-ref and generic type arguments are unwrapped (`List<Infra.Foo>` depends on both `List<>`
-and `Infra.Foo`), and compiler-generated members are ignored.
+and `Infra.Foo`). Purely synthetic references that you never wrote are ignored: compiler-generated members,
+the implicit `object`/`ValueType`/`Enum` base type, and the compiler-emitted nullability attributes (so a type
+does not trivially "depend on" `System`).
 
 > **Signature-level only:** dependencies are computed from reflection metadata, so body-level references such
 > as `new Infra.Foo()`, static calls and local variables are **not** detected.

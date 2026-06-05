@@ -42,6 +42,19 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenOnlySystemReferenceIsImplicitBaseAndNullableAttributes_ShouldSucceed()
+			{
+				// OnlyLayer1's only authored dependency is Layer1.TargetA; the implicit object base type and the
+				// compiler-emitted nullable attributes must not count as a dependency on "System".
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenNamingFrameworkNamespaceThatIsReferenced_ShouldFail()
 			{
 				Type subject = typeof(FrameworkConsumer);

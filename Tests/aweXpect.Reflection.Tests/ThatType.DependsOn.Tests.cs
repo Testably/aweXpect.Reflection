@@ -321,6 +321,30 @@ public sealed partial class ThatType
 				await That(Act).Throws<ArgumentException>()
 					.WithMessage("At least one namespace must be specified.");
 			}
+
+			[Fact]
+			public async Task WhenNamespaceIsNull_ShouldThrowArgumentNullException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace, null!);
+
+				await That(Act).Throws<ArgumentNullException>()
+					.WithMessage("The namespaces must not contain null.*").AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithNullNamespace_ShouldThrowArgumentNullException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace).OrOn(Layer2Namespace, null!);
+
+				await That(Act).Throws<ArgumentNullException>()
+					.WithMessage("The namespaces must not contain null.*").AsWildcard();
+			}
 		}
 
 		public sealed class NegatedTests

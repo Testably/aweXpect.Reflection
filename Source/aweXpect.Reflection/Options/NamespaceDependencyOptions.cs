@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using aweXpect.Core;
@@ -25,6 +25,11 @@ internal sealed class NamespaceDependencyOptions
 		if (_namespaces.Count == 0)
 		{
 			throw new ArgumentException("At least one namespace must be specified.");
+		}
+
+		if (_namespaces.Contains(null!))
+		{
+			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not contain null.");
 		}
 	}
 
@@ -66,12 +71,18 @@ internal sealed class NamespaceDependencyOptions
 	/// </summary>
 	public void OrOn(IEnumerable<string> namespaces)
 	{
-		int countBefore = _namespaces.Count;
-		_namespaces.AddRange(namespaces);
-		if (_namespaces.Count == countBefore)
+		List<string> added = namespaces.ToList();
+		if (added.Count == 0)
 		{
 			throw new ArgumentException("At least one namespace must be specified.");
 		}
+
+		if (added.Contains(null!))
+		{
+			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not contain null.");
+		}
+
+		_namespaces.AddRange(added);
 	}
 
 	/// <summary>

@@ -173,6 +173,18 @@ public sealed partial class ThatType
 					              but it was <null>
 					              """);
 			}
+
+			[Fact]
+			public async Task WhenNoNamespaceIsSpecified_ShouldThrowArgumentException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn();
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage("At least one namespace must be specified.");
+			}
 		}
 
 		public sealed class NegatedTests

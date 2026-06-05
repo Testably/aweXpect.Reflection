@@ -62,6 +62,18 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenNoNamespaceIsSpecified_ShouldThrowArgumentException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn();
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage("At least one namespace must be specified.");
+			}
+
+			[Fact]
 			public async Task WhenDependingOnlyOnOwnNamespace_ShouldSucceed()
 			{
 				Type subject = typeof(ReferencesOwnNamespace);

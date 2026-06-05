@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using aweXpect.Core;
@@ -18,7 +19,13 @@ internal sealed class NamespaceDependencyOptions
 	private bool _excludeSubNamespaces;
 
 	public NamespaceDependencyOptions(IEnumerable<string> namespaces)
-		=> _namespaces.AddRange(namespaces);
+	{
+		_namespaces.AddRange(namespaces);
+		if (_namespaces.Count == 0)
+		{
+			throw new ArgumentException("At least one namespace must be specified.");
+		}
+	}
 
 	private NamespaceDependencyOptions(IEnumerable<string> namespaces, bool excludeSubNamespaces)
 	{

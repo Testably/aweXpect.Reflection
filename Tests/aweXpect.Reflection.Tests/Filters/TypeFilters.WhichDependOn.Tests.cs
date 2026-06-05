@@ -40,6 +40,15 @@ public sealed partial class TypeFilters
 
 				await That(types).Contains(typeof(ViaField));
 			}
+
+			[Fact]
+			public async Task WhenNoNamespaceIsSpecified_ShouldThrowArgumentException()
+			{
+				void Act() => _ = In.Namespace(ConsumersNamespace).WhichDependOn();
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage("At least one namespace must be specified.");
+			}
 		}
 	}
 }

@@ -412,20 +412,24 @@ await Expect.That(In.Namespace("MyApp.Api").Types())
 In.AllLoadedAssemblies().Types().WhichDependOn("System.Data")
 ```
 
-A type *depends on* every type referenced in its **declared signature**: the base type and implemented
-interfaces, generic arguments and parameter constraints, field/property/event types, indexer parameters,
-method return/parameter/generic-argument types, constructor parameters and the types of attributes applied to
-the type and its members (including the types passed as `typeof(…)` attribute arguments). Element types of
-arrays/pointers/by-ref and generic type arguments are unwrapped (`List<Infra.Foo>` depends on both `List<>`
-and `Infra.Foo`). Purely synthetic references that you never wrote are ignored: compiler-generated members,
-the implicit `object`/`ValueType`/`Enum` base type, and the compiler-emitted nullability attributes (so a type
-does not trivially "depend on" `System`).
+A type *depends on* every type referenced in its **declared signature**: the base type and directly
+implemented interfaces, generic arguments and parameter constraints, field/property/event types, indexer
+parameters, method return/parameter/generic-argument types, constructor parameters and the types of attributes
+applied to the type and its members (including `typeof(…)` and enum attribute arguments). Element types of
+arrays/pointers/by-ref and generic type arguments are unwrapped (`List<Infra.Foo>` depends on `List<Infra.Foo>`
+— which also matches a `List<>` target — and on `Infra.Foo`; a closed-generic target like `List<Infra.Bar>`
+only matches that exact construction). Purely synthetic references that you never wrote are ignored:
+compiler-generated members, the implicit `object`/`ValueType`/`Enum` base type, interfaces inherited from the
+base type, records' synthesized `IEquatable<T>`, delegates' runtime infrastructure (only the `Invoke`
+signature counts) and the attributes the compiler emits onto authored code (nullability metadata, required
+members, async/iterator state machines, …) — so a type does not trivially "depend on" `System`.
 
 > **Signature-level only:** dependencies are computed from reflection metadata, so body-level references such
 > as `new Infra.Foo()`, static calls and local variables are **not** detected.
 
 Namespace matching is ordinal and case-sensitive and, like `WithinNamespace`, includes sub-namespaces by
-default (so `Foo.Bar` matches `Foo.Bar.Baz` but not `Foo.BarBaz`). Each result is chainable:
+default (so `Foo.Bar` matches `Foo.Bar.Baz` but not `Foo.BarBaz`). A dependency in the **global namespace**
+can be targeted or allowed with an empty string (`""`). Each result is chainable:
 
 ```csharp
 // Widen the set with .Or(…)
@@ -456,6 +460,13 @@ await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().Or<SqlConne
 > [`ExcludedAssemblyPrefixes`](#assembly-exclusions) (so you never have to whitelist `System.*`), while a
 > type's **own namespace** is always allowed. `DependsOn` / `DoesNotDependOn` / `WhichDependOn` still match a
 > framework namespace when you name it explicitly (e.g. `DoesNotDependOn("System.Data")`).
+>
+> ⚠️ The default prefixes include `Microsoft`, so `DependOnlyOn` also ignores dependencies on e.g.
+> `Microsoft.EntityFrameworkCore`, `Microsoft.AspNetCore` and `Microsoft.Extensions.*` — a domain entity
+> inheriting `DbContext` does **not** fail `DependOnlyOn("MyApp.Domain")`. To forbid such dependencies, name
+> them explicitly (`DoesNotDependOn<DbContext>()` or `DoNotDependOn("Microsoft.EntityFrameworkCore")`) or
+> customize the [`ExcludedAssemblyPrefixes`](#assembly-exclusions). Note that the customization also affects
+> assembly scanning and assembly-level dependency assertions.
 
 ### Methods
 

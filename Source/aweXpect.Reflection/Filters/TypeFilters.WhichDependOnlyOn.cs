@@ -16,7 +16,9 @@ public static partial class TypeFilters
 	/// <remarks>
 	///     Dependencies on types whose assembly name starts with one of the
 	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored, so
-	///     that framework namespaces do not have to be listed explicitly.
+	///     that framework namespaces do not have to be listed explicitly. The default prefixes include
+	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
+	///     explicitly via <c>WhichDoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
 	public static Filtered.Types.NamespaceDependencyFilterResult WhichDependOnlyOn(
 		this Filtered.Types @this, params IEnumerable<string> namespaces)

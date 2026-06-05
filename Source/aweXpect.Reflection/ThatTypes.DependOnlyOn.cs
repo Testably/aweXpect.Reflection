@@ -26,7 +26,9 @@ public static partial class ThatTypes
 	/// <remarks>
 	///     Dependencies on types whose assembly name starts with one of the
 	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored, so
-	///     that framework namespaces do not have to be listed explicitly.
+	///     that framework namespaces do not have to be listed explicitly. The default prefixes include
+	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
+	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
 	public static NamespaceDependencyResult<IEnumerable<Type?>> DependOnlyOn(
 		this IThat<IEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
@@ -48,7 +50,9 @@ public static partial class ThatTypes
 	/// <remarks>
 	///     Dependencies on types whose assembly name starts with one of the
 	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored, so
-	///     that framework namespaces do not have to be listed explicitly.
+	///     that framework namespaces do not have to be listed explicitly. The default prefixes include
+	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
+	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
 	public static NamespaceDependencyResult<IAsyncEnumerable<Type?>> DependOnlyOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, params IEnumerable<string> namespaces)

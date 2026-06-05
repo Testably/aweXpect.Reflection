@@ -5,6 +5,10 @@ using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
 using Xunit.Sdk;
 
+// These tests intentionally exercise the non-generic DependsOn(Type) overload (open/closed generic
+// constructions and array targets), so the "prefer generic overload" hint does not apply here.
+#pragma warning disable CA2263
+
 namespace aweXpect.Reflection.Tests;
 
 public sealed partial class ThatType
@@ -192,7 +196,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ViaGenericArgument);
 
 				async Task Act()
-					=> await That(subject).DependsOn<List<TargetA>>();
+					=> await That(subject).DependsOn(typeof(List<TargetA>));
 
 				await That(Act).DoesNotThrow();
 			}
@@ -215,7 +219,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ViaGenericArgument);
 
 				async Task Act()
-					=> await That(subject).DependsOn<List<TargetB>>();
+					=> await That(subject).DependsOn(typeof(List<TargetB>));
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
@@ -234,8 +238,8 @@ public sealed partial class ThatType
 
 				async Task Act()
 				{
-					await That(subject).DependsOn<TargetA[]>();
-					await That(subject).DependsOn<TargetA>();
+					await That(subject).DependsOn(typeof(TargetA[]));
+					await That(subject).DependsOn(typeof(TargetA));
 				}
 
 				await That(Act).DoesNotThrow();

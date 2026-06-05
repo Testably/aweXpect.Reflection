@@ -110,29 +110,8 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("all depend only on ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			string itemIndentation = (indentation ?? string.Empty) + "  ";
-			stringBuilder.Append(it).Append(" contained types with disallowed dependencies [");
-			for (int index = 0; index < NotMatching.Length; index++)
-			{
-				Type? type = NotMatching[index];
-				stringBuilder.Append(Environment.NewLine).Append(itemIndentation)
-					.Append(Formatter.Format(type));
-
-				// A null item has no violations to list; it fails because it cannot satisfy the expectation.
-				if (type is not null && _violations.TryGetValue(type, out IReadOnlyList<string>? violations))
-				{
-					stringBuilder.Append(" depends on ").Append(Formatter.Format(violations));
-				}
-
-				if (index < NotMatching.Length - 1)
-				{
-					stringBuilder.Append(',');
-				}
-			}
-
-			stringBuilder.Append(Environment.NewLine).Append(indentation).Append(']');
-		}
+			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, it,
+				" contained types with disallowed dependencies ", NotMatching, _violations, indentation);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all depend only on ").Append(options.Describe());

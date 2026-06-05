@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -126,28 +125,9 @@ public static partial class ThatAssemblies
 			=> stringBuilder.Append("all have dependencies only on ").Append(DescribeAllowed());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			string itemIndentation = (indentation ?? string.Empty) + "  ";
-			stringBuilder.Append(it).Append(" contained assemblies with disallowed dependencies [");
-			for (int index = 0; index < NotMatching.Length; index++)
-			{
-				Assembly? assembly = NotMatching[index];
-				string?[] violations =
-					assembly is not null && _disallowedDependencies.TryGetValue(assembly, out string?[]? value)
-						? value
-						: [];
-				stringBuilder.Append(Environment.NewLine).Append(itemIndentation)
-					.Append(Formatter.Format(assembly))
-					.Append(" depends on ")
-					.Append(Formatter.Format(violations));
-				if (index < NotMatching.Length - 1)
-				{
-					stringBuilder.Append(',');
-				}
-			}
-
-			stringBuilder.Append(Environment.NewLine).Append(indentation).Append(']');
-		}
+			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, it,
+				" contained assemblies with disallowed dependencies ", NotMatching, _disallowedDependencies,
+				indentation);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have dependencies only on ").Append(DescribeAllowed());

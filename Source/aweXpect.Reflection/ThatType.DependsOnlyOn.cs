@@ -17,8 +17,10 @@ public static partial class ThatType
 	///     <paramref name="namespaces" /> (including sub-namespaces), its own namespace or framework assemblies.
 	/// </summary>
 	/// <remarks>
-	///     Dependencies on types whose assembly name starts with one of the
-	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored, so
+	///     Dependencies on types whose assembly name matches one of the
+	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> at a
+	///     name-segment boundary (<c>System</c> covers <c>System.Text.Json</c>, but not
+	///     <c>SystemsBiology.Core</c>) are ignored, so
 	///     that framework namespaces do not have to be listed explicitly. The default prefixes include
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoesNotDependOn</c> or customize the prefixes.

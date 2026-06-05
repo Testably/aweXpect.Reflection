@@ -62,7 +62,14 @@ internal sealed class NamespaceDependencyOptions
 	///     Widens the set of targeted/allowed namespaces by the given <paramref name="namespaces" />.
 	/// </summary>
 	public void Or(IEnumerable<string> namespaces)
-		=> _namespaces.AddRange(namespaces);
+	{
+		int countBefore = _namespaces.Count;
+		_namespaces.AddRange(namespaces);
+		if (_namespaces.Count == countBefore)
+		{
+			throw new ArgumentException("At least one namespace must be specified.");
+		}
+	}
 
 	/// <summary>
 	///     Sets how sub-namespaces are excluded for the whole expression.
@@ -76,6 +83,12 @@ internal sealed class NamespaceDependencyOptions
 	public bool Matches(string? dependencyNamespace)
 		=> _namespaces.Any(@namespace
 			=> TypeHelpers.NamespaceMatches(dependencyNamespace, @namespace, !ExcludeSubNamespaces));
+
+	/// <summary>
+	///     Checks whether the <paramref name="type" /> has at least one dependency in a configured namespace.
+	/// </summary>
+	public bool IsMatchedBy(Type type)
+		=> type.ResolveDependencies().Any(dependency => Matches(dependency.Namespace));
 
 	/// <summary>
 	///     Describes the configured namespaces for an expectation message.

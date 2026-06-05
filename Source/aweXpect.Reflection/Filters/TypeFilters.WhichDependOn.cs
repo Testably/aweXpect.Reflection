@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using aweXpect.Reflection.Collections;
-using aweXpect.Reflection.Helpers;
 using aweXpect.Reflection.Options;
 
 namespace aweXpect.Reflection;
@@ -17,7 +15,7 @@ public static partial class TypeFilters
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
 		=> new(new NamespaceDependencyOptions(namespaces),
 			options => @this.Which(Filter.Suffix<Type>(
-				type => type.ResolveDependencies().Any(dependency => options.Matches(dependency.Namespace)),
+				type => options.IsMatchedBy(type),
 				() => $"which depend on {options.Describe()} ")));
 
 	/// <summary>
@@ -28,6 +26,6 @@ public static partial class TypeFilters
 		this Filtered.Types @this, params IEnumerable<string> namespaces)
 		=> new(new NamespaceDependencyOptions(namespaces),
 			options => @this.Which(Filter.Suffix<Type>(
-				type => !type.ResolveDependencies().Any(dependency => options.Matches(dependency.Namespace)),
+				type => !options.IsMatchedBy(type),
 				() => $"which do not depend on {options.Describe()} ")));
 }

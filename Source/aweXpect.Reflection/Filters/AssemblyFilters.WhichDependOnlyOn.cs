@@ -1,10 +1,10 @@
-using System;
 using System.Linq;
 using System.Reflection;
 using aweXpect.Core;
 using aweXpect.Customization;
 using aweXpect.Options;
 using aweXpect.Reflection.Collections;
+using aweXpect.Reflection.Helpers;
 
 namespace aweXpect.Reflection;
 
@@ -14,8 +14,10 @@ public static partial class AssemblyFilters
 	///     Filter for assemblies which have dependencies only on the <paramref name="allowed" /> assemblies.
 	/// </summary>
 	/// <remarks>
-	///     References to assemblies whose name starts with one of the
-	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored,
+	///     References to assemblies whose name matches one of the
+	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> at a
+	///     name-segment boundary (<c>System</c> covers <c>System.Text.Json</c>, but not
+	///     <c>SystemsBiology.Core</c>) are ignored,
 	///     so that framework assemblies do not have to be listed explicitly.
 	/// </remarks>
 	public static Filtered.Assemblies.StringEqualityResultType WhichDependOnlyOn(
@@ -27,7 +29,7 @@ public static partial class AssemblyFilters
 				{
 					string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
 					return assembly.GetReferencedAssemblies().AllAsync(async dependency =>
-						prefixes.Any(prefix => dependency.Name?.StartsWith(prefix, StringComparison.Ordinal) == true) ||
+						dependency.Name.IsExcludedAssemblyName(prefixes) ||
 						await allowed.AnyAsync(expected => options.AreConsideredEqual(dependency.Name, expected)));
 				},
 				() => allowed.Length == 0

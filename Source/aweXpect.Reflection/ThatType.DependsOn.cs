@@ -93,8 +93,7 @@ public static partial class ThatType
 		: ConstraintResult.WithNotNullValue<Type?>(it, grammars),
 			IValueConstraint<Type?>
 	{
-		private string[] _dependencyNamespaces = [];
-		private string[] _matchingNamespaces = [];
+		private Type[] _dependencies = [];
 
 		public ConstraintResult IsMetBy(Type? actual)
 		{
@@ -105,21 +104,21 @@ public static partial class ThatType
 				return this;
 			}
 
-			Type[] dependencies = actual.ResolveDependencies();
-			_dependencyNamespaces = dependencies
-				.Select(dependency => dependency.Namespace ?? "<global namespace>")
-				.Distinct(StringComparer.Ordinal)
-				.OrderBy(@namespace => @namespace, StringComparer.Ordinal)
-				.ToArray();
-			_matchingNamespaces = dependencies
-				.Where(dependency => options.Matches(dependency.Namespace))
-				.Select(dependency => dependency.Namespace ?? "<global namespace>")
-				.Distinct(StringComparer.Ordinal)
-				.OrderBy(@namespace => @namespace, StringComparer.Ordinal)
-				.ToArray();
-			Outcome = _matchingNamespaces.Length > 0 ? Outcome.Success : Outcome.Failure;
+			_dependencies = actual.ResolveDependencies();
+			Outcome = _dependencies.Any(dependency => options.Matches(dependency.Namespace))
+				? Outcome.Success
+				: Outcome.Failure;
 			return this;
 		}
+
+		// The sorted namespace lists are only needed for failure messages, so they are built lazily here
+		// instead of on every (typically succeeding) evaluation.
+		private static string[] ToSortedNamespaces(IEnumerable<Type> dependencies)
+			=> dependencies
+				.Select(dependency => dependency.Namespace ?? TypeHelpers.GlobalNamespaceDisplay)
+				.Distinct(StringComparer.Ordinal)
+				.OrderBy(@namespace => @namespace, StringComparer.Ordinal)
+				.ToArray();
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("depends on ").Append(options.Describe());
@@ -127,7 +126,7 @@ public static partial class ThatType
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
 			stringBuilder.Append(It).Append(" depended on ");
-			Formatter.Format(stringBuilder, _dependencyNamespaces);
+			Formatter.Format(stringBuilder, ToSortedNamespaces(_dependencies));
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -136,7 +135,8 @@ public static partial class ThatType
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
 			stringBuilder.Append(It).Append(" depended on ");
-			Formatter.Format(stringBuilder, _matchingNamespaces);
+			Formatter.Format(stringBuilder,
+				ToSortedNamespaces(_dependencies.Where(dependency => options.Matches(dependency.Namespace))));
 		}
 	}
 
@@ -147,7 +147,7 @@ public static partial class ThatType
 		: ConstraintResult.WithNotNullValue<Type?>(it, grammars),
 			IValueConstraint<Type?>
 	{
-		private Type[] _matchingTypes = [];
+		private Type[] _dependencies = [];
 
 		public ConstraintResult IsMetBy(Type? actual)
 		{
@@ -158,12 +158,8 @@ public static partial class ThatType
 				return this;
 			}
 
-			_matchingTypes = actual.ResolveDependencies()
-				.Where(options.Matches)
-				.Distinct()
-				.OrderBy(type => type.FullName ?? type.Name, StringComparer.Ordinal)
-				.ToArray();
-			Outcome = _matchingTypes.Length > 0 ? Outcome.Success : Outcome.Failure;
+			_dependencies = actual.ResolveDependencies();
+			Outcome = _dependencies.Any(options.Matches) ? Outcome.Success : Outcome.Failure;
 			return this;
 		}
 
@@ -178,8 +174,13 @@ public static partial class ThatType
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
+			// The sorted matching types are only needed for this failure message, so they are built lazily.
 			stringBuilder.Append(It).Append(" depended on ");
-			Formatter.Format(stringBuilder, _matchingTypes);
+			Formatter.Format(stringBuilder, _dependencies
+				.Where(options.Matches)
+				.Distinct()
+				.OrderBy(type => type.FullName ?? type.Name, StringComparer.Ordinal)
+				.ToArray());
 		}
 	}
 }

@@ -18,7 +18,7 @@ internal sealed class TypeDependencyOptions
 	private readonly List<Type> _types = [];
 
 	public TypeDependencyOptions(Type type)
-		=> _types.Add(type);
+		=> _types.Add(type ?? throw new ArgumentNullException(nameof(type)));
 
 	/// <summary>
 	///     The targeted types.
@@ -29,7 +29,7 @@ internal sealed class TypeDependencyOptions
 	///     Widens the set of targeted types by the given <paramref name="type" />.
 	/// </summary>
 	public void Or(Type type)
-		=> _types.Add(type);
+		=> _types.Add(type ?? throw new ArgumentNullException(nameof(type)));
 
 	/// <summary>
 	///     Checks whether the <paramref name="dependency" /> references any of the configured types.

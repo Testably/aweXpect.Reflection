@@ -421,11 +421,14 @@ arrays/pointers/by-ref and generic type arguments are unwrapped (`List<Infra.Foo
 only matches that exact construction). Purely synthetic references that you never wrote are ignored:
 compiler-generated members, the implicit `object`/`ValueType`/`Enum` base type, interfaces inherited from the
 base type, records' synthesized `IEquatable<T>`, delegates' runtime infrastructure (only the `Invoke`
-signature counts) and the attributes the compiler emits onto authored code (nullability metadata, required
-members, async/iterator state machines, …) — so a type does not trivially "depend on" `System`.
+signature counts), enums' underlying-value plumbing and the attributes the compiler emits onto authored code
+(nullability metadata, required members, async/iterator state machines, …) — so the compiler's own plumbing
+never counts. Types you write in authored signatures always do, including primitives and `void` return types
+(namespace `System`) — in practice, almost every type with members *does* depend on `System`.
 
 > **Signature-level only:** dependencies are computed from reflection metadata, so body-level references such
-> as `new Infra.Foo()`, static calls and local variables are **not** detected.
+> as `new Infra.Foo()`, static calls and local variables are **not** detected. Function-pointer signatures
+> (`delegate*<…>`) are not decomposed either — the types inside them are invisible to dependency assertions.
 
 Namespace matching is ordinal and case-sensitive and, like `WithinNamespace`, includes sub-namespaces by
 default (so `Foo.Bar` matches `Foo.Bar.Baz` but not `Foo.BarBaz`). A dependency in the **global namespace**
@@ -456,8 +459,10 @@ await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().Or<SqlConne
 ```
 
 > **Framework dependencies are ignored unless you name one explicitly.** `DependOnlyOn` ignores dependencies
-> whose assembly name starts with one of the
-> [`ExcludedAssemblyPrefixes`](#assembly-exclusions) (so you never have to whitelist `System.*`), while a
+> whose assembly name matches one of the
+> [`ExcludedAssemblyPrefixes`](#assembly-exclusions) at a name-segment boundary — `System` covers `System`
+> and `System.Text.Json`, but not an assembly named `SystemsBiology` (so you never have to whitelist
+> `System.*` and unrelated assemblies are never swallowed by a prefix), while a
 > type's **own namespace** is always allowed. `DependsOn` / `DoesNotDependOn` / `WhichDependOn` still match a
 > framework namespace when you name it explicitly (e.g. `DoesNotDependOn("System.Data")`).
 >
@@ -809,6 +814,10 @@ By default, assemblies whose name starts with one of the following prefixes are 
 
 `mscorlib`, `System`, `Microsoft`, `netstandard`, `WindowsBase`, `JetBrains`, `xunit`, `Castle`,
 `DynamicProxyGenAssembly2`.
+
+The dependency assertions (`DependsOnlyOn` / `DependOnlyOn` / `WhichDependOnlyOn`, on both assemblies and
+types) use the same prefixes, matched at a name-segment boundary: `System` covers `System` and
+`System.Text.Json`, but not an assembly named `SystemsBiology`.
 
 Customize this via `Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes`. `Set(…)` replaces the
 list and returns a scope that restores the previous value when disposed:

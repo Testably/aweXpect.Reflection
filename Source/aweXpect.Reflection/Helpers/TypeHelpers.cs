@@ -734,7 +734,9 @@ internal static class TypeHelpers
 		}
 
 		return includeSubNamespaces &&
-		       actualNamespace.StartsWith(expectedNamespace + ".", StringComparison.Ordinal);
+		       actualNamespace.Length > expectedNamespace.Length &&
+		       actualNamespace[expectedNamespace.Length] == '.' &&
+		       actualNamespace.StartsWith(expectedNamespace, StringComparison.Ordinal);
 	}
 
 	/// <summary>
@@ -764,12 +766,17 @@ internal static class TypeHelpers
 	}
 
 	/// <summary>
-	///     Determines whether the <paramref name="type" /> belongs to a framework assembly, i.e. its assembly name
-	///     starts with one of the <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" />.
+	///     The display text for the global namespace in expectation and failure messages.
 	/// </summary>
-	internal static bool IsFrameworkDependency(this Type type)
+	internal const string GlobalNamespaceDisplay = "<global namespace>";
+
+	/// <summary>
+	///     Determines whether the <paramref name="type" /> belongs to a framework assembly, i.e. its assembly name
+	///     matches one of the <paramref name="excludedPrefixes" /> at a name-segment boundary
+	///     (see <see cref="AssemblyHelpers.IsExcludedAssemblyName" />).
+	/// </summary>
+	private static bool IsFrameworkDependency(this Type type, string[] excludedPrefixes)
 	{
-		string[] prefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
 		string? assemblyName;
 		try
 		{
@@ -784,8 +791,7 @@ internal static class TypeHelpers
 			return false;
 		}
 
-		return assemblyName is not null &&
-		       prefixes.Any(prefix => assemblyName.StartsWith(prefix, StringComparison.Ordinal));
+		return assemblyName.IsExcludedAssemblyName(excludedPrefixes);
 	}
 
 	/// <summary>
@@ -802,23 +808,17 @@ internal static class TypeHelpers
 		this Type type, NamespaceDependencyOptions allowed)
 	{
 		string? ownNamespace = type.Namespace;
+		string[] excludedPrefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
 		List<string> violations = [];
 		HashSet<string> seen = new(StringComparer.Ordinal);
 		foreach (Type dependency in type.ResolveDependencies())
 		{
-			if (dependency.IsFrameworkDependency())
+			if (!IsDependencyViolation(dependency, ownNamespace, allowed, excludedPrefixes))
 			{
 				continue;
 			}
 
-			string? dependencyNamespace = dependency.Namespace;
-			if (IsOwnNamespace(dependencyNamespace, ownNamespace, allowed.IncludeOwnSubNamespaces) ||
-			    allowed.Matches(dependencyNamespace))
-			{
-				continue;
-			}
-
-			string display = dependencyNamespace ?? "<global namespace>";
+			string display = dependency.Namespace ?? GlobalNamespaceDisplay;
 			if (seen.Add(display))
 			{
 				violations.Add(display);
@@ -827,6 +827,35 @@ internal static class TypeHelpers
 
 		violations.Sort(StringComparer.Ordinal);
 		return violations;
+	}
+
+	/// <summary>
+	///     Checks whether the <paramref name="type" /> has at least one dependency namespace violation, stopping at
+	///     the first one.
+	/// </summary>
+	/// <remarks>
+	///     Same rules as <see cref="GetDependencyNamespaceViolations" />, for callers (like filters) that only need
+	///     a verdict and not the violation list.
+	/// </remarks>
+	internal static bool HasDependencyNamespaceViolations(this Type type, NamespaceDependencyOptions allowed)
+	{
+		string? ownNamespace = type.Namespace;
+		string[] excludedPrefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
+		return type.ResolveDependencies()
+			.Any(dependency => IsDependencyViolation(dependency, ownNamespace, allowed, excludedPrefixes));
+	}
+
+	private static bool IsDependencyViolation(
+		Type dependency, string? ownNamespace, NamespaceDependencyOptions allowed, string[] excludedPrefixes)
+	{
+		if (dependency.IsFrameworkDependency(excludedPrefixes))
+		{
+			return false;
+		}
+
+		string? dependencyNamespace = dependency.Namespace;
+		return !IsOwnNamespace(dependencyNamespace, ownNamespace, allowed.IncludeOwnSubNamespaces) &&
+		       !allowed.Matches(dependencyNamespace);
 	}
 
 	private static bool IsOwnNamespace(string? dependencyNamespace, string? ownNamespace, bool includeSubNamespaces)
@@ -861,7 +890,9 @@ internal static class TypeHelpers
 	///     parameters are skipped (their constraints are kept), and the result is de-duplicated.
 	///     <para />
 	///     This is signature-level only: references that appear merely in method bodies (e.g. <c>new Infra.Foo()</c>,
-	///     static calls or locals) are not detected.
+	///     static calls or locals) are not detected. Function-pointer signatures (<c>delegate*&lt;…&gt;</c>) are
+	///     not decomposed either: the parameter and return types inside them are invisible to dependency
+	///     assertions (the reflection APIs to traverse them only exist on .NET 8+).
 	/// </remarks>
 	internal static IEnumerable<Type> GetSignatureDependencies(this Type type)
 	{
@@ -1000,15 +1031,30 @@ internal static class TypeHelpers
 			// dependencies the author wrote.
 			IEnumerable<CustomAttributeData> attributes = SafeAttributes(member);
 
-			// For required members, the compiler pairs [Obsolete] with [CompilerFeatureRequired] on the
-			// constructor; only that compiler-emitted [Obsolete] is skipped, an authored one still counts.
+			// For required members, the compiler pairs an [Obsolete] carrying a fixed marker message with
+			// [CompilerFeatureRequired] on the constructor; only that compiler-emitted [Obsolete] is skipped,
+			// an authored one (even on the same constructor) still counts.
 			bool hasCompilerFeatureRequired = attributes.Any(data
 				=> data.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerFeatureRequiredAttribute");
+
+			// The compiler emits [DefaultMember("Item")] onto every type declaring an indexer; an authored
+			// [DefaultMember] cannot coexist with an indexer (CS0646), so it is only skipped in that case.
+			bool hasIndexer = member is Type type && HasIndexer(type);
+
+			// The compiler emits [DebuggerStepThrough] onto authored async methods, always paired with the
+			// async state machine attribute; an authored [DebuggerStepThrough] elsewhere still counts.
+			bool hasAsyncStateMachine = attributes.Any(data => data.AttributeType.FullName
+				is "System.Runtime.CompilerServices.AsyncStateMachineAttribute"
+				or "System.Runtime.CompilerServices.AsyncIteratorStateMachineAttribute");
 
 			foreach (CustomAttributeData attribute in attributes
 				         .Where(data => !data.AttributeType.IsCompilerGenerated() &&
 				                        !IsCompilerEmittedAttribute(data.AttributeType) &&
-				                        !(hasCompilerFeatureRequired && data.AttributeType == typeof(ObsoleteAttribute))))
+				                        !(hasCompilerFeatureRequired && IsRequiredMembersObsolete(data)) &&
+				                        !(hasIndexer &&
+				                          data.AttributeType.FullName == "System.Reflection.DefaultMemberAttribute") &&
+				                        !(hasAsyncStateMachine &&
+				                          data.AttributeType.FullName == "System.Diagnostics.DebuggerStepThroughAttribute")))
 			{
 				Add(attribute.AttributeType);
 
@@ -1023,7 +1069,11 @@ internal static class TypeHelpers
 
 		public void AddFields(Type type)
 		{
-			foreach (FieldInfo field in Safe(() => type.GetFields(Flags)).Where(m => !m.IsCompilerGenerated()))
+			// Special-name fields are runtime-supplied, not authored: most importantly every enum's `value__`
+			// instance field (typed as the underlying integral type), which would otherwise make every enum
+			// trivially "depend on" System.
+			foreach (FieldInfo field in Safe(() => type.GetFields(Flags))
+				         .Where(m => !m.IsCompilerGenerated() && !m.IsSpecialName))
 			{
 				// Member signature types are resolved lazily on first access and can throw when the defining
 				// assembly is missing, so each access is guarded individually to skip only the unresolvable member.
@@ -1108,8 +1158,15 @@ internal static class TypeHelpers
 		/// <summary>
 		///     Attributes the C# compiler emits onto authored code, which are therefore not dependencies the
 		///     author wrote: nullability metadata, required members, async/iterator state machines, extension
-		///     methods, readonly/ref structs, tuple names, <c>dynamic</c> and <c>decimal</c> constants.
+		///     methods, readonly/ref structs, fixed buffers, tuple names, <c>dynamic</c> and <c>decimal</c>
+		///     constants.
 		/// </summary>
+		/// <remarks>
+		///     Only attribute types the author can never legally apply in the same situation belong here.
+		///     Attributes that can also be authored ([Obsolete], [DebuggerStepThrough], [DefaultMember]) are
+		///     instead skipped conditionally in <see cref="AddAttributes" />, based on the co-occurrence pattern
+		///     the compiler produces.
+		/// </remarks>
 		private static readonly HashSet<string> CompilerEmittedAttributes = new(StringComparer.Ordinal)
 		{
 			"System.Runtime.CompilerServices.NullableAttribute",
@@ -1128,11 +1185,45 @@ internal static class TypeHelpers
 			"System.Runtime.CompilerServices.TupleElementNamesAttribute",
 			"System.Runtime.CompilerServices.DynamicAttribute",
 			"System.Runtime.CompilerServices.DecimalConstantAttribute",
-			"System.Diagnostics.DebuggerStepThroughAttribute",
+			"System.Runtime.CompilerServices.FixedBufferAttribute",
 		};
 
 		private static bool IsCompilerEmittedAttribute(Type attributeType)
 			=> attributeType.FullName is { } fullName && CompilerEmittedAttributes.Contains(fullName);
+
+		/// <summary>
+		///     The marker message Roslyn puts into the <see cref="ObsoleteAttribute" /> it emits (next to
+		///     <c>[CompilerFeatureRequired]</c>) onto constructors of types with required members.
+		/// </summary>
+		private const string RequiredMembersObsoleteMessage =
+			"Constructors of types with required members are not supported in this version of your compiler.";
+
+		private static bool IsRequiredMembersObsolete(CustomAttributeData data)
+		{
+			if (data.AttributeType != typeof(ObsoleteAttribute))
+			{
+				return false;
+			}
+
+			try
+			{
+				return data.ConstructorArguments.Count > 0 &&
+				       data.ConstructorArguments[0].Value is RequiredMembersObsoleteMessage;
+			}
+			catch (Exception exception) when (exception
+				                                  is TypeLoadException
+				                                  or FileNotFoundException
+				                                  or FileLoadException
+				                                  or BadImageFormatException)
+			{
+				// When the arguments cannot be resolved, the compiler-emitted pairing is assumed.
+				return true;
+			}
+		}
+
+		private static bool HasIndexer(Type type)
+			=> Safe(() => type.GetProperties(Flags))
+				.Any(property => Safe(property.GetIndexParameters).Length > 0);
 
 		private void AddAttributeArgument(CustomAttributeTypedArgument argument)
 		{
@@ -1167,6 +1258,12 @@ internal static class TypeHelpers
 		///     (e.g. <c>List&lt;Foo&gt;</c>), so that they can be matched exactly; their generic type arguments are
 		///     additionally contributed as separate dependencies.
 		/// </summary>
+		/// <remarks>
+		///     Known limitation: function-pointer types (<c>delegate*&lt;…&gt;</c>) are yielded as-is; the
+		///     parameter and return types inside their signature are not collected, because
+		///     <c>Type.GetFunctionPointerParameterTypes()</c> only exists on .NET 8+ and the unwrap must behave
+		///     identically on all target frameworks.
+		/// </remarks>
 		private static IEnumerable<Type> Unwrap(Type? type)
 		{
 			if (type is null)

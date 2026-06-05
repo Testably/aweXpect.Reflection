@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
@@ -83,7 +82,7 @@ public static partial class ThatTypes
 #endif
 
 	private static bool DependsOnNamespace(Type? type, NamespaceDependencyOptions options)
-		=> type is not null && type.ResolveDependencies().Any(dependency => options.Matches(dependency.Namespace));
+		=> type is not null && options.IsMatchedBy(type);
 
 	private sealed class DependOnConstraint(
 		string it,

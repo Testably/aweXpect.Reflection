@@ -23,8 +23,10 @@ public static partial class ThatAssemblies
 	///     the <paramref name="allowed" /> assemblies.
 	/// </summary>
 	/// <remarks>
-	///     References to assemblies whose name starts with one of the
-	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored,
+	///     References to assemblies whose name matches one of the
+	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> at a
+	///     name-segment boundary (<c>System</c> covers <c>System.Text.Json</c>, but not
+	///     <c>SystemsBiology.Core</c>) are ignored,
 	///     so that framework assemblies do not have to be listed explicitly.
 	/// </remarks>
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> DependOnlyOn(
@@ -44,8 +46,10 @@ public static partial class ThatAssemblies
 	///     the <paramref name="allowed" /> assemblies.
 	/// </summary>
 	/// <remarks>
-	///     References to assemblies whose name starts with one of the
-	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> are ignored,
+	///     References to assemblies whose name matches one of the
+	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> at a
+	///     name-segment boundary (<c>System</c> covers <c>System.Text.Json</c>, but not
+	///     <c>SystemsBiology.Core</c>) are ignored,
 	///     so that framework assemblies do not have to be listed explicitly.
 	/// </remarks>
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>>
@@ -99,7 +103,7 @@ public static partial class ThatAssemblies
 			List<string?> violations = [];
 			foreach (AssemblyName dependency in assembly.GetReferencedAssemblies())
 			{
-				if (prefixes.Any(prefix => dependency.Name?.StartsWith(prefix, StringComparison.Ordinal) == true))
+				if (dependency.Name.IsExcludedAssemblyName(prefixes))
 				{
 					continue;
 				}

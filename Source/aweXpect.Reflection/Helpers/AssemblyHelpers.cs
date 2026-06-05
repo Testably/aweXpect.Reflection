@@ -85,6 +85,21 @@ internal static class AssemblyHelpers
 		=> MapFrameworkName(assembly?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkName);
 
 	/// <summary>
+	///     Checks if the <paramref name="assemblyName" /> matches one of the <paramref name="excludedPrefixes" />
+	///     at a name-segment boundary, i.e. it equals the prefix or continues with a <c>.</c> after it.
+	/// </summary>
+	/// <remarks>
+	///     The boundary check prevents unrelated assemblies from being swallowed by a framework prefix:
+	///     <c>System</c> matches <c>System</c> and <c>System.Text.Json</c>, but not <c>SystemsBiology.Core</c>.
+	/// </remarks>
+	public static bool IsExcludedAssemblyName(this string? assemblyName, string[] excludedPrefixes)
+		=> assemblyName is not null &&
+		   excludedPrefixes.Any(prefix
+			   => assemblyName.Length >= prefix.Length &&
+			      (assemblyName.Length == prefix.Length || assemblyName[prefix.Length] == '.') &&
+			      assemblyName.StartsWith(prefix, StringComparison.Ordinal));
+
+	/// <summary>
 	///     Checks if the <paramref name="assembly" /> is strong named.
 	/// </summary>
 	/// <remarks>

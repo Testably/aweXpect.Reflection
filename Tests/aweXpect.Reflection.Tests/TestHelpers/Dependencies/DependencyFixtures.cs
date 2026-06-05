@@ -24,6 +24,12 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1
 		public Type Type { get; } = type;
 	}
 
+	[AttributeUsage(AttributeTargets.All)]
+	public sealed class TargetSeverityAttribute(Layer2.TargetSeverity severity) : Attribute
+	{
+		public Layer2.TargetSeverity Severity { get; } = severity;
+	}
+
 	public delegate void TargetEventHandler();
 
 	public class TargetGeneric<T>;
@@ -37,6 +43,12 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1.Sub
 namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2
 {
 	public class TargetB;
+
+	public enum TargetSeverity
+	{
+		Default,
+		High,
+	}
 }
 
 namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers
@@ -168,6 +180,11 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 	{
 		private TargetA[] _targets;
 	}
+
+	// Layer2's TargetSeverity is referenced ONLY through the attribute's enum argument; the attribute
+	// type TargetSeverityAttribute itself lives in Layer1.
+	[TargetSeverity(Layer2.TargetSeverity.High)]
+	public class ViaEnumAttributeArgument;
 
 	public class WithAsyncMethod
 	{

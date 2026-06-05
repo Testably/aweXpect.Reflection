@@ -1152,6 +1152,13 @@ internal static class TypeHelpers
 					AddAttributeArgument(element);
 				}
 			}
+			else if (argument.ArgumentType.IsEnum)
+			{
+				// An enum constant in an attribute application (e.g. [Configured(Severity.High)]) is a
+				// verbatim authored reference to the enum type, even though its value is boxed as the
+				// underlying integral type.
+				Add(argument.ArgumentType);
+			}
 		}
 
 		/// <summary>

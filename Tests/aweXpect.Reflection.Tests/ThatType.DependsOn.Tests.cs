@@ -146,6 +146,19 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTypeReferencesEnumOnlyViaAttributeArgument_ShouldSucceed()
+			{
+				// Layer2's TargetSeverity is referenced ONLY through the attribute's enum argument; the
+				// attribute type itself lives in Layer1.
+				Type subject = typeof(ViaEnumAttributeArgument);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer2Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeDoesNotReferenceSpecificType_ShouldFail()
 			{
 				Type subject = typeof(ViaField);

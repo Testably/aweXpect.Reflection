@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -1026,9 +1027,6 @@ internal static class TypeHelpers
 
 		public void AddAttributes(MemberInfo member)
 		{
-			// Neither compiler-generated/embedded attributes nor the BCL attributes the compiler emits onto
-			// authored code (nullability, required members, async/iterator state machines, ...) are
-			// dependencies the author wrote.
 			IEnumerable<CustomAttributeData> attributes = SafeAttributes(member);
 
 			// For required members, the compiler pairs an [Obsolete] carrying a fixed marker message with
@@ -1041,20 +1039,28 @@ internal static class TypeHelpers
 			// [DefaultMember] cannot coexist with an indexer (CS0646), so it is only skipped in that case.
 			bool hasIndexer = member is Type type && HasIndexer(type);
 
-			// The compiler emits [DebuggerStepThrough] onto authored async methods, always paired with the
-			// async state machine attribute; an authored [DebuggerStepThrough] elsewhere still counts.
-			bool hasAsyncStateMachine = attributes.Any(data => data.AttributeType.FullName
-				is "System.Runtime.CompilerServices.AsyncStateMachineAttribute"
-				or "System.Runtime.CompilerServices.AsyncIteratorStateMachineAttribute");
+			bool skipDebuggerStepThrough = IsCompilerEmittedDebuggerStepThrough(member, attributes);
 
+			AddAttributes(attributes, data
+				=> (hasCompilerFeatureRequired && IsRequiredMembersObsolete(data)) ||
+				   (hasIndexer && data.AttributeType.FullName == "System.Reflection.DefaultMemberAttribute") ||
+				   (skipDebuggerStepThrough &&
+				    data.AttributeType.FullName == "System.Diagnostics.DebuggerStepThroughAttribute"));
+		}
+
+		public void AddAttributes(ParameterInfo parameter)
+			=> AddAttributes(SafeAttributes(parameter), null);
+
+		private void AddAttributes(IEnumerable<CustomAttributeData> attributes,
+			Func<CustomAttributeData, bool>? isCompilerEmittedPairing)
+		{
+			// Neither compiler-generated/embedded attributes nor the BCL attributes the compiler emits onto
+			// authored code (nullability, required members, async/iterator state machines, ...) are
+			// dependencies the author wrote.
 			foreach (CustomAttributeData attribute in attributes
 				         .Where(data => !data.AttributeType.IsCompilerGenerated() &&
 				                        !IsCompilerEmittedAttribute(data.AttributeType) &&
-				                        !(hasCompilerFeatureRequired && IsRequiredMembersObsolete(data)) &&
-				                        !(hasIndexer &&
-				                          data.AttributeType.FullName == "System.Reflection.DefaultMemberAttribute") &&
-				                        !(hasAsyncStateMachine &&
-				                          data.AttributeType.FullName == "System.Diagnostics.DebuggerStepThroughAttribute")))
+				                        isCompilerEmittedPairing?.Invoke(data) != true))
 			{
 				Add(attribute.AttributeType);
 
@@ -1064,6 +1070,84 @@ internal static class TypeHelpers
 				{
 					AddAttributeArgument(argument);
 				}
+			}
+		}
+
+		/// <summary>
+		///     Determines whether a <c>[DebuggerStepThrough]</c> on the <paramref name="member" /> is
+		///     compiler-emitted and must therefore be skipped.
+		/// </summary>
+		/// <remarks>
+		///     In Debug builds the compiler emits <c>[DebuggerStepThrough]</c> onto the kickoff method of
+		///     authored async methods (next to the state machine attribute); in Release builds it emits none.
+		///     An authored <c>[DebuggerStepThrough]</c> therefore shows up as a duplicate in Debug builds and
+		///     as the only occurrence in Release builds — only a single occurrence in a Debug-built assembly
+		///     is (indistinguishably) compiler-emitted. An authored <c>[DebuggerStepThrough]</c> on a
+		///     non-async member always counts.
+		/// </remarks>
+		private static bool IsCompilerEmittedDebuggerStepThrough(MemberInfo member,
+			IEnumerable<CustomAttributeData> attributes)
+		{
+			bool hasAsyncStateMachine = attributes.Any(data => data.AttributeType.FullName
+				is "System.Runtime.CompilerServices.AsyncStateMachineAttribute"
+				or "System.Runtime.CompilerServices.AsyncIteratorStateMachineAttribute");
+			if (!hasAsyncStateMachine)
+			{
+				return false;
+			}
+
+			int debuggerStepThroughCount = attributes.Count(data
+				=> data.AttributeType.FullName == "System.Diagnostics.DebuggerStepThroughAttribute");
+			return debuggerStepThroughCount == 1 && IsDebugBuilt(SafeOrNull(() => member.Module.Assembly));
+		}
+
+		/// <summary>
+		///     Checks whether the <paramref name="assembly" /> was compiled in Debug configuration, i.e. carries
+		///     a <c>[Debuggable]</c> attribute with the
+		///     <see cref="DebuggableAttribute.DebuggingModes.DisableOptimizations" /> flag.
+		/// </summary>
+		/// <remarks>
+		///     When this cannot be determined, a Debug build is assumed, so that the (then ambiguous) single
+		///     <c>[DebuggerStepThrough]</c> keeps being treated as compiler-emitted.
+		/// </remarks>
+		private static bool IsDebugBuilt(Assembly? assembly)
+		{
+			if (assembly is null)
+			{
+				return true;
+			}
+
+			try
+			{
+				foreach (CustomAttributeData data in assembly.GetCustomAttributesData())
+				{
+					if (data.AttributeType.FullName != "System.Diagnostics.DebuggableAttribute")
+					{
+						continue;
+					}
+
+					IList<CustomAttributeTypedArgument> arguments = data.ConstructorArguments;
+					if (arguments.Count == 1 && arguments[0].Value is int debuggingModes)
+					{
+						return (debuggingModes &
+						        (int)DebuggableAttribute.DebuggingModes.DisableOptimizations) != 0;
+					}
+
+					if (arguments.Count == 2 && arguments[1].Value is bool isJitOptimizerDisabled)
+					{
+						return isJitOptimizerDisabled;
+					}
+				}
+
+				return false;
+			}
+			catch (Exception exception) when (exception
+				                                  is TypeLoadException
+				                                  or FileNotFoundException
+				                                  or FileLoadException
+				                                  or BadImageFormatException)
+			{
+				return true;
 			}
 		}
 
@@ -1087,7 +1171,7 @@ internal static class TypeHelpers
 			foreach (PropertyInfo property in Safe(() => type.GetProperties(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
 				AddSafe(() => property.PropertyType);
-				AddAll(Safe(() => property.GetIndexParameters().Select(parameter => parameter.ParameterType).ToArray()));
+				AddParameters(Safe(property.GetIndexParameters));
 				AddAttributes(property);
 			}
 		}
@@ -1106,7 +1190,8 @@ internal static class TypeHelpers
 			foreach (MethodInfo method in Safe(() => type.GetMethods(Flags)).Where(m => !m.IsCompilerGenerated()))
 			{
 				AddSafe(() => method.ReturnType);
-				AddAll(Safe(() => method.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
+				AddReturnValueAttributes(method);
+				AddParameters(Safe(method.GetParameters));
 				AddGenericArguments(Safe(method.GetGenericArguments));
 				AddAttributes(method);
 			}
@@ -1117,7 +1202,7 @@ internal static class TypeHelpers
 			foreach (ConstructorInfo constructor in Safe(() => type.GetConstructors(Flags))
 				         .Where(m => !m.IsCompilerGenerated()))
 			{
-				AddAll(Safe(() => constructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
+				AddParameters(Safe(constructor.GetParameters));
 				AddAttributes(constructor);
 			}
 		}
@@ -1127,8 +1212,32 @@ internal static class TypeHelpers
 			if (SafeOrNull(() => type.GetMethod("Invoke", Flags)) is { } invoke)
 			{
 				AddSafe(() => invoke.ReturnType);
-				AddAll(Safe(() => invoke.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
+				AddReturnValueAttributes(invoke);
+				AddParameters(Safe(invoke.GetParameters));
 				AddAttributes(invoke);
+			}
+		}
+
+		private void AddParameters(IEnumerable<ParameterInfo> parameters)
+		{
+			foreach (ParameterInfo parameter in parameters)
+			{
+				// Member signature types are resolved lazily on first access and can throw when the defining
+				// assembly is missing, so each access is guarded individually to skip only the unresolvable member.
+				AddSafe(() => parameter.ParameterType);
+
+				// Attributes applied to a parameter (e.g. [Layer1.Target] int value) are authored signature
+				// text just like the parameter type itself.
+				AddAttributes(parameter);
+			}
+		}
+
+		private void AddReturnValueAttributes(MethodInfo method)
+		{
+			// [return: ...] attributes are authored signature text just like parameter attributes.
+			if (SafeOrNull(() => method.ReturnParameter) is { } returnParameter)
+			{
+				AddAttributes(returnParameter);
 			}
 		}
 
@@ -1157,15 +1266,15 @@ internal static class TypeHelpers
 
 		/// <summary>
 		///     Attributes the C# compiler emits onto authored code, which are therefore not dependencies the
-		///     author wrote: nullability metadata, required members, async/iterator state machines, extension
-		///     methods, readonly/ref structs, fixed buffers, tuple names, <c>dynamic</c> and <c>decimal</c>
-		///     constants.
+		///     author wrote: nullability metadata, required members, async/iterator state machines,
+		///     covariant-return overrides, extension methods, readonly/ref structs, fixed buffers, tuple names,
+		///     <c>params</c> arrays, <c>dynamic</c> and <c>decimal</c> constants.
 		/// </summary>
 		/// <remarks>
 		///     Only attribute types the author can never legally apply in the same situation belong here.
 		///     Attributes that can also be authored ([Obsolete], [DebuggerStepThrough], [DefaultMember]) are
-		///     instead skipped conditionally in <see cref="AddAttributes" />, based on the co-occurrence pattern
-		///     the compiler produces.
+		///     instead skipped conditionally in <see cref="AddAttributes(MemberInfo)" />, based on the
+		///     co-occurrence pattern the compiler produces.
 		/// </remarks>
 		private static readonly HashSet<string> CompilerEmittedAttributes = new(StringComparer.Ordinal)
 		{
@@ -1176,6 +1285,7 @@ internal static class TypeHelpers
 			"System.Runtime.CompilerServices.AsyncStateMachineAttribute",
 			"System.Runtime.CompilerServices.IteratorStateMachineAttribute",
 			"System.Runtime.CompilerServices.AsyncIteratorStateMachineAttribute",
+			"System.Runtime.CompilerServices.PreserveBaseOverridesAttribute",
 			"System.Runtime.CompilerServices.ExtensionAttribute",
 			"System.Runtime.CompilerServices.IsReadOnlyAttribute",
 			"System.Runtime.CompilerServices.IsByRefLikeAttribute",
@@ -1186,6 +1296,7 @@ internal static class TypeHelpers
 			"System.Runtime.CompilerServices.DynamicAttribute",
 			"System.Runtime.CompilerServices.DecimalConstantAttribute",
 			"System.Runtime.CompilerServices.FixedBufferAttribute",
+			"System.ParamArrayAttribute",
 		};
 
 		private static bool IsCompilerEmittedAttribute(Type attributeType)
@@ -1307,6 +1418,22 @@ internal static class TypeHelpers
 			try
 			{
 				return member.GetCustomAttributesData();
+			}
+			catch (Exception exception) when (exception
+				                                  is TypeLoadException
+				                                  or FileNotFoundException
+				                                  or FileLoadException
+				                                  or BadImageFormatException)
+			{
+				return [];
+			}
+		}
+
+		private static IEnumerable<CustomAttributeData> SafeAttributes(ParameterInfo parameter)
+		{
+			try
+			{
+				return parameter.GetCustomAttributesData();
 			}
 			catch (Exception exception) when (exception
 				                                  is TypeLoadException

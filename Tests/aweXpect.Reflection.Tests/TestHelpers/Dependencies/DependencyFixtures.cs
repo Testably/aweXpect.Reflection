@@ -156,10 +156,12 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers.OwnSub
 	public class OwnSubTarget;
 }
 
-// Types whose only "System" or Layer1 surface is what the compiler or the inheritance chain contributes;
-// kept in a separate namespace so that the Consumers-based filter tests are unaffected.
+// Types whose only "System" or Layer1 surface is what the compiler or the inheritance chain contributes,
+// plus fixtures probing the authored-vs-compiler attribute boundary; kept in a separate namespace so that
+// the Consumers-based filter tests are unaffected.
 namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 {
+	using System.Diagnostics;
 	using System.Threading.Tasks;
 	using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 
@@ -198,4 +200,48 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 			yield return 1;
 		}
 	}
+
+	public class WithAuthoredDebuggerStepThroughAsyncMethod
+	{
+		[DebuggerStepThrough]
+		public static async void MethodAsync() => await Task.CompletedTask;
+	}
+
+	// Layer1's TargetAttribute is referenced ONLY through the parameter attribute; the parameter type
+	// itself is a plain int.
+	public class ViaParameterAttribute
+	{
+		public static void Method([Target] int value)
+		{
+		}
+	}
+
+	// Layer1's TargetAttribute is referenced ONLY through the [return: ...] attribute.
+	public class ViaReturnValueAttribute
+	{
+		[return: Target]
+		public static int Method() => 0;
+	}
+
+	// `params` compiles into [ParamArray] on the parameter, which the author can never write directly
+	// (CS0674) and which must therefore not count as a "System" dependency by itself.
+	public class WithParamsArrayOfOwnType
+	{
+		public static void Method(params WithParamsArrayOfOwnType[] values)
+		{
+		}
+	}
+
+#if NET8_0_OR_GREATER
+	// The compiler emits [PreserveBaseOverrides] onto covariant-return overrides (.NET 5+ only).
+	public class CovariantReturnBase
+	{
+		public virtual CovariantReturnBase Self() => this;
+	}
+
+	public class CovariantReturnDerived : CovariantReturnBase
+	{
+		public override CovariantReturnDerived Self() => this;
+	}
+#endif
 }

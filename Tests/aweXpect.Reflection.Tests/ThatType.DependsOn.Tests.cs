@@ -163,6 +163,44 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTypeReferencesNamespaceOnlyViaParameterAttribute_ShouldSucceed()
+			{
+				// Layer1's TargetAttribute is referenced ONLY through the attribute on a method parameter.
+				Type subject = typeof(ViaParameterAttribute);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTypeReferencesNamespaceOnlyViaReturnValueAttribute_ShouldSucceed()
+			{
+				// Layer1's TargetAttribute is referenced ONLY through the [return: ...] attribute.
+				Type subject = typeof(ViaReturnValueAttribute);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace);
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenDebuggerStepThroughIsAuthoredOnAsyncMethod_ShouldCountAsDependency()
+			{
+				// In Debug builds the authored [DebuggerStepThrough] appears next to the compiler-emitted
+				// one (two entries); in Release builds it is the only occurrence in an optimized assembly —
+				// in both cases it is recognized as authored and counts.
+				Type subject = typeof(WithAuthoredDebuggerStepThroughAsyncMethod);
+
+				async Task Act()
+					=> await That(subject).DependsOn("System.Diagnostics");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTypeDoesNotReferenceSpecificType_ShouldFail()
 			{
 				Type subject = typeof(ViaField);

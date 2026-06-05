@@ -117,6 +117,34 @@ public sealed partial class ThatType
 				await That(Act).DoesNotThrow();
 			}
 
+#if NET8_0_OR_GREATER
+			[Fact]
+			public async Task WhenCompilerEmitsPreserveBaseOverridesForCovariantReturn_ShouldNotCountAsDependency()
+			{
+				// A covariant-return override makes the compiler emit [PreserveBaseOverrides]; the
+				// attribute is not authored.
+				Type subject = typeof(CovariantReturnDerived);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System.Runtime.CompilerServices");
+
+				await That(Act).DoesNotThrow();
+			}
+#endif
+
+			[Fact]
+			public async Task WhenCompilerEmitsParamArrayForParamsParameter_ShouldNotCountAsDependency()
+			{
+				// The `params` keyword compiles into [ParamArray] on the parameter, which the author can
+				// never write directly (CS0674).
+				Type subject = typeof(WithParamsArrayOfOwnType);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn<ParamArrayAttribute>();
+
+				await That(Act).DoesNotThrow();
+			}
+
 			[Fact]
 			public async Task WhenInterfaceIsImplementedOnlyByBaseType_ShouldNotCountAsDependency()
 			{

@@ -415,7 +415,8 @@ In.AllLoadedAssemblies().Types().WhichDependOn("System.Data")
 A type *depends on* every type referenced in its **declared signature**: the base type and directly
 implemented interfaces, generic arguments and parameter constraints, field/property/event types, indexer
 parameters, method return/parameter/generic-argument types, constructor parameters and the types of attributes
-applied to the type and its members (including `typeof(…)` and enum attribute arguments). Element types of
+applied to the type, its members, their parameters and return values (including `typeof(…)` and enum attribute
+arguments). Element types of
 arrays/pointers/by-ref and generic type arguments are unwrapped (`List<Infra.Foo>` depends on `List<Infra.Foo>`
 — which also matches a `List<>` target — and on `Infra.Foo`; a closed-generic target like `List<Infra.Bar>`
 only matches that exact construction). Purely synthetic references that you never wrote are ignored:

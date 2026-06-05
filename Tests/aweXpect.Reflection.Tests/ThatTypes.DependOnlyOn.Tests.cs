@@ -52,6 +52,28 @@ public sealed partial class ThatTypes
 			}
 
 			[Fact]
+			public async Task WhenCollectionContainsNull_ShouldListNullWithoutViolations()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(OnlyLayer1),
+					null,
+				];
+
+				async Task Act()
+					=> await That(subject).DependOnlyOn(Layer1Namespace);
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              all depend only on namespace "{Layer1Namespace}",
+					              but it contained types with disallowed dependencies [
+					                <null>
+					              ]
+					              """);
+			}
+
+			[Fact]
 			public async Task WhenAllowingAllNamespaces_ShouldSucceed()
 			{
 				IEnumerable<Type?> subject =

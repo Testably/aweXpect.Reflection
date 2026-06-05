@@ -108,14 +108,15 @@ public static partial class ThatTypes
 			for (int index = 0; index < NotMatching.Length; index++)
 			{
 				Type? type = NotMatching[index];
-				IReadOnlyList<string> violations =
-					type is not null && _violations.TryGetValue(type, out IReadOnlyList<string>? value)
-						? value
-						: [];
 				stringBuilder.Append(Environment.NewLine).Append(itemIndentation)
-					.Append(Formatter.Format(type))
-					.Append(" depends on ")
-					.Append(Formatter.Format(violations));
+					.Append(Formatter.Format(type));
+
+				// A null item has no violations to list; it fails because it cannot satisfy the expectation.
+				if (type is not null && _violations.TryGetValue(type, out IReadOnlyList<string>? violations))
+				{
+					stringBuilder.Append(" depends on ").Append(Formatter.Format(violations));
+				}
+
 				if (index < NotMatching.Length - 1)
 				{
 					stringBuilder.Append(',');

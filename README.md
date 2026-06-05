@@ -139,6 +139,11 @@ The custom `.Which(…)` filter has a universal assertion counterpart that works
 (types, members and assemblies): use aweXpect's `.Satisfies(…)` on a single subject and `.All().Satisfy(…)`
 (or `.Any().Satisfy(…)`) on a collection. See [Collections and quantifiers](#collections-and-quantifiers).
 
+The custom `.Except(…)` filter is the inverse of `.Which(…)`: it **removes** the items that match the
+predicate. This is handy for defining exemptions to a rule (e.g. *all async methods except this one*). Like
+`.Which(…)` it is available on **every** collection (assemblies, types and members). For types there is also a
+typed `.Except<T>()` overload that excludes exactly the type `T`.
+
 ### Access modifiers
 
 Shared by all types and members: these names are identical for types, methods, properties, fields,
@@ -443,27 +448,27 @@ In addition to [access modifiers](#access-modifiers),
 [attributes](#attributes) and
 [names](#names-and-namespaces):
 
-|                                       | Filter                                      | Assert (single)                 | Assert (many)                     |
-|---------------------------------------|---------------------------------------------|---------------------------------|-----------------------------------|
-| of type (or a subtype)                | `.OfType<T>()`                              | `.IsOfType<T>()`                | `.AreOfType<T>()`                 |
-| of exact type                         | `.OfExactType<T>()`                         | `.IsOfExactType<T>()`           | `.AreOfExactType<T>()`            |
-| static *(properties & fields)*        | `.WhichAreStatic()`                         | `.IsStatic()`                   | `.AreStatic()`                    |
-| abstract / sealed *(properties only)* | `.WhichAreAbstract()` / `.WhichAreSealed()` | `.IsAbstract()` / `.IsSealed()` | `.AreAbstract()` / `.AreSealed()` |
-| virtual *(properties only)*           | `.WhichAreVirtual()`                        | `.IsVirtual()`                  | `.AreVirtual()`                   |
-| override *(properties only)*          | `.WhichOverride()`                          | `.Overrides()`                  | `.Override()`                     |
-| required *(properties only)*          | `.WhichAreRequired()`                       | `.IsRequired()`                 | `.AreRequired()`                  |
-| readable *(properties only)*          | `.WhichAreReadable()`                       | `.IsReadable()`                 | `.AreReadable()`                  |
-| writable *(properties only)*          | `.WhichAreWritable()`                       | `.IsWritable()`                 | `.AreWritable()`                  |
-| read-only *(properties only)*         | `.WhichAreReadOnly()`                       | `.IsReadOnly()`                 | `.AreReadOnly()`                  |
-| write-only *(properties only)*        | `.WhichAreWriteOnly()`                      | `.IsWriteOnly()`                | `.AreWriteOnly()`                 |
-| read-write *(properties only)*        | `.WhichAreReadWrite()`                      | `.IsReadWrite()`                | `.AreReadWrite()`                 |
-| has getter *(properties only)*        | `.WhichHaveAGetter()`                       | `.HasAGetter()`                 | `.HaveAGetter()`                  |
-| has setter *(properties only)*        | `.WhichHaveASetter()`                       | `.HasASetter()`                 | `.HaveASetter()`                  |
-| has init setter *(properties only)*   | `.WhichHaveAnInitSetter()`                  | `.HasAnInitSetter()`            | `.HaveAnInitSetter()`             |
-| indexer *(properties only)*           | `.WhichAreIndexers()`                       | `.IsAnIndexer()`                | `.AreIndexers()`                  |
-| extension property *(properties only)* | `.WhichAreExtensionProperties()`           | `.IsAnExtensionProperty()`      | `.AreExtensionProperties()`       |
-| read-only *(fields only)*             | `.WhichAreReadOnly()`                       | `.IsReadOnly()`                 | `.AreReadOnly()`                  |
-| constant *(fields only)*              | `.WhichAreConstant()`                       | `.IsConstant()`                 | `.AreConstant()`                  |
+|                                        | Filter                                      | Assert (single)                 | Assert (many)                     |
+|----------------------------------------|---------------------------------------------|---------------------------------|-----------------------------------|
+| of type (or a subtype)                 | `.OfType<T>()`                              | `.IsOfType<T>()`                | `.AreOfType<T>()`                 |
+| of exact type                          | `.OfExactType<T>()`                         | `.IsOfExactType<T>()`           | `.AreOfExactType<T>()`            |
+| static *(properties & fields)*         | `.WhichAreStatic()`                         | `.IsStatic()`                   | `.AreStatic()`                    |
+| abstract / sealed *(properties only)*  | `.WhichAreAbstract()` / `.WhichAreSealed()` | `.IsAbstract()` / `.IsSealed()` | `.AreAbstract()` / `.AreSealed()` |
+| virtual *(properties only)*            | `.WhichAreVirtual()`                        | `.IsVirtual()`                  | `.AreVirtual()`                   |
+| override *(properties only)*           | `.WhichOverride()`                          | `.Overrides()`                  | `.Override()`                     |
+| required *(properties only)*           | `.WhichAreRequired()`                       | `.IsRequired()`                 | `.AreRequired()`                  |
+| readable *(properties only)*           | `.WhichAreReadable()`                       | `.IsReadable()`                 | `.AreReadable()`                  |
+| writable *(properties only)*           | `.WhichAreWritable()`                       | `.IsWritable()`                 | `.AreWritable()`                  |
+| read-only *(properties only)*          | `.WhichAreReadOnly()`                       | `.IsReadOnly()`                 | `.AreReadOnly()`                  |
+| write-only *(properties only)*         | `.WhichAreWriteOnly()`                      | `.IsWriteOnly()`                | `.AreWriteOnly()`                 |
+| read-write *(properties only)*         | `.WhichAreReadWrite()`                      | `.IsReadWrite()`                | `.AreReadWrite()`                 |
+| has getter *(properties only)*         | `.WhichHaveAGetter()`                       | `.HasAGetter()`                 | `.HaveAGetter()`                  |
+| has setter *(properties only)*         | `.WhichHaveASetter()`                       | `.HasASetter()`                 | `.HaveASetter()`                  |
+| has init setter *(properties only)*    | `.WhichHaveAnInitSetter()`                  | `.HasAnInitSetter()`            | `.HaveAnInitSetter()`             |
+| indexer *(properties only)*            | `.WhichAreIndexers()`                       | `.IsAnIndexer()`                | `.AreIndexers()`                  |
+| extension property *(properties only)* | `.WhichAreExtensionProperties()`            | `.IsAnExtensionProperty()`      | `.AreExtensionProperties()`       |
+| read-only *(fields only)*              | `.WhichAreReadOnly()`                       | `.IsReadOnly()`                 | `.AreReadOnly()`                  |
+| constant *(fields only)*               | `.WhichAreConstant()`                       | `.IsConstant()`                 | `.AreConstant()`                  |
 
 > **Negation:** the `static`, `abstract`, `sealed`, `virtual`, `required`, `indexer`, `extension property`,
 > `read-only` *(fields)* and `constant` rows have a negated form — `WhichAreNot…` on filters and `IsNot…` /

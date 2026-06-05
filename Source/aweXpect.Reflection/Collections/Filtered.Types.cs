@@ -543,5 +543,39 @@ public static partial class Filtered
 			public Types InExecutingAssembly()
 				=> In.ExecutingAssembly().Types().WithinNamespace(_namespace);
 		}
+
+		/// <summary>
+		///     A filtered collection of <see cref="System.Type" /> from a dependency filter whose targets are filtered
+		///     collections of types, allowing to widen the targeted/allowed collections.
+		/// </summary>
+		/// <remarks>
+		///     Like all filtered collections, this is an immutable value object: <see cref="OrOn" /> does not mutate
+		///     this instance but rebuilds a fresh filter from the original base collection, so deriving multiple views
+		///     from the same instance cannot corrupt each other.
+		/// </remarks>
+		public sealed class TypeSetDependencyFilterResult : Types
+		{
+			private readonly Func<TypeSetDependencyOptions, Types> _build;
+			private readonly TypeSetDependencyOptions _options;
+
+			internal TypeSetDependencyFilterResult(
+				TypeSetDependencyOptions options,
+				Func<TypeSetDependencyOptions, Types> build)
+				: base(build(options))
+			{
+				_options = options;
+				_build = build;
+			}
+
+			/// <summary>
+			///     Widens the filter by the given <paramref name="targets" />.
+			/// </summary>
+			public TypeSetDependencyFilterResult OrOn(params Filtered.Types[] targets)
+			{
+				TypeSetDependencyOptions widened = _options.Copy();
+				widened.OrOn(targets);
+				return new TypeSetDependencyFilterResult(widened, _build);
+			}
+		}
 	}
 }

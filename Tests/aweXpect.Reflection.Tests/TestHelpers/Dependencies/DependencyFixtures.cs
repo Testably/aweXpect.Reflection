@@ -224,6 +224,13 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic
 	[TargetSeverity(TargetSeverity.High)]
 	public class ViaEnumAttributeArgument;
 
+	// Layer1's TargetGeneric<T> is referenced ONLY as the constructed TargetGeneric<TargetB>; a scanned
+	// target collection contains the open definition, which must match the construction.
+	public class ViaLayer1GenericConstruction
+	{
+		private TargetGeneric<TargetB> _target;
+	}
+
 	public class WithAsyncMethod
 	{
 		public static async void MethodAsync() => await Task.CompletedTask;

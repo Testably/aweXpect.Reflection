@@ -183,6 +183,93 @@ public sealed partial class ThatType
 			}
 		}
 
+		public sealed class FilteredTypesTargetTests
+		{
+			[Fact]
+			public async Task WhenAllDependenciesAreInTargetCollection_ShouldSucceed()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(Layer1Namespace));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenDependingOnTypeOutsideTargetCollections_ShouldFail()
+			{
+				Type subject = typeof(Layer1AndLayer2);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(Layer1Namespace));
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              depends only on types within namespace "{Layer1Namespace}" in all loaded assemblies,
+					              but it also depended on ["TargetB"]
+					              """);
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithOrOn_ShouldSucceed()
+			{
+				Type subject = typeof(Layer1AndLayer2);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(Layer1Namespace))
+						.OrOn(Types.InNamespace(Layer2Namespace));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTargetCollectionIsEmpty_ShouldStillAllowFrameworkDependencies()
+			{
+				Type subject = typeof(FrameworkConsumer);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Types.InNamespace("Non.Existent.Namespace"));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTargetCollectionIsEmpty_ShouldStillAllowOwnNamespace()
+			{
+				Type subject = typeof(ReferencesOwnNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Types.InNamespace("Non.Existent.Namespace"));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenTargetCollectionIsEmpty_DisallowedDependencyShouldFail()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Types.InNamespace("Non.Existent.Namespace"));
+
+				await That(Act).Throws<XunitException>();
+			}
+
+			[Fact]
+			public async Task WhenNegated_ShouldSucceedForDisallowedDependency()
+			{
+				Type subject = typeof(Layer1AndLayer2);
+
+				async Task Act()
+					=> await That(subject)
+						.DoesNotComplyWith(it => it.DependsOnlyOn(Types.InNamespace(Layer1Namespace)));
+
+				await That(Act).DoesNotThrow();
+			}
+		}
+
 		public sealed class NegatedTests
 		{
 			[Fact]

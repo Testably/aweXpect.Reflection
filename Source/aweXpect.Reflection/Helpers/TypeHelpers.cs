@@ -934,6 +934,68 @@ internal static class TypeHelpers
 			: NamespaceMatches(dependencyNamespace, ownNamespace, includeSubNamespaces);
 
 	/// <summary>
+	///     Collects the <paramref name="type" />'s dependencies that are not allowed by the resolved target set in
+	///     <paramref name="allowed" />, the type's own namespace, or the framework rule.
+	/// </summary>
+	/// <remarks>
+	///     Same framework and own-namespace rules as <see cref="GetDependencyNamespaceViolations" />, but the allowed
+	///     set is a concrete set of types, so the violations are reported as formatted type names instead of
+	///     namespaces. Requires <see cref="TypeSetDependencyOptions.Resolve" /> to have been awaited before.
+	/// </remarks>
+	internal static IReadOnlyList<string> GetDependencyTypeSetViolations(
+		this Type type, TypeSetDependencyOptions allowed)
+	{
+		string? ownNamespace = type.Namespace;
+		string[] excludedPrefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
+		List<string> violations = [];
+		HashSet<string> seen = new(StringComparer.Ordinal);
+		foreach (Type dependency in type.ResolveDependencies())
+		{
+			if (!IsDependencyTypeSetViolation(dependency, ownNamespace, allowed, excludedPrefixes))
+			{
+				continue;
+			}
+
+			string display = Formatter.Format(dependency);
+			if (seen.Add(display))
+			{
+				violations.Add(display);
+			}
+		}
+
+		violations.Sort(StringComparer.Ordinal);
+		return violations;
+	}
+
+	/// <summary>
+	///     Checks whether the <paramref name="type" /> has at least one dependency outside the resolved target set,
+	///     stopping at the first one.
+	/// </summary>
+	/// <remarks>
+	///     Same rules as <see cref="GetDependencyTypeSetViolations" />, for callers (like filters) that only need
+	///     a verdict and not the violation list.
+	/// </remarks>
+	internal static bool HasDependencyTypeSetViolations(this Type type, TypeSetDependencyOptions allowed)
+	{
+		string? ownNamespace = type.Namespace;
+		string[] excludedPrefixes = Customize.aweXpect.Reflection().ExcludedAssemblyPrefixes.Get();
+		return type.ResolveDependencies()
+			.Any(dependency => IsDependencyTypeSetViolation(dependency, ownNamespace, allowed, excludedPrefixes));
+	}
+
+	private static bool IsDependencyTypeSetViolation(
+		Type dependency, string? ownNamespace, TypeSetDependencyOptions allowed, string[] excludedPrefixes)
+	{
+		if (dependency.IsFrameworkDependency(excludedPrefixes))
+		{
+			return false;
+		}
+
+		return !IsOwnNamespace(dependency.Namespace, ownNamespace, true) &&
+		       !allowed.Matches(dependency);
+	}
+
+	/// <summary>
 	///     Resolves the dependencies of the <paramref name="type" /> through which all assertions and filters go,
 	///     using the resolver configured via the <c>DependencyResolver</c> customization
 	///     (the <see cref="SignatureDependencies" /> built-in by default).

@@ -492,6 +492,9 @@ await Expect.That(Types.InNamespace("MyApp.Domain"))
 await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().OrOn<SqlConnection>();
 ```
 
+All three dependency families additionally accept a reusable `Filtered.Types` selection as target — see
+[Architecture rules](#architecture-rules).
+
 > **Framework dependencies are ignored unless you name one explicitly.** `DependOnlyOn` ignores dependencies
 > whose assembly name matches one of the
 > [`ExcludedAssemblyPrefixes`](#assembly-exclusions) at a name-segment boundary: `System` covers `System`
@@ -553,6 +556,79 @@ await Expect.That(Types.InNamespace("MyApp"))
 Because the edges come from the same dependency resolution as the other dependency assertions, configuring a
 [custom dependency resolver](#dependency-resolver) (e.g. an IL-level one) also sharpens cycle
 detection: body-level references it surfaces can complete a cycle that the signature-level default cannot see.
+
+### Architecture rules
+
+There is no separate rule engine: a "layer" is just a reusable `Filtered.Types` selection (with the full
+filter vocabulary at your disposal), and an architecture rule is just an expectation on it.
+
+```csharp
+Filtered.Types domain         = Types.InNamespace("MyApp.Domain");
+Filtered.Types infrastructure = Types.InNamespace("MyApp.Infrastructure");
+Filtered.Types repositories   = Types.InNamespace("MyApp.Data").WithName("Repository").AsSuffix();
+```
+
+The dependency assertions and filters accept such a selection as a **target**, alongside the namespace and
+specific-type forms: `DependsOn` / `DoesNotDependOn` / `DependsOnlyOn` (and the plural `DependOn` /
+`DoNotDependOn` / `DependOnlyOn` and the `WhichDependOn` / `WhichDoNotDependOn` / `WhichDependOnlyOn`
+filters) take one or more `Filtered.Types` arguments. Each target selection is resolved once per assertion;
+a dependency matches when it is a member of the union of the resolved selections — by type identity, where a
+generic type definition in the selection (e.g. a scanned `Repository<>`) matches any of its constructions.
+Multiple targets and `.OrOn(…)` mean *any of*; for the *only-on* family the union is the allowed set, while
+the own-namespace and framework rules apply unchanged (an empty selection thus allows only the own namespace
+and framework dependencies). A selection is an explicit target, so framework types contained in it are
+matched normally by `DependsOn` / `DoesNotDependOn`.
+
+```csharp
+// Outgoing rule with a selection as target:
+await Expect.That(domain).DoNotDependOn(infrastructure);
+
+// Incoming rules are written explicitly from the other side:
+await Expect.That(infrastructure).DoNotDependOn(domain);
+
+// Allowed set as union of selections (own namespace + framework stay allowed):
+await Expect.That(domain).DependOnlyOn(repositories).OrOn(infrastructure);
+```
+
+Combine several rules into a single verification with aweXpect's `Expect.ThatAll(…)` (see
+[multiple expectations](https://docs.testably.org/aweXpect/advanced/multiple-expectations)) — every rule is
+evaluated and all failures are reported together. Any assertion works on a selection, not just the
+dependency ones, so naming conventions or sealing rules live in the same check:
+
+```csharp
+await Expect.ThatAll(
+    Expect.That(domain).DoNotDependOn(infrastructure),
+    Expect.That(domain).DependOnlyOn(repositories).OrOn(infrastructure),
+    Expect.That(domain).AreSealed());
+```
+
+A failing rule reports all violations, numbered per expectation:
+
+```
+Expected all of the following to succeed:
+ [01] Expected that domain all do not depend on types within namespace "MyApp.Infrastructure" in all loaded assemblies
+ [02] Expected that domain are all sealed
+but
+ [01] it contained types with the dependency [
+  OrderService
+]
+ [02] it contained non-sealed types [
+  Order,
+  Invoice
+]
+```
+
+Exemptions to a rule use the [`Except` filter](#filters-and-the-matching-assertions) on the subject
+selection:
+
+```csharp
+await Expect.That(domain.Except<LegacyService>()).DoNotDependOn(infrastructure);
+await Expect.That(domain.Except(type => type.Name.StartsWith("Generated"))).AreSealed();
+```
+
+A layer spanning several namespaces is built by widening a dependency *target* with additional selections
+(or `.OrOn(…)`); for a *subject* spanning several namespaces, assert each namespace selection as its own
+rule inside the same `Expect.ThatAll(…)`.
 
 ### Methods
 

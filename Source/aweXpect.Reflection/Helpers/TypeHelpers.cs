@@ -773,16 +773,24 @@ internal static class TypeHelpers
 	internal const string GlobalNamespaceDisplay = "<global namespace>";
 
 	/// <summary>
+	///     Caches the simple assembly name per <see cref="Assembly" />: <see cref="Assembly.GetName()" /> parses a
+	///     fresh <see cref="AssemblyName" /> on every call, but the framework check runs per dependency of every
+	///     asserted type (outside the <see cref="ResolvedDependencies" /> memoization), while the dependencies
+	///     cluster into a handful of distinct assemblies whose name cannot change.
+	/// </summary>
+	private static readonly ConditionalWeakTable<Assembly, string> AssemblyNames = new();
+
+	/// <summary>
 	///     Determines whether the <paramref name="type" /> belongs to a framework assembly, i.e. its assembly name
 	///     matches one of the <paramref name="excludedPrefixes" /> at a name-segment boundary
 	///     (see <see cref="AssemblyHelpers.IsExcludedAssemblyName" />).
 	/// </summary>
 	private static bool IsFrameworkDependency(this Type type, string[] excludedPrefixes)
 	{
-		string? assemblyName;
+		string assemblyName;
 		try
 		{
-			assemblyName = type.Assembly.GetName().Name;
+			assemblyName = AssemblyNames.GetValue(type.Assembly, static assembly => assembly.GetName().Name ?? "");
 		}
 		catch (Exception exception) when (IsUnresolvable(exception))
 		{
@@ -1114,6 +1122,13 @@ internal static class TypeHelpers
 		}
 
 		/// <summary>
+		///     Caches the Debug-built verdict per <see cref="Assembly" />: in a Debug-built assembly the check
+		///     runs for every authored async method (each kickoff carries a compiler-emitted
+		///     <c>[DebuggerStepThrough]</c>), but the build configuration of an assembly cannot change.
+		/// </summary>
+		private static readonly ConditionalWeakTable<Assembly, object> DebugBuilt = new();
+
+		/// <summary>
 		///     Checks whether the <paramref name="assembly" /> was compiled in Debug configuration, i.e. carries
 		///     a <c>[Debuggable]</c> attribute with the
 		///     <see cref="DebuggableAttribute.DebuggingModes.DisableOptimizations" /> flag.
@@ -1129,6 +1144,11 @@ internal static class TypeHelpers
 				return true;
 			}
 
+			return (bool)DebugBuilt.GetValue(assembly, static a => DetermineIsDebugBuilt(a));
+		}
+
+		private static object DetermineIsDebugBuilt(Assembly assembly)
+		{
 			try
 			{
 				foreach (CustomAttributeData data in assembly.GetCustomAttributesData())

@@ -75,7 +75,7 @@ public static partial class ThatTypes
 			, IAsyncConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
-		private IReadOnlyList<string> _cycles = [];
+		private List<string> _cycles = [];
 
 		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
 		{
@@ -97,7 +97,7 @@ public static partial class ThatTypes
 		}
 #endif
 
-		private ConstraintResult SetResult(IEnumerable<Type?> types)
+		private HaveNoDependencyCyclesConstraint SetResult(IEnumerable<Type?> types)
 		{
 			_cycles = NamespaceDependencyGraph.Build(types, sliceRoot).Cycles
 				.Select(cycle => string.Join(" -> ", cycle))

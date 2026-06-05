@@ -102,7 +102,7 @@ internal sealed class NamespaceDependencyGraph
 	///     that returns to its starting node. The result is ordered (and the path within each cycle starts at its
 	///     ordinally smallest node) so failure messages are deterministic.
 	/// </summary>
-	private static IReadOnlyList<IReadOnlyList<string>> DetectCycles(
+	private static List<IReadOnlyList<string>> DetectCycles(
 		Dictionary<string, HashSet<string>> adjacency)
 	{
 		List<IReadOnlyList<string>> cycles = [];
@@ -161,7 +161,7 @@ internal sealed class NamespaceDependencyGraph
 	///     Reconstructs the path <c>start → … → end → start</c> from the breadth-first <paramref name="predecessor" />
 	///     map (the trailing <paramref name="start" /> closes the cycle).
 	/// </summary>
-	private static IReadOnlyList<string> BuildPath(
+	private static List<string> BuildPath(
 		Dictionary<string, string> predecessor, string start, string end)
 	{
 		List<string> path = [];
@@ -189,14 +189,15 @@ internal sealed class NamespaceDependencyGraph
 		private readonly List<HashSet<string>> _components = [];
 		private int _nextIndex;
 
-		public IReadOnlyList<HashSet<string>> StronglyConnectedComponents()
+		public List<HashSet<string>> StronglyConnectedComponents()
 		{
-			foreach (string node in adjacency.Keys.OrderBy(node => node, StringComparer.Ordinal))
+			// The Where must stay after the (eagerly-buffering) OrderBy so its predicate is evaluated lazily per
+			// node: StrongConnect mutates _indices during the walk, so already-visited nodes must be skipped.
+			foreach (string node in adjacency.Keys
+				         .OrderBy(node => node, StringComparer.Ordinal)
+				         .Where(node => !_indices.ContainsKey(node)))
 			{
-				if (!_indices.ContainsKey(node))
-				{
-					StrongConnect(node);
-				}
+				StrongConnect(node);
 			}
 
 			return _components;
@@ -212,14 +213,14 @@ internal sealed class NamespaceDependencyGraph
 
 			foreach (string next in adjacency[node])
 			{
-				if (!_indices.ContainsKey(next))
+				if (!_indices.TryGetValue(next, out int nextIndex))
 				{
 					StrongConnect(next);
 					_lowLinks[node] = Math.Min(_lowLinks[node], _lowLinks[next]);
 				}
 				else if (_onStack.Contains(next))
 				{
-					_lowLinks[node] = Math.Min(_lowLinks[node], _indices[next]);
+					_lowLinks[node] = Math.Min(_lowLinks[node], nextIndex);
 				}
 			}
 

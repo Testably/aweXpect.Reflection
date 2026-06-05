@@ -132,3 +132,21 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.Resolver.B
 {
 	public class ResolverB;
 }
+
+// A namespaced type and a global-namespace type that reference each other, so the cycle path renders the
+// global-namespace node as "<global namespace>".
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.GlobalRing
+{
+	public class GlobalRingType
+	{
+		private global::GlobalCycleType _global;
+	}
+}
+
+#pragma warning disable CA1050 // Declare types in namespaces
+
+// This type intentionally lives in the global namespace to exercise global-namespace cycle rendering.
+public class GlobalCycleType
+{
+	private aweXpect.Reflection.Tests.TestHelpers.Dependencies.Cycles.GlobalRing.GlobalRingType _ring;
+}

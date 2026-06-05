@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using aweXpect.Core;
 using aweXpect.Reflection.Options;
 using aweXpect.Results;
@@ -32,16 +32,22 @@ public sealed class NamespaceDependencyResult<TThat>
 	}
 
 	/// <summary>
-	///     Opts out of sub-namespace matching for the whole expression (including any <see cref="Or" /> additions),
-	///     according to the <paramref name="exclude" /> parameter.
+	///     Excludes sub-namespaces from matching for the whole expression (including any <see cref="Or" /> additions),
+	///     according to the <paramref name="exclusion" /> parameter.
 	/// </summary>
 	/// <remarks>
 	///     Without this call, a namespace matches itself and all its sub-namespaces (so <c>Foo.Bar</c> includes
 	///     <c>Foo.Bar.Baz</c> but not <c>Foo.BarBaz</c>).
+	///     <para />
+	///     For <c>DependsOnlyOn</c>, the type's own namespace is always allowed; with the default
+	///     <see cref="SubNamespaceExclusion.ExceptOwnNamespace" /> its sub-namespaces stay allowed too. Use
+	///     <see cref="SubNamespaceExclusion.IncludingOwnNamespace" /> to also exclude the own sub-namespaces, or
+	///     <see cref="SubNamespaceExclusion.None" /> to keep including sub-namespaces.
 	/// </remarks>
-	public NamespaceDependencyResult<TThat> ExcludingSubNamespaces(bool exclude = true)
+	public NamespaceDependencyResult<TThat> ExcludingSubNamespaces(
+		SubNamespaceExclusion exclusion = SubNamespaceExclusion.ExceptOwnNamespace)
 	{
-		_options.ExcludingSubNamespaces(exclude);
+		_options.ExcludingSubNamespaces(exclusion);
 		return this;
 	}
 }

@@ -1,4 +1,4 @@
-// ReSharper disable All
+﻿// ReSharper disable All
 
 #pragma warning disable CS0169 // field is never used
 #pragma warning disable CS0649 // field is never assigned
@@ -122,6 +122,11 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers
 		private OnlyLayer1 _other;
 	}
 
+	public class ReferencesOwnSubNamespace
+	{
+		private OwnSub.OwnSubTarget _target;
+	}
+
 	public class FrameworkConsumer
 	{
 		private List<int> _values;
@@ -132,4 +137,9 @@ namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers
 	{
 		private global::GlobalNamespaceTarget _target;
 	}
+}
+
+namespace aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers.OwnSub
+{
+	public class OwnSubTarget;
 }

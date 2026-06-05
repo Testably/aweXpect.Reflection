@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -803,7 +803,7 @@ internal static class TypeHelpers
 			}
 
 			string? dependencyNamespace = dependency.Namespace;
-			if (IsOwnNamespace(dependencyNamespace, ownNamespace, !allowed.ExcludeSubNamespaces) ||
+			if (IsOwnNamespace(dependencyNamespace, ownNamespace, allowed.IncludeOwnSubNamespaces) ||
 			    allowed.Matches(dependencyNamespace))
 			{
 				continue;

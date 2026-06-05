@@ -635,6 +635,12 @@ namespace aweXpect.Reflection
                 where TAttribute : System.Attribute { }
         }
     }
+    public enum SubNamespaceExclusion
+    {
+        None = 0,
+        ExceptOwnNamespace = 1,
+        IncludingOwnNamespace = 2,
+    }
     public static class ThatAssemblies
     {
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Reflection.Assembly?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Reflection.Assembly?>>> AreNotStrongNamed(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Reflection.Assembly?>> subject) { }
@@ -1945,7 +1951,7 @@ namespace aweXpect.Reflection.Collections
     }
     public sealed class NamespaceDependencyFilterResult : aweXpect.Reflection.Collections.Filtered.Types
     {
-        public aweXpect.Reflection.Collections.NamespaceDependencyFilterResult ExcludingSubNamespaces(bool exclude = true) { }
+        public aweXpect.Reflection.Collections.NamespaceDependencyFilterResult ExcludingSubNamespaces(aweXpect.Reflection.SubNamespaceExclusion exclusion = 1) { }
         public aweXpect.Reflection.Collections.NamespaceDependencyFilterResult Or(System.Collections.Generic.IEnumerable<string> namespaces) { }
     }
 }
@@ -2072,7 +2078,7 @@ namespace aweXpect.Reflection.Results
     }
     public sealed class NamespaceDependencyResult<TThat> : aweXpect.Results.AndOrResult<TThat, aweXpect.Core.IThat<TThat>>
     {
-        public aweXpect.Reflection.Results.NamespaceDependencyResult<TThat> ExcludingSubNamespaces(bool exclude = true) { }
+        public aweXpect.Reflection.Results.NamespaceDependencyResult<TThat> ExcludingSubNamespaces(aweXpect.Reflection.SubNamespaceExclusion exclusion = 1) { }
         public aweXpect.Reflection.Results.NamespaceDependencyResult<TThat> Or(System.Collections.Generic.IEnumerable<string> namespaces) { }
     }
     public class ParameterCollectionAtIndexResult<TThat, TParameter> : aweXpect.Results.AndOrResult<TThat, aweXpect.Core.IThat<TThat>>

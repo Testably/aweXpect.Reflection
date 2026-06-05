@@ -436,6 +436,14 @@ await Expect.That(In.Namespace("MyApp.Api").Types())
 await Expect.That(types).DoNotDependOn("MyApp.Data").ExcludingSubNamespaces();
 ```
 
+For `DependsOnlyOn` a type's own namespace is always allowed, and by default so are its sub-namespaces. Pass
+`SubNamespaceExclusion.IncludingOwnNamespace` to also forbid references into a type's own sub-namespaces:
+
+```csharp
+await Expect.That(In.Namespace("MyApp.Domain").Types())
+    .DependOnlyOn("MyApp.Domain").ExcludingSubNamespaces(SubNamespaceExclusion.IncludingOwnNamespace);
+```
+
 `DependsOn` and `DoesNotDependOn` (single types only) also accept a **specific type** via `<T>()` or
 `(Type)`, with `.Or<T>()` / `.Or(Type)` to widen:
 

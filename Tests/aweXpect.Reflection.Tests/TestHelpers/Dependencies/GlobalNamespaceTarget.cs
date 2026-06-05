@@ -1,4 +1,4 @@
-// ReSharper disable All
+﻿// ReSharper disable All
 
 #pragma warning disable CS0169 // field is never used
 #pragma warning disable CS8618 // non-nullable field must contain a non-null value

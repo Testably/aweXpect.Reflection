@@ -1,4 +1,4 @@
-using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -9,6 +9,9 @@ public sealed partial class ThatType
 	{
 		private const string Layer1Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1";
 		private const string Layer2Namespace = "aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2";
+
+		private const string OwnSubNamespace =
+			"aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers.OwnSub";
 
 		public sealed class Tests
 		{
@@ -82,6 +85,36 @@ public sealed partial class ThatType
 					=> await That(subject).DependsOnlyOn(Layer1Namespace);
 
 				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenExcludingSubNamespaces_OwnSubNamespaceStaysAllowed()
+			{
+				// ReferencesOwnSubNamespace (in ...Consumers) only references ...Consumers.OwnSub. By default the
+				// type's own sub-namespaces remain allowed even when sub-namespaces are excluded.
+				Type subject = typeof(ReferencesOwnSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Layer1Namespace).ExcludingSubNamespaces();
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenExcludingSubNamespacesIncludingOwnNamespace_OwnSubNamespaceBecomesViolation()
+			{
+				Type subject = typeof(ReferencesOwnSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(Layer1Namespace)
+						.ExcludingSubNamespaces(SubNamespaceExclusion.IncludingOwnNamespace);
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              depends only on namespace "{Layer1Namespace}",
+					              but it also depended on ["{OwnSubNamespace}"]
+					              """);
 			}
 
 			[Fact]

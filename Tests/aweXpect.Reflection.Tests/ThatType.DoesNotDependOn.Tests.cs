@@ -1,4 +1,4 @@
-using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
 using Xunit.Sdk;

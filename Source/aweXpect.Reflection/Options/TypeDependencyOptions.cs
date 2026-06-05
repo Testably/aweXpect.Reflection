@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using aweXpect.Core;
@@ -40,8 +40,9 @@ internal sealed class TypeDependencyOptions
 	/// <summary>
 	///     Describes the configured types for an expectation message.
 	/// </summary>
+	/// <remarks>
+	///     The constructor always sets one type, so an empty set cannot occur here.
+	/// </remarks>
 	public string Describe()
-		=> _types.Count == 0
-			? "no type"
-			: $"type {string.Join(" or ", _types.Select(type => Formatter.Format(type)))}";
+		=> $"type {string.Join(" or ", _types.Select(type => Formatter.Format(type)))}";
 }

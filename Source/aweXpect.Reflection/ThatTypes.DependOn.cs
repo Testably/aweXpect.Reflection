@@ -176,6 +176,14 @@ public static partial class ThatTypes
 	private static bool DoesNotDependOnNamespace(Type? type, NamespaceDependencyOptions options)
 		=> type is not null && !options.IsMatchedBy(type);
 
+	private static bool DependsOnTypeSet(Type? type, TypeSetDependencyOptions options)
+		=> type is not null && options.IsMatchedBy(type);
+
+	// A null item's dependencies cannot be verified, so it fails the negative assertion just like the
+	// positive one (and like DependOnlyOn), instead of slipping through as "does not depend".
+	private static bool DoesNotDependOnTypeSet(Type? type, TypeSetDependencyOptions options)
+		=> type is not null && !options.IsMatchedBy(type);
+
 	private sealed class DependOnConstraint(
 		string it,
 		ExpectationGrammars grammars,
@@ -264,14 +272,14 @@ public static partial class ThatTypes
 		public async Task<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
 		{
 			await options.Resolve();
-			return await SetAsyncValue(actual, type => type is not null && options.IsMatchedBy(type));
+			return await SetAsyncValue(actual, type => DependsOnTypeSet(type, options));
 		}
 #endif
 
 		public async Task<ConstraintResult> IsMetBy(IEnumerable<Type?> actual, CancellationToken cancellationToken)
 		{
 			await options.Resolve();
-			return SetValue(actual, type => type is not null && options.IsMatchedBy(type));
+			return SetValue(actual, type => DependsOnTypeSet(type, options));
 		}
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -307,18 +315,14 @@ public static partial class ThatTypes
 		public async Task<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
 		{
 			await options.Resolve();
-			// A null item's dependencies cannot be verified, so it fails the negative assertion just like the
-			// positive one (and like DependOnlyOn), instead of slipping through as "does not depend".
-			return await SetAsyncValue(actual, type => type is not null && !options.IsMatchedBy(type));
+			return await SetAsyncValue(actual, type => DoesNotDependOnTypeSet(type, options));
 		}
 #endif
 
 		public async Task<ConstraintResult> IsMetBy(IEnumerable<Type?> actual, CancellationToken cancellationToken)
 		{
 			await options.Resolve();
-			// A null item's dependencies cannot be verified, so it fails the negative assertion just like the
-			// positive one (and like DependOnlyOn), instead of slipping through as "does not depend".
-			return SetValue(actual, type => type is not null && !options.IsMatchedBy(type));
+			return SetValue(actual, type => DoesNotDependOnTypeSet(type, options));
 		}
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)

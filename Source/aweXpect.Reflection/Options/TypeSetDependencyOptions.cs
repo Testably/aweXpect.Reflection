@@ -34,7 +34,7 @@ internal sealed class TypeSetDependencyOptions
 				"The additional target collections of types must not be null.");
 		}
 
-		Add(additional);
+		Add(additional, nameof(additional));
 	}
 
 	private TypeSetDependencyOptions(IEnumerable<Filtered.Types> targets)
@@ -61,17 +61,18 @@ internal sealed class TypeSetDependencyOptions
 			throw new ArgumentException("At least one collection of types must be specified.");
 		}
 
-		Add(targets);
+		Add(targets, nameof(targets));
 	}
 
-	private void Add(Filtered.Types[] targets)
+	private void Add(Filtered.Types[] targets, string paramName)
 	{
-		foreach (Filtered.Types target in targets)
+		// Fully validate before mutating, so that a failed widening leaves the shared instance untouched.
+		if (targets.Contains(null!))
 		{
-			_targets.Add(target ?? throw new ArgumentNullException(nameof(targets),
-				"The target collections of types must not contain null."));
+			throw new ArgumentNullException(paramName, "The target collections of types must not contain null.");
 		}
 
+		_targets.AddRange(targets);
 		// Widening invalidates a previously resolved set.
 		_resolved = null;
 	}
@@ -80,6 +81,11 @@ internal sealed class TypeSetDependencyOptions
 	///     Resolves the target collections once into their union set; subsequent <see cref="Matches" /> /
 	///     <see cref="IsMatchedBy" /> calls use this set.
 	/// </summary>
+	/// <remarks>
+	///     Each member is normalized via <see cref="TypeHelpers.StripElementTypes" />: dependencies are stored
+	///     element-stripped at collection time, so array/by-ref/pointer targets must be unwrapped symmetrically
+	///     (mirroring <see cref="TypeHelpers.MatchesType" /> in the specific-type overloads).
+	/// </remarks>
 #if NET8_0_OR_GREATER
 	public async ValueTask Resolve()
 	{
@@ -93,7 +99,7 @@ internal sealed class TypeSetDependencyOptions
 		{
 			await foreach (Type type in target)
 			{
-				resolved.Add(type);
+				resolved.Add(TypeHelpers.StripElementTypes(type));
 			}
 		}
 
@@ -107,7 +113,10 @@ internal sealed class TypeSetDependencyOptions
 			HashSet<Type> resolved = [];
 			foreach (Filtered.Types target in _targets)
 			{
-				resolved.UnionWith(target);
+				foreach (Type type in target)
+				{
+					resolved.Add(TypeHelpers.StripElementTypes(type));
+				}
 			}
 
 			_resolved = resolved;

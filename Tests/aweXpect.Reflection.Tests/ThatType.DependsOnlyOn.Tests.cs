@@ -1,4 +1,5 @@
 ﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -222,6 +223,20 @@ public sealed partial class ThatType
 						.OrOn(Types.InNamespace(Layer2Namespace));
 
 				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenDistinctViolatorsShareTheSimpleName_ShouldQualifyThemByNamespace()
+			{
+				// Both AmbiguousTarget dependencies are disallowed; they must stay apart in the message
+				// instead of collapsing into one indistinguishable "AmbiguousTarget" entry.
+				Type subject = typeof(WithSameNamedDependencies);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(In.Namespace(Layer1Namespace));
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("*AmbiguousA.AmbiguousTarget*AmbiguousB.AmbiguousTarget*").AsWildcard();
 			}
 
 			[Fact]

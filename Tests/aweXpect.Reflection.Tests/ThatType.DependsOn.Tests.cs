@@ -535,6 +535,19 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTargetCollectionContainsArrayType_ShouldMatchElementTypeDependency()
+			{
+				// Dependencies are stored element-stripped, so an array target matches like its element
+				// type, mirroring the specific-type overload DependsOn(typeof(TargetA[])).
+				Type subject = typeof(ViaField);
+
+				async Task Act()
+					=> await That(subject).DependsOn(In.Type(typeof(TargetA[])));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenTargetCollectionContainsFrameworkTypes_ShouldMatchThem()
 			{
 				// A filtered collection is an explicit target, so framework types in it are checked normally.
@@ -606,8 +619,11 @@ public sealed partial class ThatType
 					=> await That(subject)
 						.DependsOn(Types.InNamespace(Layer1Namespace), (Filtered.Types)null!, (Filtered.Types)null!);
 
+				// The localized paramName suffix differs between frameworks ("(Parameter 'additional')" vs
+				// "Parametername: additional"), so only the shared part is matched.
 				await That(Act).Throws<ArgumentNullException>()
-					.WithMessage("The target collections of types must not contain null.*").AsWildcard();
+					.WithMessage("The target collections of types must not contain null.*additional*")
+					.AsWildcard();
 			}
 
 			[Fact]

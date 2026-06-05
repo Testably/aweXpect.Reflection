@@ -1,6 +1,7 @@
 ﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer1;
 using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Layer2;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -48,6 +49,22 @@ public sealed partial class ThatType
 					              depends on namespace "{Layer2Namespace}",
 					              but it depended on ["{Layer1Namespace}"]
 					              """);
+			}
+
+			[Fact]
+			public async Task WhenDelegateSignatureReferencesNamespace_ShouldSucceed()
+			{
+				// The authored Invoke signature (return type Layer1.TargetA, parameter Layer2.TargetB)
+				// still counts as a dependency of the delegate type.
+				Type subject = typeof(TargetProviderDelegate);
+
+				async Task Act()
+				{
+					await That(subject).DependsOn(Layer1Namespace);
+					await That(subject).DependsOn(Layer2Namespace);
+				}
+
+				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]

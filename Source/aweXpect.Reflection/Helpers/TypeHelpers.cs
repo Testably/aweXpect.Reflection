@@ -844,8 +844,10 @@ internal static class TypeHelpers
 	///     parameters and the types of attributes applied to the type and its members (read via
 	///     <see cref="CustomAttributeData" /> without instantiating them). Compiler-generated members are excluded, as
 	///     are purely synthetic references that the author never wrote: the implicit <see cref="object" /> /
-	///     <see cref="ValueType" /> / <see cref="System.Enum" /> base type and the attributes the compiler emits
-	///     onto authored code (nullability metadata, required members, async/iterator state machines, ...).
+	///     <see cref="ValueType" /> / <see cref="System.Enum" /> base type, the attributes the compiler emits
+	///     onto authored code (nullability metadata, required members, async/iterator state machines, ...) and
+	///     the runtime-supplied delegate infrastructure (for delegate types only the <c>Invoke</c> signature
+	///     counts).
 	///     Array/by-ref/pointer element types and generic type arguments are unwrapped recursively, open generic
 	///     parameters are skipped (their constraints are kept), and the result is de-duplicated.
 	///     <para />
@@ -855,6 +857,17 @@ internal static class TypeHelpers
 	internal static IEnumerable<Type> GetSignatureDependencies(this Type type)
 	{
 		SignatureDependencyCollector collector = new();
+
+		if (type.IsDelegate())
+		{
+			// A delegate's runtime infrastructure - the MulticastDelegate base, the (object, IntPtr)
+			// constructor and BeginInvoke/EndInvoke - is not authored; only the Invoke signature carries
+			// the parameter and return types the author wrote.
+			collector.AddGenericArguments(Safe(type.GetGenericArguments));
+			collector.AddAttributes(type);
+			collector.AddDelegateInvoke(type);
+			return collector.Build(type);
+		}
 
 		// The implicit object/ValueType/Enum base type is not a dependency the author wrote, so it is skipped to
 		// avoid every type trivially "depending on" System.
@@ -1047,6 +1060,16 @@ internal static class TypeHelpers
 			{
 				AddAll(Safe(() => constructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
 				AddAttributes(constructor);
+			}
+		}
+
+		public void AddDelegateInvoke(Type type)
+		{
+			if (SafeOrNull(() => type.GetMethod("Invoke", Flags)) is { } invoke)
+			{
+				AddSafe(() => invoke.ReturnType);
+				AddAll(Safe(() => invoke.GetParameters().Select(parameter => parameter.ParameterType).ToArray()));
+				AddAttributes(invoke);
 			}
 		}
 

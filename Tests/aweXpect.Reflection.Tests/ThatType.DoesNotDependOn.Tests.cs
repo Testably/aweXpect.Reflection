@@ -138,6 +138,19 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenDelegateInfrastructureIsRuntimeSupplied_ShouldNotCountAsDependency()
+			{
+				// The MulticastDelegate base, the (object, IntPtr) constructor and BeginInvoke/EndInvoke
+				// are runtime-supplied; only the Invoke signature of a delegate is authored.
+				Type subject = typeof(TargetProviderDelegate);
+
+				async Task Act()
+					=> await That(subject).DoesNotDependOn("System");
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenNamingFrameworkNamespaceThatIsReferenced_ShouldFail()
 			{
 				Type subject = typeof(FrameworkConsumer);

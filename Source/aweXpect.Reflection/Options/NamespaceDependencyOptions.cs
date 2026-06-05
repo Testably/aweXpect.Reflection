@@ -31,6 +31,8 @@ internal sealed class NamespaceDependencyOptions
 		{
 			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not contain null.");
 		}
+
+		ThrowOnTrailingDot(_namespaces);
 	}
 
 	private NamespaceDependencyOptions(IEnumerable<string> namespaces, bool excludeSubNamespaces,
@@ -82,7 +84,23 @@ internal sealed class NamespaceDependencyOptions
 			throw new ArgumentNullException(nameof(namespaces), "The namespaces must not contain null.");
 		}
 
+		ThrowOnTrailingDot(added);
 		_namespaces.AddRange(added);
+	}
+
+	/// <summary>
+	///     A namespace with a trailing dot could never match (real namespaces do not end with a dot, and the
+	///     sub-namespace boundary check expects the dot after the given namespace), so negative assertions
+	///     would silently pass; it is rejected to avoid confusion with the trailing-dot convention of the
+	///     excluded assembly prefixes.
+	/// </summary>
+	private static void ThrowOnTrailingDot(IEnumerable<string> namespaces)
+	{
+		if (namespaces.Any(@namespace => @namespace.EndsWith(".", StringComparison.Ordinal)))
+		{
+			throw new ArgumentException(
+				"The namespaces must not end with a dot (sub-namespaces are matched automatically).");
+		}
 	}
 
 	/// <summary>

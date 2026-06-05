@@ -358,6 +358,31 @@ public sealed partial class ThatType
 					.WithMessage("The namespaces must not contain null.*").AsWildcard();
 			}
 
+			[Fact]
+			public async Task WhenNamespaceEndsWithDot_ShouldThrowArgumentException()
+			{
+				// A trailing-dot namespace could never match and would make negative assertions pass
+				// vacuously; only the excluded assembly prefixes use the trailing-dot convention.
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn($"{Layer1Namespace}.");
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage("The namespaces must not end with a dot (sub-namespaces are matched automatically).");
+			}
+
+			[Fact]
+			public async Task WhenWidenedWithNamespaceEndingWithDot_ShouldThrowArgumentException()
+			{
+				Type subject = typeof(OnlyLayer1);
+
+				async Task Act()
+					=> await That(subject).DependsOn(Layer1Namespace).OrOn($"{Layer2Namespace}.");
+
+				await That(Act).Throws<ArgumentException>()
+					.WithMessage("The namespaces must not end with a dot (sub-namespaces are matched automatically).");
+			}
 		}
 
 		public sealed class NegatedTests

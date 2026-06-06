@@ -1,4 +1,4 @@
-using Nuke.Common;
+﻿using Nuke.Common;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.ReportGenerator;
 using static Nuke.Common.Tools.ReportGenerator.ReportGeneratorTasks;

@@ -145,8 +145,8 @@ public sealed partial class TypeFilters
 			{
 				// 'sealed' is required so MethodInfo.IsFinal is true, which the .Sealed
 				// filter relies on (see ShouldChainSealedBeforeMethods); do not remove.
-				public sealed override string ToString() => "Sealed";
-				public sealed override void VirtualMethod() { }
+				public override string ToString() => "Sealed";
+				public override void VirtualMethod() { }
 			}
 		}
 	}

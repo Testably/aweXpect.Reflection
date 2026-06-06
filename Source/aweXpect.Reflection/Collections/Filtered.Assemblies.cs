@@ -59,10 +59,6 @@ public static partial class Filtered
 			_description = inner._description;
 		}
 
-		/// <inheritdoc />
-		private protected override Assemblies CloneWith(List<IFilter<Assembly>> filters)
-			=> new(this, filters);
-
 		/// <summary>
 		///     Filters for public types.
 		/// </summary>
@@ -164,6 +160,10 @@ public static partial class Filtered
 
 		/// <inheritdoc cref="ILimitedStaticTypeAssemblies.Properties()" />
 		public Properties Properties() => NewBuilder(MemberFilterState.Empty).Properties();
+
+		/// <inheritdoc />
+		private protected override Assemblies CloneWith(List<IFilter<Assembly>> filters)
+			=> new(this, filters);
 
 		private AssembliesTypeBuilder NewBuilder(MemberFilterState memberState)
 			=> new(this, memberState, new List<Func<Type, bool>>(), "");

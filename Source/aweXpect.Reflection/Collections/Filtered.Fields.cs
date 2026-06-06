@@ -54,10 +54,6 @@ public static partial class Filtered
 		}
 
 		/// <inheritdoc />
-		private protected override Fields CloneWith(List<IFilter<FieldInfo>> filters)
-			=> new(this, filters);
-
-		/// <inheritdoc />
 		public string GetDescription()
 		{
 			string description = _description;
@@ -73,6 +69,10 @@ public static partial class Filtered
 
 			return description;
 		}
+
+		/// <inheritdoc />
+		private protected override Fields CloneWith(List<IFilter<FieldInfo>> filters)
+			=> new(this, filters);
 
 		/// <summary>
 		///     Get all declaring types of the filtered fields.

@@ -513,8 +513,7 @@ public static partial class Filtered
 			///     Clarifies that the types within the namespace are searched in the given <paramref name="assemblies" />.
 			/// </summary>
 			public Types InAssemblies(params IEnumerable<Assembly?> assemblies)
-				=> new Assemblies(assemblies, $"in the assemblies {Formatter.Format(assemblies)}").Types()
-					.WithinNamespace(_namespace);
+				=> In.Assemblies(assemblies).Types().WithinNamespace(_namespace);
 
 			/// <summary>
 			///     Clarifies that the types within the namespace are searched in the assembly that contains

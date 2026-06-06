@@ -749,8 +749,8 @@ await Expect.That(managers).HaveName("Manager").AsSuffix();
 
 Layering and architecture rules are expressed over the types a type references **in its signature**:
 [Type dependencies](#type-dependencies) covers the dependency filters and assertions (including
-[dependency cycles](#dependency-cycles)), and [Architecture rules](#architecture-rules) shows how to
-combine them with reusable type selections into a full architecture test suite.
+[dependency cycles](#dependency-cycles)), and [Layers as type selections](#layers-as-type-selections) shows
+how to combine them with reusable type selections into a full architecture test suite.
 
 ### Type dependencies
 
@@ -832,7 +832,7 @@ await Expect.That(typeof(MyDomainType)).DoesNotDependOn<DbContext>().OrOn<SqlCon
 ```
 
 All three dependency families additionally accept a reusable `Filtered.Types` selection as target; see
-[Architecture rules](#architecture-rules).
+[Layers as type selections](#layers-as-type-selections).
 
 > **Framework dependencies are ignored unless you name one explicitly.** `DependOnlyOn` ignores dependencies
 > whose assembly name matches one of the
@@ -896,7 +896,7 @@ Because the edges come from the same dependency resolution as the other dependen
 [custom dependency resolver](#dependency-resolver) (e.g. an IL-level one) also sharpens cycle
 detection: body-level references it surfaces can complete a cycle that the signature-level default cannot see.
 
-### Architecture rules
+### Layers as type selections
 
 There is no separate rule engine: a "layer" is just a reusable `Filtered.Types` selection (with the full
 filter vocabulary at your disposal), and an architecture rule is just an expectation on it.

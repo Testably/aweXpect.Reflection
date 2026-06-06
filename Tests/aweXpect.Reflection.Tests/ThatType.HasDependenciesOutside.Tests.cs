@@ -1,4 +1,5 @@
 ﻿using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Consumers;
+using aweXpect.Reflection.Tests.TestHelpers.Dependencies.Synthetic;
 using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
@@ -203,6 +204,22 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenSubjectIsInGlobalNamespaceAndDependsOnlyOnFramework_ShouldFail()
+			{
+				Type subject = typeof(GlobalNamespaceTarget);
+
+				async Task Act()
+					=> await That(subject).HasDependenciesOutside(Layer1Namespace);
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              has dependencies outside namespace "{Layer1Namespace}",
+					              but it only depended on the allowed namespaces
+					              """);
+			}
+
+			[Fact]
 			public async Task WhenTypeIsNull_ShouldFail()
 			{
 				Type? subject = null;
@@ -352,6 +369,21 @@ public sealed partial class ThatType
 						.DoesNotComplyWith(it => it.HasDependenciesOutside(Types.InNamespace(Layer1Namespace)));
 
 				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenNegatedAndDistinctViolatorsShareTheSimpleName_ShouldQualifyThemByNamespace()
+			{
+				// Both AmbiguousTarget dependencies are outside the allowed set; they must stay apart in the
+				// message instead of collapsing into one indistinguishable "AmbiguousTarget" entry.
+				Type subject = typeof(WithSameNamedDependencies);
+
+				async Task Act()
+					=> await That(subject)
+						.DoesNotComplyWith(it => it.HasDependenciesOutside(Types.InNamespace(Layer1Namespace)));
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("*AmbiguousA.AmbiguousTarget*AmbiguousB.AmbiguousTarget*").AsWildcard();
 			}
 
 			[Fact]

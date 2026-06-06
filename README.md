@@ -834,9 +834,9 @@ chainable refinements):
 // Select the current violators of an architecture rule (e.g. for a baseline)
 In.AllLoadedAssemblies().Types().WhichHaveDependenciesOutside("MyApp.Application", "MyApp.Domain")
 
-// Assert that a legacy module still has its known external dependencies
-await Expect.That(Types.InNamespace("MyApp.Legacy"))
-    .HaveDependenciesOutside("MyApp.Application", "MyApp.Domain");
+// Assert that a known legacy type still has its external dependency
+await Expect.That(typeof(LegacyImportService))
+    .HasDependenciesOutside("MyApp.Application", "MyApp.Domain");
 ```
 
 `DependsOn` and `DoesNotDependOn` (single types only) also accept a **specific type** via `<T>()` or

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using aweXpect.Core;
 using aweXpect.Reflection.Options;
 using aweXpect.Results;

@@ -235,6 +235,7 @@ public static partial class ThatType
 			IAsyncConstraint<Type?>
 	{
 		private Type[] _dependencies = [];
+		private ResolvedTypeSet? _targetSet;
 
 		public async Task<ConstraintResult> IsMetBy(Type? actual, CancellationToken cancellationToken)
 		{
@@ -245,9 +246,10 @@ public static partial class ThatType
 				return this;
 			}
 
-			await options.Resolve();
+			ResolvedTypeSet targetSet = await options.Resolve(cancellationToken);
+			_targetSet = targetSet;
 			_dependencies = actual.ResolveDependencies();
-			Outcome = _dependencies.Any(options.Matches) ? Outcome.Success : Outcome.Failure;
+			Outcome = _dependencies.Any(targetSet.Matches) ? Outcome.Success : Outcome.Failure;
 			return this;
 		}
 
@@ -263,9 +265,10 @@ public static partial class ThatType
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
 			// The sorted matching types are only needed for this failure message, so they are built lazily.
+			// _targetSet can only be null when the subject was null, in which case _dependencies is empty.
 			stringBuilder.Append(It).Append(" depended on ");
 			Formatter.Format(stringBuilder, _dependencies
-				.Where(options.Matches)
+				.Where(dependency => _targetSet?.Matches(dependency) == true)
 				.Distinct()
 				.OrderBy(type => type.FullName ?? type.Name, StringComparer.Ordinal)
 				.ToArray());

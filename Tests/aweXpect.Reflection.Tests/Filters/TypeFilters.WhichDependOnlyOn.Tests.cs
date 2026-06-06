@@ -47,6 +47,27 @@ public sealed partial class TypeFilters
 
 				await That(types).Contains(typeof(Layer1AndLayer2));
 			}
+
+			[Fact]
+			public async Task WhenExcludingOwnSubNamespaces_ShouldFilterOutTypesReferencingOwnSubNamespace()
+			{
+				Filtered.Types types = In.Namespace(ConsumersNamespace)
+					.WhichDependOnlyOn(In.Namespace(Layer1Namespace))
+					.ExcludingOwnSubNamespaces();
+
+				await That(types).Contains(typeof(OnlyLayer1));
+				await That(types).DoesNotContain(typeof(ReferencesOwnSubNamespace));
+			}
+
+			[Fact]
+			public async Task ExcludingOwnSubNamespaces_ShouldNotAffectOriginalFilter()
+			{
+				Filtered.Types.TypeSetDependencyOnlyOnFilterResult original = In.Namespace(ConsumersNamespace)
+					.WhichDependOnlyOn(In.Namespace(Layer1Namespace));
+				_ = original.ExcludingOwnSubNamespaces();
+
+				await That(original).Contains(typeof(ReferencesOwnSubNamespace));
+			}
 		}
 	}
 }

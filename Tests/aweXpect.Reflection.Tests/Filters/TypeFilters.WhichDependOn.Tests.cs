@@ -83,6 +83,20 @@ public sealed partial class TypeFilters
 
 				await That(original).DoesNotContain(typeof(ViaField));
 			}
+
+			[Fact]
+			public async Task ShouldDelimitTargetDescriptionFromSourceSuffix()
+			{
+				// The parentheses keep the target's trailing source scope apart from the subject collection's
+				// own source suffix, so the two "in all loaded assemblies" do not run into each other.
+				Filtered.Types types = In.Namespace(ConsumersNamespace)
+					.WhichDependOn(In.Namespace(Layer1Namespace));
+
+				await That(types.GetDescription()).IsEqualTo(
+					$"types within namespace \"{ConsumersNamespace}\" which depend on " +
+					$"(types within namespace \"{Layer1Namespace}\" in all loaded assemblies) " +
+					"in all loaded assemblies");
+			}
 		}
 	}
 }

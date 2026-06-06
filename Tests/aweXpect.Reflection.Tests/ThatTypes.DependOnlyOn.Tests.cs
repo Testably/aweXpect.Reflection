@@ -159,6 +159,29 @@ public sealed partial class ThatTypes
 
 				await That(Act).DoesNotThrow();
 			}
+
+			[Fact]
+			public async Task WhenExcludingOwnSubNamespaces_OwnSubNamespaceBecomesViolation()
+			{
+				IEnumerable<Type?> subject =
+				[
+					typeof(OnlyLayer1),
+					typeof(ReferencesOwnSubNamespace),
+				];
+
+				async Task Act()
+					=> await That(subject).DependOnlyOn(In.Namespace(Layer1Namespace))
+						.ExcludingOwnSubNamespaces();
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              all depend only on types within namespace "{Layer1Namespace}" in all loaded assemblies,
+					              but it contained types with disallowed dependencies [
+					                ReferencesOwnSubNamespace depends on ["OwnSubTarget"]
+					              ]
+					              """);
+			}
 		}
 	}
 }

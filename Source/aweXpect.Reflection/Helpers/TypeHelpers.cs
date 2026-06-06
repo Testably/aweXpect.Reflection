@@ -773,15 +773,23 @@ internal static class TypeHelpers
 	{
 		target = StripElementTypes(target);
 
-		if (dependency == target)
-		{
-			return true;
-		}
-
-		return target.IsGenericTypeDefinition &&
-		       dependency.IsGenericType &&
-		       dependency.GetGenericTypeDefinition() == target;
+		return dependency == target ||
+		       dependency.GetGenericTypeDefinitionOfConstruction() == target;
 	}
+
+	/// <summary>
+	///     Returns the generic type definition (e.g. <c>List&lt;&gt;</c>) when the <paramref name="dependency" />
+	///     is a constructed generic type (e.g. <c>List&lt;Foo&gt;</c>), otherwise <see langword="null" />.
+	/// </summary>
+	/// <remarks>
+	///     The single encoding of the rule that a dependency on any construction also matches its generic type
+	///     definition; shared between <see cref="MatchesType" /> and <see cref="ResolvedTypeSet.Matches" />, so
+	///     that the specific-type and the type-set matchers cannot drift apart.
+	/// </remarks>
+	internal static Type? GetGenericTypeDefinitionOfConstruction(this Type dependency)
+		=> dependency is { IsGenericType: true, IsGenericTypeDefinition: false, }
+			? dependency.GetGenericTypeDefinition()
+			: null;
 
 	/// <summary>
 	///     Strips array/by-ref/pointer wrappers from the <paramref name="type" />, returning the innermost
@@ -959,16 +967,14 @@ internal static class TypeHelpers
 	///     set is a concrete set of types, so the violations are reported as formatted type names instead of
 	///     namespaces. Distinct violators sharing a formatted name (the same simple name in different namespaces)
 	///     are qualified by their namespace, so they do not collapse into one indistinguishable entry.
-	///     Requires <see cref="TypeSetDependencyOptions.Resolve" /> to have been awaited before.
 	/// </remarks>
 	internal static IReadOnlyList<string> GetDependencyTypeSetViolations(
-		this Type type, TypeSetDependencyOptions allowed)
+		this Type type, ResolvedTypeSet allowed)
 	{
 		List<string> violations = [];
 		foreach (IGrouping<string, Type> sameName in type.GetDependencyViolations(
 				         (dependency, ownNamespace, excludedPrefixes)
 					         => IsDependencyTypeSetViolation(dependency, ownNamespace, allowed, excludedPrefixes))
-			         .Distinct()
 			         .GroupBy(dependency => Formatter.Format(dependency), StringComparer.Ordinal))
 		{
 			Type[] violators = sameName.ToArray();
@@ -996,14 +1002,14 @@ internal static class TypeHelpers
 	///     Same rules as <see cref="GetDependencyTypeSetViolations" />, for callers (like filters) that only need
 	///     a verdict and not the violation list.
 	/// </remarks>
-	internal static bool HasDependencyTypeSetViolations(this Type type, TypeSetDependencyOptions allowed)
+	internal static bool HasDependencyTypeSetViolations(this Type type, ResolvedTypeSet allowed)
 		=> type.GetDependencyViolations(
 			(dependency, ownNamespace, excludedPrefixes)
 				=> IsDependencyTypeSetViolation(dependency, ownNamespace, allowed, excludedPrefixes)).Any();
 
 	private static bool IsDependencyTypeSetViolation(
-		Type dependency, string? ownNamespace, TypeSetDependencyOptions allowed, string[] excludedPrefixes)
-		=> !IsExemptDependency(dependency, ownNamespace, true, excludedPrefixes) &&
+		Type dependency, string? ownNamespace, ResolvedTypeSet allowed, string[] excludedPrefixes)
+		=> !IsExemptDependency(dependency, ownNamespace, allowed.IncludeOwnSubNamespaces, excludedPrefixes) &&
 		   !allowed.Matches(dependency);
 
 	/// <summary>

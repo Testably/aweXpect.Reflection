@@ -283,6 +283,48 @@ public sealed partial class ThatType
 
 				await That(Act).DoesNotThrow();
 			}
+
+			[Fact]
+			public async Task WhenReferencingOwnSubNamespace_ShouldSucceedByDefault()
+			{
+				Type subject = typeof(ReferencesOwnSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(In.Namespace(Layer1Namespace));
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WhenExcludingOwnSubNamespaces_OwnSubNamespaceBecomesViolation()
+			{
+				Type subject = typeof(ReferencesOwnSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(In.Namespace(Layer1Namespace))
+						.ExcludingOwnSubNamespaces();
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage($"""
+					              Expected that subject
+					              depends only on types within namespace "{Layer1Namespace}" in all loaded assemblies,
+					              but it also depended on ["OwnSubTarget"]
+					              """);
+			}
+
+			[Fact]
+			public async Task WhenExcludingOwnSubNamespaces_TargetCollectionCoveringTheSubNamespaceStillAllowsIt()
+			{
+				// The own sub-namespace is no longer implicitly allowed, but the target collection contains the
+				// referenced OwnSub type, which covers it explicitly.
+				Type subject = typeof(ReferencesOwnSubNamespace);
+
+				async Task Act()
+					=> await That(subject).DependsOnlyOn(In.Namespace(ConsumersNamespace))
+						.ExcludingOwnSubNamespaces();
+
+				await That(Act).DoesNotThrow();
+			}
 		}
 
 		public sealed class NegatedTests

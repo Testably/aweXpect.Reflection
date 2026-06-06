@@ -47,7 +47,9 @@ public static partial class ThatType
 	/// <remarks>
 	///     The target collections are resolved once per assertion; a dependency is allowed when it is a member of the
 	///     union of the resolved collections (by <see cref="Type" /> identity; a generic type definition in a
-	///     collection matches any construction of it).
+	///     collection matches any construction of it). The type's own namespace is always allowed, including its
+	///     sub-namespaces unless
+	///     <see cref="TypeSetDependencyOnlyOnResult{TThat}.ExcludingOwnSubNamespaces" /> is used.
 	///     <para />
 	///     Dependencies on types whose assembly name matches one of the
 	///     <see cref="AwexpectCustomization.ReflectionCustomizationValue.ExcludedAssemblyPrefixes" /> at a
@@ -57,11 +59,11 @@ public static partial class ThatType
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoesNotDependOn</c> or customize the prefixes.
 	/// </remarks>
-	public static TypeSetDependencyResult<Type?> DependsOnlyOn(
+	public static TypeSetDependencyOnlyOnResult<Type?> DependsOnlyOn(
 		this IThat<Type?> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{
 		TypeSetDependencyOptions options = new(target, additional);
-		return new TypeSetDependencyResult<Type?>(subject.Get().ExpectationBuilder
+		return new TypeSetDependencyOnlyOnResult<Type?>(subject.Get().ExpectationBuilder
 				.AddConstraint((it, grammars)
 					=> new DependsOnlyOnTypeSetConstraint(it, grammars, options)),
 			subject,
@@ -125,8 +127,8 @@ public static partial class ThatType
 				return this;
 			}
 
-			await options.Resolve();
-			_violations = actual.GetDependencyTypeSetViolations(options);
+			ResolvedTypeSet allowed = await options.Resolve(cancellationToken);
+			_violations = actual.GetDependencyTypeSetViolations(allowed);
 			Outcome = _violations.Count == 0 ? Outcome.Success : Outcome.Failure;
 			return this;
 		}

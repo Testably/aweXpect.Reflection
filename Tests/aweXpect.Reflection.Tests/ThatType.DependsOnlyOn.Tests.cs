@@ -233,7 +233,7 @@ public sealed partial class ThatType
 				Type subject = typeof(WithSameNamedDependencies);
 
 				async Task Act()
-					=> await That(subject).DependsOnlyOn(In.Namespace(Layer1Namespace));
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(Layer1Namespace));
 
 				await That(Act).Throws<XunitException>()
 					.WithMessage("*AmbiguousA.AmbiguousTarget*AmbiguousB.AmbiguousTarget*").AsWildcard();
@@ -290,7 +290,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ReferencesOwnSubNamespace);
 
 				async Task Act()
-					=> await That(subject).DependsOnlyOn(In.Namespace(Layer1Namespace));
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(Layer1Namespace));
 
 				await That(Act).DoesNotThrow();
 			}
@@ -301,7 +301,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ReferencesOwnSubNamespace);
 
 				async Task Act()
-					=> await That(subject).DependsOnlyOn(In.Namespace(Layer1Namespace))
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(Layer1Namespace))
 						.ExcludingOwnSubNamespaces();
 
 				await That(Act).Throws<XunitException>()
@@ -320,7 +320,7 @@ public sealed partial class ThatType
 				Type subject = typeof(ReferencesOwnSubNamespace);
 
 				async Task Act()
-					=> await That(subject).DependsOnlyOn(In.Namespace(ConsumersNamespace))
+					=> await That(subject).DependsOnlyOn(Types.InNamespace(ConsumersNamespace))
 						.ExcludingOwnSubNamespaces();
 
 				await That(Act).DoesNotThrow();

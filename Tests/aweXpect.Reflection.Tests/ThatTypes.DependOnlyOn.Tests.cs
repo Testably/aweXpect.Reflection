@@ -170,7 +170,7 @@ public sealed partial class ThatTypes
 				];
 
 				async Task Act()
-					=> await That(subject).DependOnlyOn(In.Namespace(Layer1Namespace))
+					=> await That(subject).DependOnlyOn(Types.InNamespace(Layer1Namespace))
 						.ExcludingOwnSubNamespaces();
 
 				await That(Act).Throws<XunitException>()

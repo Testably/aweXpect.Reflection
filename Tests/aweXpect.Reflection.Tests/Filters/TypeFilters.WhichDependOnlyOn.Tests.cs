@@ -51,8 +51,8 @@ public sealed partial class TypeFilters
 			[Fact]
 			public async Task WhenExcludingOwnSubNamespaces_ShouldFilterOutTypesReferencingOwnSubNamespace()
 			{
-				Filtered.Types types = In.Namespace(ConsumersNamespace)
-					.WhichDependOnlyOn(In.Namespace(Layer1Namespace))
+				Filtered.Types types = Types.InNamespace(ConsumersNamespace)
+					.WhichDependOnlyOn(Types.InNamespace(Layer1Namespace))
 					.ExcludingOwnSubNamespaces();
 
 				await That(types).Contains(typeof(OnlyLayer1));
@@ -62,8 +62,8 @@ public sealed partial class TypeFilters
 			[Fact]
 			public async Task ExcludingOwnSubNamespaces_ShouldNotAffectOriginalFilter()
 			{
-				Filtered.Types.TypeSetDependencyOnlyOnFilterResult original = In.Namespace(ConsumersNamespace)
-					.WhichDependOnlyOn(In.Namespace(Layer1Namespace));
+				Filtered.Types.TypeSetDependencyOnlyOnFilterResult original = Types.InNamespace(ConsumersNamespace)
+					.WhichDependOnlyOn(Types.InNamespace(Layer1Namespace));
 				_ = original.ExcludingOwnSubNamespaces();
 
 				await That(original).Contains(typeof(ReferencesOwnSubNamespace));

@@ -89,8 +89,8 @@ public sealed partial class TypeFilters
 			{
 				// The parentheses keep the target's trailing source scope apart from the subject collection's
 				// own source suffix, so the two "in all loaded assemblies" do not run into each other.
-				Filtered.Types types = In.Namespace(ConsumersNamespace)
-					.WhichDependOn(In.Namespace(Layer1Namespace));
+				Filtered.Types types = Types.InNamespace(ConsumersNamespace)
+					.WhichDependOn(Types.InNamespace(Layer1Namespace));
 
 				await That(types.GetDescription()).IsEqualTo(
 					$"types within namespace \"{ConsumersNamespace}\" which depend on " +

@@ -11,6 +11,19 @@ public sealed partial class ThatType
 		public sealed class Tests
 		{
 			[Fact]
+			public async Task WhenBaseTypeHasNonNullableEvent_ShouldSucceed()
+			{
+				Type subject = typeof(DerivedClassWithNullableEvent);
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenBaseTypeHasNonNullableMembers_ShouldSucceed()
 			{
 				Type subject = typeof(DerivedClassWithNullableMembers);
@@ -145,6 +158,28 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WithIncludingInherited_WhenBaseTypeHasNonNullableEvent_ShouldFail()
+			{
+				Type subject = typeof(DerivedClassWithNullableEvent);
+				EventInfo @event = subject
+					.GetEvent(nameof(ClassWithSingleNonNullableEvent.NonNullableEvent))!;
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers(MemberScope.IncludingInherited);
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              only has nullable members,
+					              but it contained non-nullable members [
+					                {Formatter.Format(@event)}
+					              ]
+					              """);
+			}
+
+			[Fact]
 			public async Task WithIncludingInherited_WhenBaseTypeHasNonNullableMembers_ShouldFail()
 			{
 				Type subject = typeof(DerivedClassWithNullableMembers);
@@ -162,6 +197,41 @@ public sealed partial class ThatType
 					               *
 					             ]
 					             """).AsWildcard();
+			}
+
+			[Fact]
+			public async Task WithIncludingInherited_WhenBaseTypeHasNullableEvent_ShouldSucceed()
+			{
+				Type subject = typeof(DerivedClassWithInheritedNullableEvent);
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers(MemberScope.IncludingInherited);
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithIncludingInherited_WhenBaseTypeHasPrivateNonNullableEvent_ShouldFail()
+			{
+				Type subject = typeof(DerivedClassWithPrivateNonNullableBaseEvent);
+				EventInfo @event = typeof(BaseClassWithPrivateNonNullableEvent)
+					.GetEvent("PrivateNonNullableEvent", BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers(MemberScope.IncludingInherited);
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              only has nullable members,
+					              but it contained non-nullable members [
+					                {Formatter.Format(@event)}
+					              ]
+					              """);
 			}
 		}
 

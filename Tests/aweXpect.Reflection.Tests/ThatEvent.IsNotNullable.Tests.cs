@@ -38,6 +38,20 @@ public sealed partial class ThatEvent
 			}
 
 			[Fact]
+			public async Task WhenEventIsNonNullableWithCustomAccessors_ShouldSucceed()
+			{
+				EventInfo subject = typeof(ClassWithCustomNonNullableEvent)
+					.GetEvent(nameof(ClassWithCustomNonNullableEvent.NonNullableCustomEvent))!;
+
+				async Task Act()
+				{
+					await That(subject).IsNotNullable();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
 			public async Task WhenEventIsNull_ShouldFail()
 			{
 				EventInfo? subject = null;
@@ -79,6 +93,25 @@ public sealed partial class ThatEvent
 			{
 				EventInfo subject = typeof(ClassWithNullableEvents)
 					.GetEvent(nameof(ClassWithNullableEvents.NullableGenericEvent))!;
+
+				async Task Act()
+				{
+					await That(subject).IsNotNullable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              is not nullable,
+					              but it was nullable {Formatter.Format(subject)}
+					              """);
+			}
+
+			[Fact]
+			public async Task WhenEventIsNullableWithCustomAccessors_ShouldFail()
+			{
+				EventInfo subject = typeof(ClassWithCustomNullableEvent)
+					.GetEvent(nameof(ClassWithCustomNullableEvent.NullableCustomEvent))!;
 
 				async Task Act()
 				{

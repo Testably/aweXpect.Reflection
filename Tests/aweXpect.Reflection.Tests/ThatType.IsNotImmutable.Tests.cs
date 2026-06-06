@@ -57,15 +57,22 @@ public sealed partial class ThatType
 					             """);
 			}
 
-			public static TheoryData<Type> MutableTypes()
-				=>
-				[
-					typeof(ClassWithMutableField),
-					typeof(ClassWithSettableProperty),
-					typeof(ClassWithMutableFieldAndSettableProperty),
-					typeof(MutableBaseClass),
-					typeof(ClassInheritingMutableField),
-				];
+			public static TheoryData<Type> MutableTypes() => new()
+			{
+				typeof(ClassWithMutableField),
+				typeof(ClassWithSettableProperty),
+				typeof(ClassWithMutableFieldAndSettableProperty),
+				typeof(MutableBaseClass),
+				typeof(ClassInheritingMutableField),
+				typeof(MutableBaseClassWithProtectedField),
+				typeof(ClassInheritingProtectedMutableField),
+				typeof(ClassWithSettableIndexer),
+				typeof(ClassWithPrivateSettableProperty),
+				typeof(MutableStruct),
+				typeof(MutableRecordStruct),
+				typeof(IMutableInterface),
+				typeof(GenericMutableClass<>),
+			};
 		}
 
 		public sealed class NegatedTests

@@ -4,7 +4,7 @@
 public class ImmutableClass
 {
 	public const int ConstantField = 4;
-	public static int StaticMutableField = 1;
+	private static int _staticMutableField = 1;
 	public readonly int ReadOnlyField = 2;
 	private readonly string _privateReadOnlyField = "";
 	public static int StaticSettableProperty { get; set; }
@@ -49,3 +49,67 @@ public class MutableBaseClass
 }
 
 public class ClassInheritingMutableField : MutableBaseClass;
+
+public class MutableBaseClassWithProtectedField
+{
+	protected int ProtectedValue = 1;
+}
+
+public class ClassInheritingProtectedMutableField : MutableBaseClassWithProtectedField;
+
+public class ClassWithSettableIndexer
+{
+	private readonly int[] _values = new int[10];
+
+	public int this[int index]
+	{
+		get => _values[index];
+		set => _values[index] = value;
+	}
+}
+
+public class ClassWithPrivateSettableProperty
+{
+	public int Value { get; private set; }
+}
+
+public struct MutableStruct
+{
+	public int Value;
+}
+
+public readonly struct ImmutableReadOnlyStruct
+{
+	public readonly int Value;
+
+	public ImmutableReadOnlyStruct(int value)
+	{
+		Value = value;
+	}
+}
+
+public record struct MutableRecordStruct(int Value);
+
+public readonly record struct ImmutableRecordStruct(int Value);
+
+public record PositionalRecord(int Value);
+
+public interface IImmutableInterface
+{
+	int Value { get; }
+}
+
+public interface IMutableInterface
+{
+	int Value { get; set; }
+}
+
+public class GenericImmutableClass<T>
+{
+	public readonly T Value = default!;
+}
+
+public class GenericMutableClass<T>
+{
+	public T Value = default!;
+}

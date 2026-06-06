@@ -103,6 +103,86 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTypeHasSettableIndexer_ShouldFail()
+			{
+				Type subject = typeof(ClassWithSettableIndexer);
+
+				async Task Act()
+				{
+					await That(subject).IsImmutable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             is immutable,
+					             but it was mutable ClassWithSettableIndexer with mutable members [
+					               public int ClassWithSettableIndexer.Item { get; set; }
+					             ]
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenTypeHasPropertyWithPrivateSetter_ShouldFail()
+			{
+				Type subject = typeof(ClassWithPrivateSettableProperty);
+
+				async Task Act()
+				{
+					await That(subject).IsImmutable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             is immutable,
+					             but it was mutable ClassWithPrivateSettableProperty with mutable members [
+					               public int ClassWithPrivateSettableProperty.Value { get; private set; }
+					             ]
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenTypeInheritsProtectedMutableField_ShouldFail()
+			{
+				Type subject = typeof(ClassInheritingProtectedMutableField);
+
+				async Task Act()
+				{
+					await That(subject).IsImmutable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             is immutable,
+					             but it was mutable ClassInheritingProtectedMutableField with mutable members [
+					               int MutableBaseClassWithProtectedField.ProtectedValue
+					             ]
+					             """);
+			}
+
+			[Fact]
+			public async Task WhenTypeIsPositionalRecordStruct_ShouldFail()
+			{
+				Type subject = typeof(MutableRecordStruct);
+
+				async Task Act()
+				{
+					await That(subject).IsImmutable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             is immutable,
+					             but it was mutable MutableRecordStruct with mutable members [
+					               public int MutableRecordStruct.Value { get; set; }
+					             ]
+					             """);
+			}
+
+			[Fact]
 			public async Task WhenTypeIsNull_ShouldFail()
 			{
 				Type? subject = null;
@@ -120,15 +200,21 @@ public sealed partial class ThatType
 					             """);
 			}
 
-			public static TheoryData<Type> ImmutableTypes()
-				=>
-				[
-					typeof(ImmutableClass),
-					typeof(ImmutableClassWithInitProperty),
-					typeof(ImmutableDerivedClass),
-					typeof(PublicRecord),
-					typeof(PublicSealedClass),
-				];
+			public static TheoryData<Type> ImmutableTypes() => new()
+			{
+				typeof(ImmutableClass),
+				typeof(ImmutableClassWithInitProperty),
+				typeof(ImmutableDerivedClass),
+				typeof(PublicRecord),
+				typeof(PublicSealedClass),
+				typeof(PositionalRecord),
+				typeof(ImmutableReadOnlyStruct),
+				typeof(ImmutableRecordStruct),
+				typeof(IImmutableInterface),
+				typeof(PublicEnum),
+				typeof(PublicStaticClass),
+				typeof(GenericImmutableClass<>),
+			};
 		}
 
 		public sealed class NegatedTests

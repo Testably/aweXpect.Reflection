@@ -101,11 +101,11 @@ public static partial class ThatProperties
 #if NET8_0_OR_GREATER
 		public async Task<ConstraintResult> IsMetBy(IAsyncEnumerable<PropertyInfo?> actual,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, property => !property.IsNullable());
+			=> await SetAsyncValue(actual, property => property?.IsNullable() == false);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<PropertyInfo?> actual)
-			=> SetValue(actual, property => !property.IsNullable());
+			=> SetValue(actual, property => property?.IsNullable() == false);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not nullable");

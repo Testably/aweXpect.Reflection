@@ -12,7 +12,7 @@ public class ClassWithNullableMembers
 	public List<string>? NullableGenericProperty { get; set; }
 	public int? NullableValueProperty { get; set; }
 
-	public string? NullableWriteOnlyProperty
+	public static string? NullableWriteOnlyProperty
 	{
 		// ReSharper disable once ValueParameterNotUsed
 		set { }
@@ -61,6 +61,12 @@ public class ClassWithSingleNullableProperty
 public class ClassWithSingleNonNullableProperty
 {
 	public string NonNullableProperty { get; set; } = "";
+}
+
+public class DerivedClassWithNullableMembers : ClassWithNonNullableMembers
+{
+	public string? DeclaredNullableField;
+	public string? DeclaredNullableProperty { get; set; }
 }
 
 public class ClassWithoutMembers;

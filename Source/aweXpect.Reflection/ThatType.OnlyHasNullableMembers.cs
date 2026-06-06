@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 
@@ -11,19 +12,23 @@ namespace aweXpect.Reflection;
 public static partial class ThatType
 {
 	/// <summary>
-	///     Verifies that all fields and properties of the <see cref="Type" /> are nullable.
+	///     Verifies that all fields and properties of the <see cref="Type" /> are nullable, including inherited
+	///     members or only those declared directly on the type according to the <paramref name="memberScope" />.
 	/// </summary>
 	/// <remarks>
 	///     A member is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a
 	///     reference type annotated as nullable (according to the nullable reference type metadata).
 	/// </remarks>
 	public static AndOrResult<Type?, IThat<Type?>> OnlyHasNullableMembers(
-		this IThat<Type?> subject)
+		this IThat<Type?> subject, MemberScope memberScope = MemberScope.DeclaredOnly)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new OnlyHasNullableMembersConstraint(it, grammars)),
+				=> new OnlyHasNullableMembersConstraint(it, grammars, memberScope)),
 			subject);
 
-	private sealed class OnlyHasNullableMembersConstraint(string it, ExpectationGrammars grammars)
+	private sealed class OnlyHasNullableMembersConstraint(
+		string it,
+		ExpectationGrammars grammars,
+		MemberScope memberScope)
 		: ConstraintResult.WithNotNullValue<Type?>(it, grammars),
 			IValueConstraint<Type?>
 	{
@@ -35,7 +40,7 @@ public static partial class ThatType
 			Actual = actual;
 			if (actual is not null)
 			{
-				(_nullableMembers, _notNullableMembers) = actual.GetMembersByNullability();
+				(_nullableMembers, _notNullableMembers) = actual.GetMembersByNullability(memberScope);
 			}
 
 			Outcome = actual is not null && _notNullableMembers.Length == 0 ? Outcome.Success : Outcome.Failure;

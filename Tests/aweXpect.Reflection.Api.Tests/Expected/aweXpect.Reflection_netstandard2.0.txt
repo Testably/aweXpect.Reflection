@@ -1440,8 +1440,8 @@ namespace aweXpect.Reflection
         public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsSealed(this aweXpect.Core.IThat<System.Type?> subject) { }
         public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsStatic(this aweXpect.Core.IThat<System.Type?> subject) { }
         public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> IsWithinNamespace(this aweXpect.Core.IThat<System.Type?> subject, string expected) { }
-        public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> OnlyHasNonNullableMembers(this aweXpect.Core.IThat<System.Type?> subject) { }
-        public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> OnlyHasNullableMembers(this aweXpect.Core.IThat<System.Type?> subject) { }
+        public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> OnlyHasNonNullableMembers(this aweXpect.Core.IThat<System.Type?> subject, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
+        public static aweXpect.Results.AndOrResult<System.Type?, aweXpect.Core.IThat<System.Type?>> OnlyHasNullableMembers(this aweXpect.Core.IThat<System.Type?> subject, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
     }
     public static class ThatTypes
     {
@@ -1537,8 +1537,8 @@ namespace aweXpect.Reflection
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> Implement<TInterface>(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, bool forceDirect = false) { }
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> InheritFrom(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, System.Type baseType, bool forceDirect = false) { }
         public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> InheritFrom<TBaseType>(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, bool forceDirect = false) { }
-        public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> OnlyHaveNonNullableMembers(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject) { }
-        public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> OnlyHaveNullableMembers(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject) { }
+        public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> OnlyHaveNonNullableMembers(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
+        public static aweXpect.Results.AndOrResult<System.Collections.Generic.IEnumerable<System.Type?>, aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>>> OnlyHaveNullableMembers(this aweXpect.Core.IThat<System.Collections.Generic.IEnumerable<System.Type?>> subject, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
     }
     public static class TypeFilters
     {
@@ -1629,8 +1629,8 @@ namespace aweXpect.Reflection
         public static aweXpect.Reflection.Collections.Filtered.Types WhichImplement<TInterface>(this aweXpect.Reflection.Collections.Filtered.Types @this, bool forceDirect = false) { }
         public static aweXpect.Reflection.Collections.Filtered.Types WhichInheritFrom(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Type baseType, bool forceDirect = false) { }
         public static aweXpect.Reflection.Collections.Filtered.Types WhichInheritFrom<TBaseType>(this aweXpect.Reflection.Collections.Filtered.Types @this, bool forceDirect = false) { }
-        public static aweXpect.Reflection.Collections.Filtered.Types WhichOnlyHaveNonNullableMembers(this aweXpect.Reflection.Collections.Filtered.Types @this) { }
-        public static aweXpect.Reflection.Collections.Filtered.Types WhichOnlyHaveNullableMembers(this aweXpect.Reflection.Collections.Filtered.Types @this) { }
+        public static aweXpect.Reflection.Collections.Filtered.Types WhichOnlyHaveNonNullableMembers(this aweXpect.Reflection.Collections.Filtered.Types @this, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
+        public static aweXpect.Reflection.Collections.Filtered.Types WhichOnlyHaveNullableMembers(this aweXpect.Reflection.Collections.Filtered.Types @this, aweXpect.Reflection.Collections.MemberScope memberScope = 0) { }
         public static aweXpect.Reflection.TypeFilters.TypesWith With<TAttribute>(this aweXpect.Reflection.Collections.Filtered.Types @this, bool inherit = true)
             where TAttribute : System.Attribute { }
         public static aweXpect.Reflection.TypeFilters.TypesWith With<TAttribute>(this aweXpect.Reflection.Collections.Filtered.Types @this, System.Func<TAttribute, bool>? predicate, bool inherit = true, [System.Runtime.CompilerServices.CallerArgumentExpression("predicate")] string doNotPopulateThisValue = "")

@@ -101,11 +101,11 @@ public static partial class ThatFields
 #if NET8_0_OR_GREATER
 		public async Task<ConstraintResult> IsMetBy(IAsyncEnumerable<FieldInfo?> actual,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, field => !field.IsNullable());
+			=> await SetAsyncValue(actual, field => field?.IsNullable() == false);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<FieldInfo?> actual)
-			=> SetValue(actual, field => !field.IsNullable());
+			=> SetValue(actual, field => field?.IsNullable() == false);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not nullable");

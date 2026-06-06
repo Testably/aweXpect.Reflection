@@ -47,6 +47,26 @@ public sealed partial class ThatProperties
 					             ]
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WhenPropertiesContainNull_ShouldFail()
+			{
+				IEnumerable<PropertyInfo?> subject = [null,];
+
+				async Task Act()
+				{
+					await That(subject).AreNotNullable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             are all not nullable,
+					             but it contained nullable properties [
+					               <null>
+					             ]
+					             """);
+			}
 		}
 
 		public sealed class NegatedTests

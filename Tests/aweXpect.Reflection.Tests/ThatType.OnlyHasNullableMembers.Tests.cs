@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Tests.TestHelpers.Types;
 
 namespace aweXpect.Reflection.Tests;
@@ -65,6 +66,39 @@ public sealed partial class ThatType
 				async Task Act()
 				{
 					await That(subject).OnlyHasNullableMembers();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             only has nullable members,
+					             but it contained non-nullable members [
+					               *
+					             ]
+					             """).AsWildcard();
+			}
+
+			[Fact]
+			public async Task WhenBaseTypeHasNonNullableMembers_ShouldSucceed()
+			{
+				Type subject = typeof(DerivedClassWithNullableMembers);
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers();
+				}
+
+				await That(Act).DoesNotThrow();
+			}
+
+			[Fact]
+			public async Task WithIncludingInherited_WhenBaseTypeHasNonNullableMembers_ShouldFail()
+			{
+				Type subject = typeof(DerivedClassWithNullableMembers);
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers(MemberScope.IncludingInherited);
 				}
 
 				await That(Act).ThrowsException()

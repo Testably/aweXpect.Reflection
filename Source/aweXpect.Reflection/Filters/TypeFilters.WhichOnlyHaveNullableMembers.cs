@@ -7,18 +7,22 @@ namespace aweXpect.Reflection;
 public static partial class TypeFilters
 {
 	/// <summary>
-	///     Filters for types whose fields and properties are all nullable.
+	///     Filters for types whose fields and properties are all nullable, including inherited members or only
+	///     those declared directly on the type according to the <paramref name="memberScope" />.
 	/// </summary>
-	public static Filtered.Types WhichOnlyHaveNullableMembers(this Filtered.Types @this)
+	public static Filtered.Types WhichOnlyHaveNullableMembers(this Filtered.Types @this,
+		MemberScope memberScope = MemberScope.DeclaredOnly)
 		=> @this.Which(Filter.Suffix<Type>(
-			type => type.GetNotNullableMembers().Length == 0,
+			type => type.GetNotNullableMembers(memberScope).Length == 0,
 			"which only have nullable members "));
 
 	/// <summary>
-	///     Filters for types whose fields and properties are all non-nullable.
+	///     Filters for types whose fields and properties are all non-nullable, including inherited members or only
+	///     those declared directly on the type according to the <paramref name="memberScope" />.
 	/// </summary>
-	public static Filtered.Types WhichOnlyHaveNonNullableMembers(this Filtered.Types @this)
+	public static Filtered.Types WhichOnlyHaveNonNullableMembers(this Filtered.Types @this,
+		MemberScope memberScope = MemberScope.DeclaredOnly)
 		=> @this.Which(Filter.Suffix<Type>(
-			type => type.GetNullableMembers().Length == 0,
+			type => type.GetNullableMembers(memberScope).Length == 0,
 			"which only have non-nullable members "));
 }

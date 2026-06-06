@@ -120,6 +120,58 @@ public sealed class NullabilityHelpersTests
 	}
 
 	[Theory]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedField))]
+	[InlineData(nameof(GenericTestClass<object>.AnnotatedField))]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedProperty))]
+	[InlineData(nameof(GenericTestClass<object>.AnnotatedProperty))]
+	public async Task IsNullable_WithGenericParameterMembers_WhenDerivedTypeUsesNullableArgument_ShouldReturnTrue(
+		string memberName)
+	{
+		MemberInfo memberInfo = typeof(DerivedFromGenericTestClassWithNullableArgument).GetMember(memberName).Single();
+
+		bool result = memberInfo is FieldInfo fieldInfo
+			? fieldInfo.IsNullable()
+			: ((PropertyInfo)memberInfo).IsNullable();
+
+		await That(result).IsTrue();
+	}
+
+	[Theory]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedField), false)]
+	[InlineData(nameof(GenericTestClass<object>.AnnotatedField), true)]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedProperty), false)]
+	[InlineData(nameof(GenericTestClass<object>.AnnotatedProperty), true)]
+	public async Task IsNullable_WithGenericParameterMembers_WhenDerivedTypeUsesNonNullableArgument_ShouldEvaluateAnnotation(
+		string memberName, bool expectNullable)
+	{
+		MemberInfo memberInfo =
+			typeof(DerivedFromGenericTestClassWithNonNullableArgument).GetMember(memberName).Single();
+
+		bool result = memberInfo is FieldInfo fieldInfo
+			? fieldInfo.IsNullable()
+			: ((PropertyInfo)memberInfo).IsNullable();
+
+		await That(result).IsEqualTo(expectNullable);
+	}
+
+	[Theory]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedField))]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedProperty))]
+	public async Task IsNullable_WithGenericParameterMembers_WhenAccessedViaConstructedType_ShouldReturnFalse(
+		string memberName)
+	{
+		// The nullable annotation of a type argument is not part of System.Type, so it can only be
+		// resolved through the base type metadata of a derived type.
+		MemberInfo memberInfo = typeof(GenericTestClass<string>).GetMember(memberName).Single();
+
+		bool result = memberInfo is FieldInfo fieldInfo
+			? fieldInfo.IsNullable()
+			: ((PropertyInfo)memberInfo).IsNullable();
+
+		await That(result).IsFalse();
+	}
+
+	[Theory]
 	[InlineData(nameof(MostlyNullableTestClass.NonNullableField), false)]
 	[InlineData(nameof(MostlyNullableTestClass.NonNullableProperty), false)]
 	[InlineData(nameof(MostlyNullableTestClass.FirstNullableField), true)]
@@ -210,7 +262,7 @@ public sealed class NullabilityHelpersTests
 		public List<string>? NullableGenericProperty { get; set; }
 		public List<string?> NonNullableGenericProperty { get; set; } = [];
 
-		public string? NullableWriteOnlyProperty
+		public static string? NullableWriteOnlyProperty
 		{
 			// ReSharper disable once ValueParameterNotUsed
 			set { }
@@ -249,6 +301,10 @@ public sealed class NullabilityHelpersTests
 		public T UnannotatedProperty { get; set; } = default!;
 		public T? AnnotatedProperty { get; set; }
 	}
+
+	public class DerivedFromGenericTestClassWithNullableArgument : GenericTestClass<string?>;
+
+	public class DerivedFromGenericTestClassWithNonNullableArgument : GenericTestClass<string>;
 
 	public class MostlyNullableTestClass
 	{

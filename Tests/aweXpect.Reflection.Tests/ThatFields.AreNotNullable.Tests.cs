@@ -47,6 +47,26 @@ public sealed partial class ThatFields
 					             ]
 					             """).AsWildcard();
 			}
+
+			[Fact]
+			public async Task WhenFieldsContainNull_ShouldFail()
+			{
+				IEnumerable<FieldInfo?> subject = [null,];
+
+				async Task Act()
+				{
+					await That(subject).AreNotNullable();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage("""
+					             Expected that subject
+					             are all not nullable,
+					             but it contained nullable fields [
+					               <null>
+					             ]
+					             """);
+			}
 		}
 
 		public sealed class NegatedTests

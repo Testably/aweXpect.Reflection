@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -19,35 +20,40 @@ public static partial class ThatTypes
 {
 	/// <summary>
 	///     Verifies that all fields and properties of all items in the filtered collection of <see cref="Type" />
-	///     are nullable.
+	///     are nullable, including inherited members or only those declared directly on the type according to
+	///     the <paramref name="memberScope" />.
 	/// </summary>
 	/// <remarks>
 	///     A member is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a
 	///     reference type annotated as nullable (according to the nullable reference type metadata).
 	/// </remarks>
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> OnlyHaveNullableMembers(
-		this IThat<IEnumerable<Type?>> subject)
+		this IThat<IEnumerable<Type?>> subject, MemberScope memberScope = MemberScope.DeclaredOnly)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new OnlyHaveNullableMembersConstraint(it, grammars)),
+				=> new OnlyHaveNullableMembersConstraint(it, grammars, memberScope)),
 			subject);
 
 #if NET8_0_OR_GREATER
 	/// <summary>
 	///     Verifies that all fields and properties of all items in the filtered collection of <see cref="Type" />
-	///     are nullable.
+	///     are nullable, including inherited members or only those declared directly on the type according to
+	///     the <paramref name="memberScope" />.
 	/// </summary>
 	/// <remarks>
 	///     A member is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a
 	///     reference type annotated as nullable (according to the nullable reference type metadata).
 	/// </remarks>
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> OnlyHaveNullableMembers(
-		this IThat<IAsyncEnumerable<Type?>> subject)
+		this IThat<IAsyncEnumerable<Type?>> subject, MemberScope memberScope = MemberScope.DeclaredOnly)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new OnlyHaveNullableMembersConstraint(it, grammars)),
+				=> new OnlyHaveNullableMembersConstraint(it, grammars, memberScope)),
 			subject);
 #endif
 
-	private sealed class OnlyHaveNullableMembersConstraint(string it, ExpectationGrammars grammars)
+	private sealed class OnlyHaveNullableMembersConstraint(
+		string it,
+		ExpectationGrammars grammars,
+		MemberScope memberScope)
 		: CollectionConstraintResult<Type?>(grammars),
 			IValueConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
@@ -63,7 +69,7 @@ public static partial class ThatTypes
 				return false;
 			}
 
-			MemberInfo[] notNullableMembers = type.GetNotNullableMembers();
+			MemberInfo[] notNullableMembers = type.GetNotNullableMembers(memberScope);
 			if (notNullableMembers.Length > 0)
 			{
 				_notNullableMembers[type] = notNullableMembers;

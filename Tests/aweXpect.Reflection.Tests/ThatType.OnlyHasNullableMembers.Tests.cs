@@ -79,6 +79,28 @@ public sealed partial class ThatType
 			}
 
 			[Fact]
+			public async Task WhenTypeHasNonNullableEvent_ShouldFail()
+			{
+				Type subject = typeof(ClassWithSingleNonNullableEvent);
+				EventInfo @event = subject
+					.GetEvent(nameof(ClassWithSingleNonNullableEvent.NonNullableEvent))!;
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers();
+				}
+
+				await That(Act).ThrowsException()
+					.WithMessage($"""
+					              Expected that subject
+					              only has nullable members,
+					              but it contained non-nullable members [
+					                {Formatter.Format(@event)}
+					              ]
+					              """);
+			}
+
+			[Fact]
 			public async Task WhenTypeIsNull_ShouldFail()
 			{
 				Type? subject = null;
@@ -94,6 +116,19 @@ public sealed partial class ThatType
 					             only has nullable members,
 					             but it was <null>
 					             """);
+			}
+
+			[Fact]
+			public async Task WhenTypeOnlyHasNullableEvent_ShouldSucceed()
+			{
+				Type subject = typeof(ClassWithSingleNullableEvent);
+
+				async Task Act()
+				{
+					await That(subject).OnlyHasNullableMembers();
+				}
+
+				await That(Act).DoesNotThrow();
 			}
 
 			[Fact]

@@ -3,6 +3,7 @@
 namespace aweXpect.Reflection.Tests.TestHelpers.Types;
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
+#pragma warning disable CS0067 // Event is never used
 public class ClassWithNullableMembers
 {
 	public string? NullableField;
@@ -71,10 +72,44 @@ public class DerivedClassWithNullableMembers : ClassWithNonNullableMembers
 
 public class ClassWithoutMembers;
 
+public class ClassWithNullableEvents
+{
+	public event EventHandler? NullableEvent;
+	public event EventHandler<string>? NullableGenericEvent;
+}
+
+public class ClassWithNonNullableEvents
+{
+	public event EventHandler NonNullableEvent = delegate { };
+	public event EventHandler<string?> NonNullableGenericEvent = delegate { };
+}
+
+public class ClassWithMixedNullableEvents
+{
+	public event EventHandler? NullableEvent;
+	public event EventHandler NonNullableEvent = delegate { };
+}
+
+public class ClassWithSingleNullableEvent
+{
+	public event EventHandler? NullableEvent;
+}
+
+public class ClassWithSingleNonNullableEvent
+{
+	public event EventHandler NonNullableEvent = delegate { };
+}
+
 #nullable disable
 public class ClassWithObliviousMembers
 {
 	public string ObliviousField;
 	public string ObliviousProperty { get; set; }
 }
+
+public class ClassWithObliviousEvents
+{
+	public event EventHandler ObliviousEvent;
+}
+#pragma warning restore CS0067
 #pragma warning restore CS0649

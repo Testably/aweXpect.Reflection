@@ -529,19 +529,6 @@ public static partial class Filtered
 			/// </summary>
 			public Types InAssemblyContaining(Type type)
 				=> In.AssemblyContaining(type).Types().WithinNamespace(_namespace);
-
-			/// <summary>
-			///     Clarifies that the types within the namespace are searched in the <see cref="Assembly.GetEntryAssembly()" />.
-			/// </summary>
-			public Types InEntryAssembly()
-				=> In.EntryAssembly().Types().WithinNamespace(_namespace);
-
-			/// <summary>
-			///     Clarifies that the types within the namespace are searched in the
-			///     <see cref="Assembly.GetExecutingAssembly()" />.
-			/// </summary>
-			public Types InExecutingAssembly()
-				=> In.ExecutingAssembly().Types().WithinNamespace(_namespace);
 		}
 
 		/// <summary>

@@ -41,18 +41,6 @@ public static class Types
 		=> In.AssemblyContaining(type).Types();
 
 	/// <summary>
-	///     Defines expectations on all types in the <see cref="Assembly.GetEntryAssembly()" />.
-	/// </summary>
-	public static Filtered.Types InEntryAssembly()
-		=> In.EntryAssembly().Types();
-
-	/// <summary>
-	///     Defines expectations on all types in the <see cref="Assembly.GetExecutingAssembly()" />.
-	/// </summary>
-	public static Filtered.Types InExecutingAssembly()
-		=> In.ExecutingAssembly().Types();
-
-	/// <summary>
 	///     Defines expectations on all types within the <paramref name="namespace" /> (including sub-namespaces).
 	/// </summary>
 	/// <remarks>

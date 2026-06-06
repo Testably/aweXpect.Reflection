@@ -51,18 +51,6 @@ public static class In
 		=> new(type.Assembly, $"in assembly containing type {Formatter.Format(type)}");
 
 	/// <summary>
-	///     Defines expectations on the <see cref="Assembly.GetEntryAssembly()" />.
-	/// </summary>
-	public static Filtered.Assemblies EntryAssembly()
-		=> new(Assembly.GetEntryAssembly(), "in entry assembly");
-
-	/// <summary>
-	///     Defines expectations on the <see cref="Assembly.GetExecutingAssembly()" />.
-	/// </summary>
-	public static Filtered.Assemblies ExecutingAssembly()
-		=> new(Assembly.GetExecutingAssembly(), "in executing assembly");
-
-	/// <summary>
 	///     Defines expectations on the type <typeparamref name="TType" />.
 	/// </summary>
 	public static Filtered.Types Type<TType>()

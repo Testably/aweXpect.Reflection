@@ -8,6 +8,12 @@ namespace aweXpect.Reflection;
 /// <summary>
 ///     Static entry point for selecting types by criteria.
 /// </summary>
+/// <remarks>
+///     The <c>In*</c> methods mirror the assembly sources on <see cref="In" /> (each is the corresponding
+///     <c>In.*(…).Types()</c>) and are mirrored again as source clarifiers on
+///     <see cref="Filtered.Types.InNamespaceResult" />. When adding a new assembly source, keep all three
+///     surfaces in sync.
+/// </remarks>
 public static class Types
 {
 	/// <summary>

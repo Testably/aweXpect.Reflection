@@ -73,6 +73,16 @@ public sealed class EventInfoHelpersTests
 	}
 
 	[Fact]
+	public async Task IsOverride_WhenAddMethodIsNull_ShouldReturnFalse()
+	{
+		EventInfo eventInfo = new EventInfoWithoutAddMethod();
+
+		bool result = eventInfo.IsOverride();
+
+		await That(result).IsFalse();
+	}
+
+	[Fact]
 	public async Task IsOverride_WhenEventInfoIsNull_ShouldReturnFalse()
 	{
 		EventInfo? eventInfo = null;

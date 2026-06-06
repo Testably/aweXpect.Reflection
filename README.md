@@ -678,7 +678,7 @@ await Expect.That(subject).HasVersion().WithMajor.GreaterThanOrEqualTo(2);
 await Expect.That(subjects).HaveVersion().WithMajor.EqualTo(1);
 ```
 
-## Type dependencies and architecture rules
+## Architecture rules
 
 Layering and architecture rules are expressed over the types a type references **in its signature**:
 [Type dependencies](#type-dependencies) covers the dependency filters and assertions (including

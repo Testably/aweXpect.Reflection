@@ -1,23 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-#if !NET8_0_OR_GREATER
-using System.Collections.Generic;
-#endif
 
 namespace aweXpect.Reflection.Helpers;
 
 /// <summary>
 ///     Helper methods to determine the nullability of members.
 /// </summary>
+/// <remarks>
+///     A member is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a reference
+///     type whose declared annotation is nullable (e.g. <c>string?</c>). The declared annotation is decoded
+///     from the <c>NullableAttribute</c> / <c>NullableContextAttribute</c> metadata on all target frameworks,
+///     so the behavior cannot diverge between them: members without annotations (oblivious code) and
+///     unconstrained generic type parameters count as non-nullable, and post-condition attributes like
+///     <c>[AllowNull]</c> or <c>[MaybeNull]</c> are ignored.
+/// </remarks>
 internal static class NullabilityHelpers
 {
 	/// <summary>
 	///     Checks if the <paramref name="propertyInfo" /> is nullable.
 	/// </summary>
 	/// <remarks>
-	///     A property is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a reference
-	///     type annotated as nullable (according to the nullable reference type metadata).
+	///     A property is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a
+	///     reference type annotated as nullable (according to the nullable reference type metadata).
 	/// </remarks>
 	public static bool IsNullable(this PropertyInfo? propertyInfo)
 	{
@@ -31,21 +37,15 @@ internal static class NullabilityHelpers
 			return Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null;
 		}
 
-#if NET8_0_OR_GREATER
-		NullabilityInfo nullabilityInfo = new NullabilityInfoContext().Create(propertyInfo);
-		return nullabilityInfo.ReadState == NullabilityState.Nullable ||
-		       nullabilityInfo.WriteState == NullabilityState.Nullable;
-#else
 		return IsNullableReferenceType(propertyInfo);
-#endif
 	}
 
 	/// <summary>
 	///     Checks if the <paramref name="fieldInfo" /> is nullable.
 	/// </summary>
 	/// <remarks>
-	///     A field is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a reference
-	///     type annotated as nullable (according to the nullable reference type metadata).
+	///     A field is considered nullable if its type is a <see cref="Nullable{T}" /> value type or a
+	///     reference type annotated as nullable (according to the nullable reference type metadata).
 	/// </remarks>
 	public static bool IsNullable(this FieldInfo? fieldInfo)
 	{
@@ -59,41 +59,53 @@ internal static class NullabilityHelpers
 			return Nullable.GetUnderlyingType(fieldInfo.FieldType) != null;
 		}
 
-#if NET8_0_OR_GREATER
-		NullabilityInfo nullabilityInfo = new NullabilityInfoContext().Create(fieldInfo);
-		return nullabilityInfo.ReadState == NullabilityState.Nullable ||
-		       nullabilityInfo.WriteState == NullabilityState.Nullable;
-#else
 		return IsNullableReferenceType(fieldInfo);
-#endif
 	}
 
 	/// <summary>
 	///     Returns the nullable fields and properties of the <paramref name="type" />.
 	/// </summary>
 	public static MemberInfo[] GetNullableMembers(this Type type)
-		=> type.GetDeclaredFields().Where(field => field.IsNullable()).Cast<MemberInfo>()
-			.Concat(type.GetDeclaredProperties().Where(property => property.IsNullable()))
-			.ToArray();
+		=> type.GetMembersByNullability().Nullable;
 
 	/// <summary>
 	///     Returns the non-nullable fields and properties of the <paramref name="type" />.
 	/// </summary>
 	public static MemberInfo[] GetNotNullableMembers(this Type type)
-		=> type.GetDeclaredFields().Where(field => !field.IsNullable()).Cast<MemberInfo>()
-			.Concat(type.GetDeclaredProperties().Where(property => !property.IsNullable()))
-			.ToArray();
+		=> type.GetMembersByNullability().NotNullable;
 
-#if !NET8_0_OR_GREATER
 	/// <summary>
-	///     Determines the nullability of a reference type member from the nullable reference type metadata,
-	///     as <c>NullabilityInfoContext</c> is unavailable on this target framework.
+	///     Partitions the declared fields and properties of the <paramref name="type" /> into nullable and
+	///     non-nullable members in a single pass.
+	/// </summary>
+	public static (MemberInfo[] Nullable, MemberInfo[] NotNullable) GetMembersByNullability(this Type type)
+	{
+		List<MemberInfo> nullable = [];
+		List<MemberInfo> notNullable = [];
+		foreach (FieldInfo field in type.GetDeclaredFields())
+		{
+			(field.IsNullable() ? nullable : notNullable).Add(field);
+		}
+
+		foreach (PropertyInfo property in type.GetDeclaredProperties())
+		{
+			(property.IsNullable() ? nullable : notNullable).Add(property);
+		}
+
+		return (nullable.ToArray(), notNullable.ToArray());
+	}
+
+	/// <summary>
+	///     Determines the nullability of a reference type member from the nullable reference type metadata.
 	/// </summary>
 	/// <remarks>
 	///     The compiler stores the annotation in a <c>NullableAttribute</c> on the member (a scalar
 	///     <see cref="byte" /> or a <see cref="byte" /> array whose first element describes the top-level type)
 	///     and omits it when the value equals the context stored in a <c>NullableContextAttribute</c> on one of
 	///     the declaring types. A flag value of <c>2</c> means "annotated" (nullable).
+	///     <para />
+	///     The metadata is decoded directly (instead of using <c>NullabilityInfoContext</c>, which is unavailable
+	///     on netstandard2.0) so that the same member yields the same result on every target framework.
 	/// </remarks>
 	private static bool IsNullableReferenceType(MemberInfo memberInfo)
 	{
@@ -112,11 +124,9 @@ internal static class NullabilityHelpers
 					return flag == annotated;
 				}
 
-				if (argument.Value is IReadOnlyList<CustomAttributeTypedArgument> { Count: > 0, } flags &&
-				    flags[0].Value is byte firstFlag)
-				{
-					return firstFlag == annotated;
-				}
+				return argument.Value is IReadOnlyList<CustomAttributeTypedArgument> { Count: > 0, } flags &&
+				       flags[0].Value is byte firstFlag &&
+				       firstFlag == annotated;
 			}
 		}
 
@@ -137,5 +147,4 @@ internal static class NullabilityHelpers
 
 		return false;
 	}
-#endif
 }

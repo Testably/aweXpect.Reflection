@@ -53,13 +53,64 @@ public sealed class NullabilityHelpersTests
 	}
 
 	[Theory]
-	[InlineData(nameof(AllNullableTestClass.FirstNullableField), true)]
-	[InlineData(nameof(AllNullableTestClass.SecondNullableField), true)]
-	[InlineData(nameof(AllNullableTestClass.FirstNullableProperty), true)]
-	public async Task IsNullable_WhenNullabilityIsStoredInContextOfDeclaringType_ShouldReturnTrue(
-		string memberName, bool expectNullable)
+	[InlineData(nameof(AllNullableTestClass.FirstNullableField))]
+	[InlineData(nameof(AllNullableTestClass.SecondNullableField))]
+	[InlineData(nameof(AllNullableTestClass.FirstNullableProperty))]
+	public async Task IsNullable_WhenNullabilityIsStoredInContextOfDeclaringType_ShouldReturnTrue(string memberName)
 	{
 		MemberInfo memberInfo = typeof(AllNullableTestClass).GetMember(memberName).Single();
+
+		bool result = memberInfo is FieldInfo fieldInfo
+			? fieldInfo.IsNullable()
+			: ((PropertyInfo)memberInfo).IsNullable();
+
+		await That(result).IsTrue();
+	}
+
+	[Theory]
+	[InlineData(nameof(NullabilityEdgeCaseTestClass.NullableArrayField), true)]
+	[InlineData(nameof(NullabilityEdgeCaseTestClass.ArrayOfNullableField), false)]
+	[InlineData(nameof(NullabilityEdgeCaseTestClass.NullableArrayProperty), true)]
+	[InlineData(nameof(NullabilityEdgeCaseTestClass.ArrayOfNullableProperty), false)]
+	public async Task IsNullable_WithArrayMembers_ShouldOnlyConsiderTheTopLevelAnnotation(
+		string memberName, bool expectNullable)
+	{
+		MemberInfo memberInfo = typeof(NullabilityEdgeCaseTestClass).GetMember(memberName).Single();
+
+		bool result = memberInfo is FieldInfo fieldInfo
+			? fieldInfo.IsNullable()
+			: ((PropertyInfo)memberInfo).IsNullable();
+
+		await That(result).IsEqualTo(expectNullable);
+	}
+
+	[Fact]
+	public async Task IsNullable_WithNullableIndexer_ShouldReturnTrue()
+	{
+		PropertyInfo propertyInfo = typeof(NullabilityEdgeCaseTestClass).GetProperty("Item")!;
+
+		await That(propertyInfo.IsNullable()).IsTrue();
+	}
+
+	[Theory]
+	[InlineData(nameof(NullabilityEdgeCaseTestClass.AllowNullProperty))]
+	[InlineData(nameof(NullabilityEdgeCaseTestClass.MaybeNullProperty))]
+	public async Task IsNullable_WithPostConditionAttributes_ShouldIgnoreThemAndReturnFalse(string propertyName)
+	{
+		PropertyInfo propertyInfo = typeof(NullabilityEdgeCaseTestClass).GetProperty(propertyName)!;
+
+		await That(propertyInfo.IsNullable()).IsFalse();
+	}
+
+	[Theory]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedField), false)]
+	[InlineData(nameof(GenericTestClass<object>.AnnotatedField), true)]
+	[InlineData(nameof(GenericTestClass<object>.UnannotatedProperty), false)]
+	[InlineData(nameof(GenericTestClass<object>.AnnotatedProperty), true)]
+	public async Task IsNullable_WithGenericTypeParameterMembers_ShouldOnlyConsiderTheAnnotation(
+		string memberName, bool expectNullable)
+	{
+		MemberInfo memberInfo = typeof(GenericTestClass<>).GetMember(memberName).Single();
 
 		bool result = memberInfo is FieldInfo fieldInfo
 			? fieldInfo.IsNullable()
@@ -172,6 +223,31 @@ public sealed class NullabilityHelpersTests
 		public string? SecondNullableField;
 		public string? FirstNullableProperty { get; set; }
 		public string? SecondNullableProperty { get; set; }
+	}
+
+	public class NullabilityEdgeCaseTestClass
+	{
+		public string[]? NullableArrayField;
+		public string?[] ArrayOfNullableField = [];
+		public string[]? NullableArrayProperty { get; set; }
+		public string?[] ArrayOfNullableProperty { get; set; } = [];
+
+		[System.Diagnostics.CodeAnalysis.AllowNull]
+		public string AllowNullProperty { get; set; } = "";
+
+		[System.Diagnostics.CodeAnalysis.MaybeNull]
+		public string MaybeNullProperty { get; set; } = "";
+
+		public string? this[int index] => null;
+	}
+
+	// ReSharper disable once UnusedTypeParameter
+	public class GenericTestClass<T>
+	{
+		public T UnannotatedField = default!;
+		public T? AnnotatedField;
+		public T UnannotatedProperty { get; set; } = default!;
+		public T? AnnotatedProperty { get; set; }
 	}
 
 	public class MostlyNullableTestClass

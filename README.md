@@ -565,8 +565,10 @@ In addition to [access modifiers](#access-modifiers),
 
 A property or field counts as *nullable* when its type is a `Nullable<T>` value type (e.g. `int?`) or a
 reference type annotated as nullable (e.g. `string?`, based on the nullable reference type metadata emitted
-by the compiler). Reference types without nullability annotations (oblivious code compiled without
-`<Nullable>enable</Nullable>`) count as non-nullable.
+by the compiler). The check follows the declared annotation on every target framework: reference types
+without nullability annotations (oblivious code compiled without `<Nullable>enable</Nullable>`) and
+unconstrained generic type parameters (`T`, as opposed to `T?`) count as non-nullable, and post-condition
+attributes like `[AllowNull]` or `[MaybeNull]` are ignored.
 
 ```csharp
 // All properties and fields of the request types must be nullable

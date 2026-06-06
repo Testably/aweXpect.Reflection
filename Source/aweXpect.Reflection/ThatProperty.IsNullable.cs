@@ -28,6 +28,7 @@ public static partial class ThatProperty
 	/// <remarks>
 	///     A property is considered nullable if its type is a <see cref="System.Nullable{T}" /> value type or a
 	///     reference type annotated as nullable (according to the nullable reference type metadata).
+	///     Properties without nullability annotations (oblivious code) count as non-nullable.
 	/// </remarks>
 	public static AndOrResult<PropertyInfo?, IThat<PropertyInfo?>> IsNotNullable(
 		this IThat<PropertyInfo?> subject)

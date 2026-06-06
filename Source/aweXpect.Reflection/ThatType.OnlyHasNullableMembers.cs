@@ -35,8 +35,7 @@ public static partial class ThatType
 			Actual = actual;
 			if (actual is not null)
 			{
-				_notNullableMembers = actual.GetNotNullableMembers();
-				_nullableMembers = actual.GetNullableMembers();
+				(_nullableMembers, _notNullableMembers) = actual.GetMembersByNullability();
 			}
 
 			Outcome = actual is not null && _notNullableMembers.Length == 0 ? Outcome.Success : Outcome.Failure;

@@ -28,6 +28,7 @@ public static partial class ThatField
 	/// <remarks>
 	///     A field is considered nullable if its type is a <see cref="System.Nullable{T}" /> value type or a
 	///     reference type annotated as nullable (according to the nullable reference type metadata).
+	///     Fields without nullability annotations (oblivious code) count as non-nullable.
 	/// </remarks>
 	public static AndOrResult<FieldInfo?, IThat<FieldInfo?>> IsNotNullable(
 		this IThat<FieldInfo?> subject)

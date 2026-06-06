@@ -1,4 +1,4 @@
-﻿# aweXpect.Reflection
+# aweXpect.Reflection
 
 [![Nuget](https://img.shields.io/nuget/v/aweXpect.Reflection)](https://www.nuget.org/packages/aweXpect.Reflection)
 [![Build](https://github.com/Testably/aweXpect.Reflection/actions/workflows/build.yml/badge.svg)](https://github.com/Testably/aweXpect.Reflection/actions/workflows/build.yml)
@@ -678,6 +678,73 @@ await Expect.That(subject).HasVersion().WithMajor.GreaterThanOrEqualTo(2);
 await Expect.That(subjects).HaveVersion().WithMajor.EqualTo(1);
 ```
 
+## Combining filters
+
+Filters chain naturally (each narrows the previous result). Several filters offer an `Or…` companion to
+widen a single step:
+
+```csharp
+// Any of several attributes
+In.AllLoadedAssemblies().Methods()
+    .With<FactAttribute>().OrWith<TheoryAttribute>()
+
+// Any of several return types
+In.AllLoadedAssemblies().Methods()
+    .WhichReturn<Task>().OrReturn<ValueTask>()
+
+// Any of several property/field types
+In.AllLoadedAssemblies().Properties()
+    .OfType<string>().OrOfType<Guid>()
+```
+
+## String matching options
+
+Every name and namespace filter/assertion uses the same string matching options as the core aweXpect
+library (see [the docs](https://docs.testably.org/aweXpect/common-types/string#equality)):
+
+| Option                                                           | Effect                                            |
+|------------------------------------------------------------------|---------------------------------------------------|
+| *(none)*                                                         | exact match (default)                             |
+| `.AsPrefix()`                                                    | the value must start with the expected string     |
+| `.AsSuffix()`                                                    | the value must end with the expected string       |
+| `.AsWildcard()`                                                  | match using `*` and `?` wildcards                 |
+| `.AsRegex()`                                                     | match using a regular expression                  |
+| `.IgnoringCase()`                                                | case-insensitive comparison                       |
+| `.IgnoringLeadingWhiteSpace()` / `.IgnoringTrailingWhiteSpace()` | trim before comparing                             |
+| `.Using(comparer)`                                               | compare with a custom `IEqualityComparer<string>` |
+
+```csharp
+await Expect.That(types).HaveName("Service").AsSuffix();
+await Expect.That(types).HaveName("*Test*").AsWildcard();
+await Expect.That(types).HaveName(@"^Test\w+$").AsRegex();
+await Expect.That(methods).HaveName("Get*Async").AsWildcard().IgnoringCase();
+```
+
+## Collections and quantifiers
+
+Every expectation works with both a single item and a collection. A collection can be an array,
+any `IEnumerable<T?>` or, on .NET 8 and later, an `IAsyncEnumerable<T?>`. The plural assertions already
+require **every** item to match; for ad-hoc predicates use aweXpect's `Satisfies(…)` (single subject) and
+`All()` / `Any()` quantifiers with `Satisfy(…)` (collections), and combine selections with LINQ:
+
+```csharp
+// The plural assertion already means "every item":
+await Expect.That(types).ArePublic();
+
+// Ad-hoc predicate on a single subject:
+await Expect.That(type).Satisfies(type => type.IsSealed);
+
+// Ad-hoc predicate across the whole collection:
+await Expect.That(types).All().Satisfy(type => type.IsSealed);
+await Expect.That(types).Any().Satisfy(type => type.IsAbstract);
+
+// Mix with LINQ (assign to IEnumerable<Type?> so Where binds to LINQ):
+IEnumerable<Type?> publicClasses = In.AllLoadedAssemblies().Types()
+    .WhichAreClasses().WhichArePublic();
+var managers = publicClasses.Where(type => type!.GetInterfaces().Length > 2);
+await Expect.That(managers).HaveName("Manager").AsSuffix();
+```
+
 ## Architecture rules
 
 Layering and architecture rules are expressed over the types a type references **in its signature**:
@@ -903,73 +970,6 @@ await Expect.That(domain.Except(type => type.Name.StartsWith("Generated"))).AreS
 A layer spanning several namespaces is built by widening a dependency *target* with additional selections
 (or `.OrOn(…)`); for a *subject* spanning several namespaces, assert each namespace selection as its own
 rule inside the same `Expect.ThatAll(…)`.
-
-## Combining filters
-
-Filters chain naturally (each narrows the previous result). Several filters offer an `Or…` companion to
-widen a single step:
-
-```csharp
-// Any of several attributes
-In.AllLoadedAssemblies().Methods()
-    .With<FactAttribute>().OrWith<TheoryAttribute>()
-
-// Any of several return types
-In.AllLoadedAssemblies().Methods()
-    .WhichReturn<Task>().OrReturn<ValueTask>()
-
-// Any of several property/field types
-In.AllLoadedAssemblies().Properties()
-    .OfType<string>().OrOfType<Guid>()
-```
-
-## String matching options
-
-Every name and namespace filter/assertion uses the same string matching options as the core aweXpect
-library (see [the docs](https://docs.testably.org/aweXpect/common-types/string#equality)):
-
-| Option                                                           | Effect                                            |
-|------------------------------------------------------------------|---------------------------------------------------|
-| *(none)*                                                         | exact match (default)                             |
-| `.AsPrefix()`                                                    | the value must start with the expected string     |
-| `.AsSuffix()`                                                    | the value must end with the expected string       |
-| `.AsWildcard()`                                                  | match using `*` and `?` wildcards                 |
-| `.AsRegex()`                                                     | match using a regular expression                  |
-| `.IgnoringCase()`                                                | case-insensitive comparison                       |
-| `.IgnoringLeadingWhiteSpace()` / `.IgnoringTrailingWhiteSpace()` | trim before comparing                             |
-| `.Using(comparer)`                                               | compare with a custom `IEqualityComparer<string>` |
-
-```csharp
-await Expect.That(types).HaveName("Service").AsSuffix();
-await Expect.That(types).HaveName("*Test*").AsWildcard();
-await Expect.That(types).HaveName(@"^Test\w+$").AsRegex();
-await Expect.That(methods).HaveName("Get*Async").AsWildcard().IgnoringCase();
-```
-
-## Collections and quantifiers
-
-Every expectation works with both a single item and a collection. A collection can be an array,
-any `IEnumerable<T?>` or, on .NET 8 and later, an `IAsyncEnumerable<T?>`. The plural assertions already
-require **every** item to match; for ad-hoc predicates use aweXpect's `Satisfies(…)` (single subject) and
-`All()` / `Any()` quantifiers with `Satisfy(…)` (collections), and combine selections with LINQ:
-
-```csharp
-// The plural assertion already means "every item":
-await Expect.That(types).ArePublic();
-
-// Ad-hoc predicate on a single subject:
-await Expect.That(type).Satisfies(type => type.IsSealed);
-
-// Ad-hoc predicate across the whole collection:
-await Expect.That(types).All().Satisfy(type => type.IsSealed);
-await Expect.That(types).Any().Satisfy(type => type.IsAbstract);
-
-// Mix with LINQ (assign to IEnumerable<Type?> so Where binds to LINQ):
-IEnumerable<Type?> publicClasses = In.AllLoadedAssemblies().Types()
-    .WhichAreClasses().WhichArePublic();
-var managers = publicClasses.Where(type => type!.GetInterfaces().Length > 2);
-await Expect.That(managers).HaveName("Manager").AsSuffix();
-```
 
 ## Configuration
 

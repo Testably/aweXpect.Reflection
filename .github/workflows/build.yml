@@ -17,7 +17,7 @@ jobs:
                 with:
                     fetch-depth: 0
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
                 with:
                     dotnet-version: |
                         8.0.x
@@ -48,7 +48,7 @@ jobs:
                 with:
                     fetch-depth: 0
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
                 with:
                     dotnet-version: |
                         8.0.x
@@ -76,7 +76,7 @@ jobs:
                 with:
                     fetch-depth: 0
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
                 with:
                     dotnet-version: |
                         8.0.x
@@ -97,7 +97,7 @@ jobs:
                 with:
                     fetch-depth: 0
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
                 with:
                     dotnet-version: |
                         8.0.x
@@ -118,7 +118,7 @@ jobs:
                 with:
                     fetch-depth: 0
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
                 with:
                     dotnet-version: |
                         8.0.x
@@ -157,7 +157,7 @@ jobs:
                 with:
                     fetch-depth: 0
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
                 with:
                     dotnet-version: |
                         8.0.x
@@ -187,7 +187,7 @@ jobs:
                     name: Packages
                     path: Artifacts/Packages
             -   name: Setup .NET SDKs
-                uses: actions/setup-dotnet@v5
+                uses: actions/setup-dotnet@v6
             -   name: Publish
                 run: |
                     echo "Found the following packages to push:"

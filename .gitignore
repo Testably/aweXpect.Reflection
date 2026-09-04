@@ -2,8 +2,8 @@
 /Artifacts
 /TestResults
 
-# NUKE temporary files
-.nuke/temp/
+# Fallout temporary files
+.fallout/temp/
 
 # Temporary files from Sonarqube
 .sonarqube/

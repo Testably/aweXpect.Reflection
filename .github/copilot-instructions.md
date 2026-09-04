@@ -10,7 +10,7 @@ aweXpect.Reflection is a .NET library providing reflection expectations for the 
 Run these commands in order to set up the repository:
 
 ```bash
-# CRITICAL: Unshallow repository for GitVersion (required for NUKE build)
+# CRITICAL: Unshallow repository for GitVersion (required for Fallout build)
 git fetch --unshallow
 
 # Cross-platform build commands:
@@ -24,17 +24,17 @@ build.cmd Compile
 
 **Alternative direct build (bypasses GitVersion issues):**
 ```bash
-# Use NUKE-installed SDK directly to avoid version conflicts
+# Use Fallout-installed SDK directly to avoid version conflicts
 # Linux/macOS:
-./.nuke/temp/dotnet-unix/dotnet build aweXpect.Reflection.slnx
+./.fallout/temp/dotnet-unix/dotnet build aweXpect.Reflection.slnx
 # Windows:
-.\.nuke\temp\dotnet-win\dotnet.exe build aweXpect.Reflection.slnx
+.\.fallout\temp\dotnet-win\dotnet.exe build aweXpect.Reflection.slnx
 # Takes ~7 seconds. Set timeout to 120+ seconds.
 ```
 
 ### Run Tests
 ```bash
-# Run all tests using NUKE  
+# Run all tests using Fallout  
 # Linux/macOS:
 ./build.sh UnitTests
 # Windows:
@@ -43,9 +43,9 @@ build.cmd UnitTests
 
 # Alternative: Direct test execution (faster, .NET 8 only)
 # Linux/macOS:
-./.nuke/temp/dotnet-unix/dotnet test aweXpect.Reflection.slnx --framework net8.0 --no-build
+./.fallout/temp/dotnet-unix/dotnet test aweXpect.Reflection.slnx --framework net8.0 --no-build
 # Windows:
-.\.nuke\temp\dotnet-win\dotnet.exe test aweXpect.Reflection.slnx --framework net8.0 --no-build
+.\.fallout\temp\dotnet-win\dotnet.exe test aweXpect.Reflection.slnx --framework net8.0 --no-build
 # Takes ~4 seconds for 1067+ tests. Set timeout to 60+ seconds.
 ```
 
@@ -104,13 +104,13 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 ### Individual Test Project Validation
 ```bash
 # Test main library (1008 tests)
-./.nuke/temp/dotnet-unix/dotnet test Tests/aweXpect.Reflection.Tests/aweXpect.Reflection.Tests.csproj --framework net8.0 --no-build
+./.fallout/temp/dotnet-unix/dotnet test Tests/aweXpect.Reflection.Tests/aweXpect.Reflection.Tests.csproj --framework net8.0 --no-build
 
 # Test internal APIs (57 tests) 
-./.nuke/temp/dotnet-unix/dotnet test Tests/aweXpect.Reflection.Internal.Tests/aweXpect.Reflection.Internal.Tests.csproj --framework net8.0 --no-build
+./.fallout/temp/dotnet-unix/dotnet test Tests/aweXpect.Reflection.Internal.Tests/aweXpect.Reflection.Internal.Tests.csproj --framework net8.0 --no-build
 
 # Test API compatibility (2 tests)
-./.nuke/temp/dotnet-unix/dotnet test Tests/aweXpect.Reflection.Api.Tests/aweXpect.Reflection.Api.Tests.csproj --framework net8.0 --no-build
+./.fallout/temp/dotnet-unix/dotnet test Tests/aweXpect.Reflection.Api.Tests/aweXpect.Reflection.Api.Tests.csproj --framework net8.0 --no-build
 ```
 
 ## Common Issues and Troubleshooting
@@ -119,14 +119,14 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 **Symptom**: `Could not inject value for Build.GitVersion` error  
 **Solutions**:
 1. Run `git fetch --unshallow` to get full git history (ignore "does not make sense" error if already unshallowed)
-2. Use direct dotnet build: `./.nuke/temp/dotnet-unix/dotnet build aweXpect.Reflection.slnx`
+2. Use direct dotnet build: `./.fallout/temp/dotnet-unix/dotnet build aweXpect.Reflection.slnx`
 3. Ensure you're on a valid branch (not detached HEAD)
 
 ### .NET SDK Version Issues  
-**Symptom**: `A compatible .NET SDK was not found. Requested SDK version: 10.0.201`  
-**Solution**: Use NUKE-installed SDK:
-- Linux/macOS: `./.nuke/temp/dotnet-unix/dotnet` instead of system `dotnet`
-- Windows: `.\.nuke\temp\dotnet-win\dotnet.exe` instead of system `dotnet`
+**Symptom**: `A compatible .NET SDK was not found. Requested SDK version: 10.0.300`  
+**Solution**: Use Fallout-installed SDK:
+- Linux/macOS: `./.fallout/temp/dotnet-unix/dotnet` instead of system `dotnet`
+- Windows: `.\.fallout\temp\dotnet-win\dotnet.exe` instead of system `dotnet`
 
 ### .NET Framework Test Failures on Linux
 **Symptom**: `Could not find 'mono' host` when running net48 tests  
@@ -147,15 +147,15 @@ git fetch --unshallow && build.cmd Compile && build.cmd UnitTests && build.cmd A
 - `Tests/aweXpect.Reflection.Tests/` - Primary unit tests (1000+ tests)
 - `Tests/aweXpect.Reflection.Internal.Tests/` - Internal API tests
 - `Tests/aweXpect.Reflection.Api.Tests/` - API compatibility tests  
-- `Pipeline/` - NUKE build automation scripts
+- `Pipeline/` - Fallout build automation scripts
 - `Benchmarks/aweXpect.Reflection.Benchmarks/` - Performance benchmarks
 - `.github/workflows/` - CI/CD pipeline definitions
 
 ### Important Files
-- `global.json` - Specifies required .NET SDK version (10.0.201)
+- `global.json` - Specifies required .NET SDK version (10.0.300)
 - `aweXpect.Reflection.slnx` - Main solution file
 - `build.sh` / `build.ps1` - Cross-platform build scripts
-- `Pipeline/Build.cs` - NUKE build configuration
+- `Pipeline/Build.cs` - Fallout build configuration
 
 ## Development Workflow
 

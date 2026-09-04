@@ -22,7 +22,7 @@ jobs:
                     dotnet-version: |
                         8.0.x
                         9.0.x
-                        10.0.x
+                        10.0.3xx
             -   name: Run unit tests (windows)
                 if: matrix.os == 'windows-latest'
                 run: ./build.ps1 CodeCoverage
@@ -53,7 +53,7 @@ jobs:
                     dotnet-version: |
                         8.0.x
                         9.0.x
-                        10.0.x
+                        10.0.3xx
             -   name: API checks
                 run: ./build.sh ApiChecks
             -   name: Upload artifacts
@@ -80,7 +80,7 @@ jobs:
                     dotnet-version: |
                         8.0.x
                         9.0.x
-                        10.0.x
+                        10.0.3xx
             -   name: Run mutation tests
                 run: ./build.sh MutationTests
             -   name: Upload artifacts
@@ -106,7 +106,7 @@ jobs:
                     dotnet-version: |
                         8.0.x
                         9.0.x
-                        10.0.x
+                        10.0.3xx
             -   name: Run benchmarks
                 run: ./build.sh Benchmarks
             -   name: Upload artifacts
@@ -135,7 +135,7 @@ jobs:
                     dotnet-version: |
                         8.0.x
                         9.0.x
-                        10.0.x
+                        10.0.3xx
             -   name: Run sonarcloud analysis
                 run: ./build.sh CodeAnalysis
     

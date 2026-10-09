@@ -21,6 +21,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> have an accessible
 	///     parameterless (default) constructor.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveADefaultConstructor(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -32,6 +33,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> have an accessible
 	///     parameterless (default) constructor.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveADefaultConstructor(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
@@ -43,6 +45,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> have an accessible
 	///     parameterless (default) constructor.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveADefaultConstructor(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -54,6 +57,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> have an accessible
 	///     parameterless (default) constructor.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveADefaultConstructor(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)

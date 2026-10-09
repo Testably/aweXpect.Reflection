@@ -33,6 +33,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TInterface" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TInterface" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> Implement<TInterface>(
 		this IThat<IEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -55,6 +56,7 @@ public static partial class ThatTypes
 	///     <paramref name="interfaceType" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="interfaceType" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> Implement(
 		this IThat<IEnumerable<Type?>> subject,
 		Type interfaceType,
@@ -83,6 +85,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TInterface" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TInterface" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> Implement<TInterface>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -107,6 +110,7 @@ public static partial class ThatTypes
 	///     <paramref name="interfaceType" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="interfaceType" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> Implement(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Type interfaceType,
@@ -135,6 +139,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TInterface" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TInterface" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotImplement<TInterface>(
 		this IThat<IEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -157,6 +162,7 @@ public static partial class ThatTypes
 	///     <paramref name="interfaceType" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="interfaceType" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotImplement(
 		this IThat<IEnumerable<Type?>> subject,
 		Type interfaceType,
@@ -185,6 +191,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TInterface" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TInterface" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotImplement<TInterface>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -209,6 +216,7 @@ public static partial class ThatTypes
 	///     <paramref name="interfaceType" /> to be implemented directly.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="interfaceType" /> is not an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotImplement(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Type interfaceType,

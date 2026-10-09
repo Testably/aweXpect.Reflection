@@ -21,6 +21,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are private.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> ArePrivate<TMember>(
 		this IThat<IEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -32,6 +33,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are private.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>> ArePrivate<TMember>(
 		this IThat<IAsyncEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -43,6 +45,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are not private.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> AreNotPrivate<TMember>(
 		this IThat<IEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -54,6 +57,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are not private.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>> AreNotPrivate<TMember>(
 		this IThat<IAsyncEnumerable<TMember>> subject)
 		where TMember : MemberInfo?

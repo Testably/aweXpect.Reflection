@@ -20,6 +20,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="PropertyInfo" /> are virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>> AreVirtual(
 		this IThat<IEnumerable<PropertyInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="PropertyInfo" /> are virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>> AreVirtual(
 		this IThat<IAsyncEnumerable<PropertyInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>((it, grammars)
@@ -40,6 +42,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="PropertyInfo" /> are not virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>> AreNotVirtual(
 		this IThat<IEnumerable<PropertyInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>((it, grammars)
@@ -50,6 +53,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="PropertyInfo" /> are not virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>> AreNotVirtual(
 		this IThat<IAsyncEnumerable<PropertyInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>((it, grammars)

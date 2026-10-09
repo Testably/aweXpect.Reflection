@@ -27,6 +27,7 @@ public static partial class ThatEvents
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> DoNotHave<TAttribute>(
 		this IThat<IEnumerable<EventInfo?>> subject, bool inherit = true)
 		where TAttribute : Attribute
@@ -49,6 +50,7 @@ public static partial class ThatEvents
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> DoNotHave<TAttribute>(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject, bool inherit = true)
 		where TAttribute : Attribute

@@ -22,6 +22,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> HaveName(
 		this IThat<IEnumerable<Assembly?>> subject, string expected)
 	{
@@ -38,6 +39,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>> HaveName(
 		this IThat<IAsyncEnumerable<Assembly?>> subject, string expected)
 	{
@@ -55,6 +57,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have the name
 	///     returned by the <paramref name="expectedNameSelector" /> for the respective item.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> HaveName(
 		this IThat<IEnumerable<Assembly?>> subject,
 		Func<Assembly?, string> expectedNameSelector,
@@ -75,6 +78,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have the name
 	///     returned by the <paramref name="expectedNameSelector" /> for the respective item.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>> HaveName(
 		this IThat<IAsyncEnumerable<Assembly?>> subject,
 		Func<Assembly?, string> expectedNameSelector,

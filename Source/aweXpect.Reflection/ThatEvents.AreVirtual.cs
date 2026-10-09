@@ -20,6 +20,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> AreVirtual(
 		this IThat<IEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> AreVirtual(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
@@ -40,6 +42,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are not virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> AreNotVirtual(
 		this IThat<IEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
@@ -50,6 +53,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are not virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> AreNotVirtual(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)

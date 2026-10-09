@@ -27,6 +27,7 @@ public static partial class ThatTypes
 	///     for interfaces use <see cref="Implement{TInterface}(IThat{IEnumerable{Type}}, bool)" />.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreAssignableTo<TType>(
 		this IThat<IEnumerable<Type?>> subject)
 		=> subject.AreAssignableTo(typeof(TType));
@@ -43,6 +44,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type the items should be assignable to.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreAssignableTo(
 		this IThat<IEnumerable<Type?>> subject, Type type)
 	{
@@ -63,6 +65,7 @@ public static partial class ThatTypes
 	///     for interfaces use <see cref="Implement{TInterface}(IThat{IEnumerable{Type}}, bool)" />.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreAssignableTo<TType>(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> subject.AreAssignableTo(typeof(TType));
@@ -79,6 +82,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type the items should be assignable to.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreAssignableTo(
 		this IThat<IAsyncEnumerable<Type?>> subject, Type type)
 	{
@@ -99,6 +103,7 @@ public static partial class ThatTypes
 	///     for interfaces use <see cref="Implement{TInterface}(IThat{IEnumerable{Type}}, bool)" />.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotAssignableTo<TType>(
 		this IThat<IEnumerable<Type?>> subject)
 		=> subject.AreNotAssignableTo(typeof(TType));
@@ -115,6 +120,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type the items should not be assignable to.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotAssignableTo(
 		this IThat<IEnumerable<Type?>> subject, Type type)
 	{
@@ -135,6 +141,7 @@ public static partial class ThatTypes
 	///     for interfaces use <see cref="Implement{TInterface}(IThat{IEnumerable{Type}}, bool)" />.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotAssignableTo<TType>(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> subject.AreNotAssignableTo(typeof(TType));
@@ -151,6 +158,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type the items should not be assignable to.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotAssignableTo(
 		this IThat<IAsyncEnumerable<Type?>> subject, Type type)
 	{
@@ -170,6 +178,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TType" /> is assignable to each item.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreAssignableFrom<TType>(
 		this IThat<IEnumerable<Type?>> subject)
 		=> subject.AreAssignableFrom(typeof(TType));
@@ -185,6 +194,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type that should be assignable to each item.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreAssignableFrom(
 		this IThat<IEnumerable<Type?>> subject, Type type)
 	{
@@ -204,6 +214,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TType" /> is assignable to each item.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreAssignableFrom<TType>(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> subject.AreAssignableFrom(typeof(TType));
@@ -219,6 +230,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type that should be assignable to each item.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreAssignableFrom(
 		this IThat<IAsyncEnumerable<Type?>> subject, Type type)
 	{
@@ -238,6 +250,7 @@ public static partial class ThatTypes
 	///     that <typeparamref name="TType" /> is not assignable to each item.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotAssignableFrom<TType>(
 		this IThat<IEnumerable<Type?>> subject)
 		=> subject.AreNotAssignableFrom(typeof(TType));
@@ -253,6 +266,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type that should not be assignable to each item.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotAssignableFrom(
 		this IThat<IEnumerable<Type?>> subject, Type type)
 	{
@@ -272,6 +286,7 @@ public static partial class ThatTypes
 	///     that <typeparamref name="TType" /> is not assignable to each item.
 	/// </remarks>
 	/// <param name="subject">The type collection subject.</param>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotAssignableFrom<TType>(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> subject.AreNotAssignableFrom(typeof(TType));
@@ -287,6 +302,7 @@ public static partial class ThatTypes
 	/// <param name="subject">The type collection subject.</param>
 	/// <param name="type">The type that should not be assignable to each item.</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="type" /> is an open generic type definition.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotAssignableFrom(
 		this IThat<IAsyncEnumerable<Type?>> subject, Type type)
 	{

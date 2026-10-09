@@ -27,6 +27,7 @@ public static partial class ThatProperties
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>> DoNotHave<TAttribute>(
 		this IThat<IEnumerable<PropertyInfo?>> subject, bool inherit = true)
 		where TAttribute : Attribute
@@ -49,6 +50,7 @@ public static partial class ThatProperties
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>>
 		DoNotHave<TAttribute>(
 			this IThat<IAsyncEnumerable<PropertyInfo?>> subject, bool inherit = true)

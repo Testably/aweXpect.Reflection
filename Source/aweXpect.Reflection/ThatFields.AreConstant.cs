@@ -20,6 +20,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> are constant.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<FieldInfo?>, IThat<IEnumerable<FieldInfo?>>> AreConstant(
 		this IThat<IEnumerable<FieldInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<FieldInfo?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> are constant.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<FieldInfo?>, IThat<IAsyncEnumerable<FieldInfo?>>> AreConstant(
 		this IThat<IAsyncEnumerable<FieldInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<FieldInfo?>>((it, grammars)
@@ -40,6 +42,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> are not constant.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<FieldInfo?>, IThat<IEnumerable<FieldInfo?>>> AreNotConstant(
 		this IThat<IEnumerable<FieldInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<FieldInfo?>>((it, grammars)
@@ -50,6 +53,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> are not constant.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<FieldInfo?>, IThat<IAsyncEnumerable<FieldInfo?>>> AreNotConstant(
 		this IThat<IAsyncEnumerable<FieldInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<FieldInfo?>>((it, grammars)

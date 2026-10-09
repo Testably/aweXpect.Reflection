@@ -27,6 +27,7 @@ public static partial class ThatTypes
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<Type?, IEnumerable<Type?>> Have<TAttribute>(
 		this IThat<IEnumerable<Type?>> subject, bool inherit = true)
 		where TAttribute : Attribute
@@ -49,6 +50,7 @@ public static partial class ThatTypes
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<Type?, IEnumerable<Type?>> Have<TAttribute>(
 		this IThat<IEnumerable<Type?>> subject,
 		Func<TAttribute, bool> predicate,
@@ -76,6 +78,7 @@ public static partial class ThatTypes
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<Type?, IAsyncEnumerable<Type?>> Have<TAttribute>(
 		this IThat<IAsyncEnumerable<Type?>> subject, bool inherit = true)
 		where TAttribute : Attribute
@@ -100,6 +103,7 @@ public static partial class ThatTypes
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<Type?, IAsyncEnumerable<Type?>> Have<TAttribute>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Func<TAttribute, bool> predicate,

@@ -17,6 +17,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveParameterExactly<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 	{
@@ -39,6 +40,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveParameterExactly(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType)
 	{
@@ -60,6 +62,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <typeparamref name="TParameter" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveParameterExactly<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject, string expected)
 	{
@@ -86,6 +89,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <paramref name="parameterType" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveParameterExactly(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 	{
@@ -112,6 +116,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveParameterExactly<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 	{
@@ -136,6 +141,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveParameterExactly(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType)
 	{
@@ -159,6 +165,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <typeparamref name="TParameter" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveParameterExactly<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, string expected)
 	{
@@ -187,6 +194,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of exact type <paramref name="parameterType" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveParameterExactly(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 	{

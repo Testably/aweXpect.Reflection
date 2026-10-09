@@ -21,6 +21,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are obsolete (marked with
 	///     the <see cref="System.ObsoleteAttribute" />).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> AreObsolete<TMember>(
 		this IThat<IEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -33,6 +34,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are obsolete (marked with
 	///     the <see cref="System.ObsoleteAttribute" />).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>> AreObsolete<TMember>(
 		this IThat<IAsyncEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -45,6 +47,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are not obsolete (not
 	///     marked with the <see cref="System.ObsoleteAttribute" />).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> AreNotObsolete<TMember>(
 		this IThat<IEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -57,6 +60,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are not obsolete (not
 	///     marked with the <see cref="System.ObsoleteAttribute" />).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>> AreNotObsolete<TMember>(
 		this IThat<IAsyncEnumerable<TMember>> subject)
 		where TMember : MemberInfo?

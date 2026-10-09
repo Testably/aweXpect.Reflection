@@ -24,6 +24,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<MethodInfo?>, IThat<IEnumerable<MethodInfo?>>> HaveOutParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<MethodInfo?>>((it, grammars)
@@ -35,6 +36,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<MethodInfo?>, IThat<IAsyncEnumerable<MethodInfo?>>> HaveOutParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<MethodInfo?>>((it, grammars)
@@ -46,6 +48,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveOutParameter<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 		=> subject.HaveParameter<TParameter>().WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -54,6 +57,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveOutParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType)
 		=> subject.HaveParameter(parameterType).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -63,6 +67,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of type <typeparamref name="TParameter" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveOutParameter<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject, string expected)
 		=> subject.HaveParameter<TParameter>(expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -72,6 +77,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of type <paramref name="parameterType" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveOutParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 		=> subject.HaveParameter(parameterType, expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -80,6 +86,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveOutParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject, string expected)
 		=> subject.HaveParameter(expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -89,6 +96,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveOutParameter<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 		=> subject.HaveParameter<TParameter>().WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -97,6 +105,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveOutParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType)
 		=> subject.HaveParameter(parameterType).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -106,6 +115,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of type <typeparamref name="TParameter" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveOutParameter<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, string expected)
 		=> subject.HaveParameter<TParameter>(expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -115,6 +125,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of type <paramref name="parameterType" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveOutParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 		=> subject.HaveParameter(parameterType, expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -123,6 +134,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveOutParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, string expected)
 		=> subject.HaveParameter(expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -132,6 +144,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of exact type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveOutParameterExactly<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 		=> subject.HaveParameterExactly<TParameter>().WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -140,6 +153,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of exact type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveOutParameterExactly(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType)
 		=> subject.HaveParameterExactly(parameterType).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -149,6 +163,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of exact type <typeparamref name="TParameter" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveOutParameterExactly<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject, string expected)
 		=> subject.HaveParameterExactly<TParameter>(expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -158,6 +173,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of exact type <paramref name="parameterType" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveOutParameterExactly(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 		=> subject.HaveParameterExactly(parameterType, expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -167,6 +183,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of exact type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveOutParameterExactly<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 		=> subject.HaveParameterExactly<TParameter>().WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -175,6 +192,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     an <see langword="out" /> parameter of exact type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveOutParameterExactly(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType)
 		=> subject.HaveParameterExactly(parameterType).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -184,6 +202,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of exact type <typeparamref name="TParameter" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveOutParameterExactly<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, string expected)
 		=> subject.HaveParameterExactly<TParameter>(expected).WithModifier(p => p.IsOutParameter(), "with out modifier");
@@ -193,6 +212,7 @@ public static partial class ThatMethods
 	///     an <see langword="out" /> parameter of exact type <paramref name="parameterType" /> with the
 	///     <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveOutParameterExactly(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 		=> subject.HaveParameterExactly(parameterType, expected).WithModifier(p => p.IsOutParameter(), "with out modifier");

@@ -23,6 +23,7 @@ public static partial class ThatConstructors
 	///     Verifies that none of the items in the filtered collection of <see cref="ConstructorInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<ConstructorInfo?>, IThat<IEnumerable<ConstructorInfo?>>> DoNotHave<TAttribute>(
 		this IThat<IEnumerable<ConstructorInfo?>> subject)
 		where TAttribute : Attribute
@@ -41,6 +42,7 @@ public static partial class ThatConstructors
 	///     Verifies that none of the items in the filtered collection of <see cref="ConstructorInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<ConstructorInfo?>, IThat<IAsyncEnumerable<ConstructorInfo?>>>
 		DoNotHave<TAttribute>(
 			this IThat<IAsyncEnumerable<ConstructorInfo?>> subject)

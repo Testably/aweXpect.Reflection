@@ -20,6 +20,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> have
 	///     the <paramref name="expected" /> namespace.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveNamespace(
 		this IThat<IEnumerable<Type?>> subject, string expected)
 	{
@@ -36,6 +37,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> have
 	///     the <paramref name="expected" /> namespace.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveNamespace(
 		this IThat<IAsyncEnumerable<Type?>> subject, string expected)
 	{

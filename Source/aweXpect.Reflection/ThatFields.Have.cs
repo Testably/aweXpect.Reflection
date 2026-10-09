@@ -24,6 +24,7 @@ public static partial class ThatFields
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<FieldInfo?, IEnumerable<FieldInfo?>> Have<TAttribute>(
 		this IThat<IEnumerable<FieldInfo?>> subject)
 		where TAttribute : Attribute
@@ -42,6 +43,7 @@ public static partial class ThatFields
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<FieldInfo?, IEnumerable<FieldInfo?>> Have<TAttribute>(
 		this IThat<IEnumerable<FieldInfo?>> subject,
 		Func<TAttribute, bool> predicate,
@@ -64,6 +66,7 @@ public static partial class ThatFields
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<FieldInfo?, IAsyncEnumerable<FieldInfo?>> Have<TAttribute>(
 		this IThat<IAsyncEnumerable<FieldInfo?>> subject)
 		where TAttribute : Attribute
@@ -84,6 +87,7 @@ public static partial class ThatFields
 	///     Verifies that all items in the filtered collection of <see cref="FieldInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<FieldInfo?, IAsyncEnumerable<FieldInfo?>> Have<TAttribute>(
 		this IThat<IAsyncEnumerable<FieldInfo?>> subject,
 		Func<TAttribute, bool> predicate,

@@ -20,6 +20,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> target
 	///     the <paramref name="expected" /> framework (e.g. <c>net8.0</c>).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> Target(
 		this IThat<IEnumerable<Assembly?>> subject, string expected)
 	{
@@ -36,6 +37,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> target
 	///     the <paramref name="expected" /> framework (e.g. <c>net8.0</c>).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>> Target(
 		this IThat<IAsyncEnumerable<Assembly?>> subject, string expected)
 	{

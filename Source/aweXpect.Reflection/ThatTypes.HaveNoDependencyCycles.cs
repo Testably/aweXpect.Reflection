@@ -34,6 +34,7 @@ public static partial class ThatTypes
 	///     edge. Use <see cref="DependencyCyclesResult{TThat}.ExcludingSubNamespaces" /> to treat every namespace as its
 	///     own node instead.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static DependencyCyclesResult<IEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IEnumerable<Type?>> subject)
 	{
@@ -58,6 +59,7 @@ public static partial class ThatTypes
 	///     framework or otherwise out-of-set namespaces never create an edge; references within the same slice are
 	///     ignored.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static DependencyCyclesResult<IEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IEnumerable<Type?>> subject, string sliceRoot)
 	{
@@ -71,6 +73,7 @@ public static partial class ThatTypes
 
 #if NET8_0_OR_GREATER
 	/// <inheritdoc cref="HaveNoDependencyCycles(IThat{IEnumerable{Type}})" />
+	[GuaranteesNotNull]
 	public static DependencyCyclesResult<IAsyncEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 	{
@@ -83,6 +86,7 @@ public static partial class ThatTypes
 	}
 
 	/// <inheritdoc cref="HaveNoDependencyCycles(IThat{IEnumerable{Type}},string)" />
+	[GuaranteesNotNull]
 	public static DependencyCyclesResult<IAsyncEnumerable<Type?>> HaveNoDependencyCycles(
 		this IThat<IAsyncEnumerable<Type?>> subject, string sliceRoot)
 	{

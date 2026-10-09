@@ -33,6 +33,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TBaseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TBaseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> InheritFrom<TBaseType>(
 		this IThat<IEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -55,6 +56,7 @@ public static partial class ThatTypes
 	///     <paramref name="baseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="baseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> InheritFrom(
 		this IThat<IEnumerable<Type?>> subject,
 		Type baseType,
@@ -83,6 +85,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TBaseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TBaseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> InheritFrom<TBaseType>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -107,6 +110,7 @@ public static partial class ThatTypes
 	///     <paramref name="baseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="baseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> InheritFrom(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Type baseType,
@@ -135,6 +139,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TBaseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TBaseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotInheritFrom<TBaseType>(
 		this IThat<IEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -157,6 +162,7 @@ public static partial class ThatTypes
 	///     <paramref name="baseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="baseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotInheritFrom(
 		this IThat<IEnumerable<Type?>> subject,
 		Type baseType,
@@ -185,6 +191,7 @@ public static partial class ThatTypes
 	///     <typeparamref name="TBaseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <typeparamref name="TBaseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotInheritFrom<TBaseType>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		bool forceDirect = false)
@@ -209,6 +216,7 @@ public static partial class ThatTypes
 	///     <paramref name="baseType" /> to be the direct parent.
 	/// </param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="baseType" /> is an interface.</exception>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotInheritFrom(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Type baseType,

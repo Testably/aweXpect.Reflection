@@ -24,6 +24,7 @@ public static partial class ThatConstructors
 	///     Verifies that all items in the filtered collection of <see cref="ConstructorInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<ConstructorInfo?, IEnumerable<ConstructorInfo?>> Have<TAttribute>(
 		this IThat<IEnumerable<ConstructorInfo?>> subject)
 		where TAttribute : Attribute
@@ -42,6 +43,7 @@ public static partial class ThatConstructors
 	///     Verifies that all items in the filtered collection of <see cref="ConstructorInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<ConstructorInfo?, IEnumerable<ConstructorInfo?>> Have<TAttribute>(
 		this IThat<IEnumerable<ConstructorInfo?>> subject,
 		Func<TAttribute, bool> predicate,
@@ -64,6 +66,7 @@ public static partial class ThatConstructors
 	///     Verifies that all items in the filtered collection of <see cref="ConstructorInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<ConstructorInfo?, IAsyncEnumerable<ConstructorInfo?>>
 		Have<TAttribute>(
 			this IThat<IAsyncEnumerable<ConstructorInfo?>> subject)
@@ -85,6 +88,7 @@ public static partial class ThatConstructors
 	///     Verifies that all items in the filtered collection of <see cref="ConstructorInfo" /> have
 	///     attribute of type <typeparamref name="TAttribute" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveAttributeWithoutInheritResult<ConstructorInfo?, IAsyncEnumerable<ConstructorInfo?>>
 		Have<TAttribute>(
 			this IThat<IAsyncEnumerable<ConstructorInfo?>> subject,

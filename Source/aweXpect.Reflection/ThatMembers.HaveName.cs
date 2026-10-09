@@ -22,6 +22,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> have
 	///     the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> HaveName<TMember>(
 		this IThat<IEnumerable<TMember>> subject, string expected)
 		where TMember : MemberInfo?
@@ -39,6 +40,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> have
 	///     the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>>
 		HaveName<TMember>(
 			this IThat<IAsyncEnumerable<TMember>> subject, string expected)
@@ -57,6 +59,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> have the name
 	///     returned by the <paramref name="expectedNameSelector" /> for the respective item.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> HaveName<TMember>(
 		this IThat<IEnumerable<TMember>> subject,
 		Func<TMember, string> expectedNameSelector,
@@ -78,6 +81,7 @@ public static partial class ThatMembers
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> have the name
 	///     returned by the <paramref name="expectedNameSelector" /> for the respective item.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>>
 		HaveName<TMember>(
 			this IThat<IAsyncEnumerable<TMember>> subject,

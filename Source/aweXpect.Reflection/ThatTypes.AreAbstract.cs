@@ -24,6 +24,7 @@ public static partial class ThatTypes
 	///     Static types or interfaces are not considered abstract, even though they
 	///     have <see cref="Type.IsAbstract" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreAbstract(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -38,6 +39,7 @@ public static partial class ThatTypes
 	///     Static types or interfaces are not considered abstract, even though they
 	///     have <see cref="Type.IsAbstract" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreAbstract(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
@@ -52,6 +54,7 @@ public static partial class ThatTypes
 	///     Static types or interfaces are considered not abstract, even though they
 	///     have <see cref="Type.IsAbstract" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotAbstract(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -66,6 +69,7 @@ public static partial class ThatTypes
 	///     Static types or interfaces are considered not abstract, even though they
 	///     have <see cref="Type.IsAbstract" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotAbstract(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)

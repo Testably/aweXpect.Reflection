@@ -23,6 +23,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     a <see cref="AssemblyName.Version" /> that satisfies the <paramref name="predicate" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> HaveVersion(
 		this IThat<IEnumerable<Assembly?>> subject,
 		Func<Version, bool> predicate,
@@ -37,6 +38,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     a <see cref="AssemblyName.Version" /> that satisfies the <paramref name="predicate" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>> HaveVersion(
 		this IThat<IAsyncEnumerable<Assembly?>> subject,
 		Func<Version, bool> predicate,
@@ -51,6 +53,7 @@ public static partial class ThatAssemblies
 	///     Verifies the individual components of the <see cref="AssemblyName.Version" /> of all items in the filtered
 	///     collection of <see cref="Assembly" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveVersionResult<IEnumerable<Assembly?>> HaveVersion(this IThat<IEnumerable<Assembly?>> subject)
 		=> new(subject, (expectationBuilder, checks)
 			=> expectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
@@ -61,6 +64,7 @@ public static partial class ThatAssemblies
 	///     Verifies the individual components of the <see cref="AssemblyName.Version" /> of all items in the filtered
 	///     collection of <see cref="Assembly" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static HaveVersionResult<IAsyncEnumerable<Assembly?>> HaveVersion(
 		this IThat<IAsyncEnumerable<Assembly?>> subject)
 		=> new(subject, (expectationBuilder, checks)

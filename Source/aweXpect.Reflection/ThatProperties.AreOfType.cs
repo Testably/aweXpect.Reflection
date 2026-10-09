@@ -22,6 +22,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all properties in the filtered collection are of type <typeparamref name="TProperty" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static PropertiesOfTypeResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>>
 		AreOfType<TProperty>(
 			this IThat<IEnumerable<PropertyInfo?>> subject)
@@ -30,6 +31,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all properties in the filtered collection are of type <paramref name="propertyType" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static PropertiesOfTypeResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>>> AreOfType(
 		this IThat<IEnumerable<PropertyInfo?>> subject, Type propertyType)
 	{
@@ -46,6 +48,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all properties in the filtered collection are of type <typeparamref name="TProperty" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static PropertiesOfTypeResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>>
 		AreOfType<TProperty>(
 			this IThat<IAsyncEnumerable<PropertyInfo?>> subject)
@@ -54,6 +57,7 @@ public static partial class ThatProperties
 	/// <summary>
 	///     Verifies that all properties in the filtered collection are of type <paramref name="propertyType" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static PropertiesOfTypeResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>>>
 		AreOfType(
 			this IThat<IAsyncEnumerable<PropertyInfo?>> subject, Type propertyType)

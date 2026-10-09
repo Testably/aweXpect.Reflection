@@ -21,6 +21,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> depend on (reference in their
 	///     signature) at least one type in one of the <paramref name="namespaces" /> (including sub-namespaces).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyResult<IEnumerable<Type?>> DependOn(
 		this IThat<IEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -37,6 +38,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> depend on (reference in their
 	///     signature) at least one type in one of the <paramref name="namespaces" /> (including sub-namespaces).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyResult<IAsyncEnumerable<Type?>> DependOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -59,6 +61,7 @@ public static partial class ThatTypes
 	///     union of the resolved collections (by <see cref="Type" /> identity; a generic type definition in a
 	///     collection matches any construction of it).
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyResult<IEnumerable<Type?>> DependOn(
 		this IThat<IEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{
@@ -81,6 +84,7 @@ public static partial class ThatTypes
 	///     union of the resolved collections (by <see cref="Type" /> identity; a generic type definition in a
 	///     collection matches any construction of it).
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyResult<IAsyncEnumerable<Type?>> DependOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{
@@ -97,6 +101,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> do not depend on (do not reference
 	///     in their signature) any type in one of the <paramref name="namespaces" /> (including sub-namespaces).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyResult<IEnumerable<Type?>> DoNotDependOn(
 		this IThat<IEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -113,6 +118,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> do not depend on (do not reference
 	///     in their signature) any type in one of the <paramref name="namespaces" /> (including sub-namespaces).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyResult<IAsyncEnumerable<Type?>> DoNotDependOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -135,6 +141,7 @@ public static partial class ThatTypes
 	///     union of the resolved collections (by <see cref="Type" /> identity; a generic type definition in a
 	///     collection matches any construction of it).
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyResult<IEnumerable<Type?>> DoNotDependOn(
 		this IThat<IEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{
@@ -157,6 +164,7 @@ public static partial class ThatTypes
 	///     union of the resolved collections (by <see cref="Type" /> identity; a generic type definition in a
 	///     collection matches any construction of it).
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyResult<IAsyncEnumerable<Type?>> DoNotDependOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{

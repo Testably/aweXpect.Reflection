@@ -21,6 +21,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     no dependency on the <paramref name="unexpected" /> assembly.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> DoNotDependOn(
 		this IThat<IEnumerable<Assembly?>> subject, string unexpected)
 	{
@@ -37,6 +38,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     no dependency on the <paramref name="unexpected" /> assembly.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>>
 		DoNotDependOn(
 			this IThat<IAsyncEnumerable<Assembly?>> subject, string unexpected)

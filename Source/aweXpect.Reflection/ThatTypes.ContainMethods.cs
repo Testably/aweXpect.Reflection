@@ -27,6 +27,7 @@ public static partial class ThatTypes
 	///     (e.g. <see cref="TypeContainingMembersResult{TThat}.Exactly(Times)" />) to require a specific count.<br />
 	///     The <paramref name="memberScope" /> controls whether inherited methods are considered.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeContainingMembersResult<IEnumerable<Type?>> ContainMethods(
 		this IThat<IEnumerable<Type?>> subject,
 		Func<Filtered.Methods, Filtered.Methods> filter,
@@ -43,6 +44,7 @@ public static partial class ThatTypes
 	///     (e.g. <see cref="TypeContainingMembersResult{TThat}.Exactly(Times)" />) to require a specific count.<br />
 	///     The <paramref name="memberScope" /> controls whether inherited methods are considered.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeContainingMembersResult<IAsyncEnumerable<Type?>> ContainMethods(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Func<Filtered.Methods, Filtered.Methods> filter,

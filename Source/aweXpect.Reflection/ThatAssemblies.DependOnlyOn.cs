@@ -30,6 +30,7 @@ public static partial class ThatAssemblies
 	///     <c>SystemsBiology.Core</c>) are ignored,
 	///     so that framework assemblies do not have to be listed explicitly.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> DependOnlyOn(
 		this IThat<IEnumerable<Assembly?>> subject, params string[] allowed)
 	{
@@ -53,6 +54,7 @@ public static partial class ThatAssemblies
 	///     <c>SystemsBiology.Core</c>) are ignored,
 	///     so that framework assemblies do not have to be listed explicitly.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>>
 		DependOnlyOn(
 			this IThat<IAsyncEnumerable<Assembly?>> subject, params string[] allowed)

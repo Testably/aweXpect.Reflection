@@ -25,6 +25,7 @@ public static partial class ThatTypes
 	///     <see langword="readonly" /> and all instance properties (including inherited ones) have no setter
 	///     or an init-only setter.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreImmutable(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -40,6 +41,7 @@ public static partial class ThatTypes
 	///     <see langword="readonly" /> and all instance properties (including inherited ones) have no setter
 	///     or an init-only setter.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreImmutable(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
@@ -55,6 +57,7 @@ public static partial class ThatTypes
 	///     <see langword="readonly" /> and all instance properties (including inherited ones) have no setter
 	///     or an init-only setter.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotImmutable(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -70,6 +73,7 @@ public static partial class ThatTypes
 	///     <see langword="readonly" /> and all instance properties (including inherited ones) have no setter
 	///     or an init-only setter.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotImmutable(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)

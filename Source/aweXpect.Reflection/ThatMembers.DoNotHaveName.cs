@@ -20,6 +20,7 @@ public static partial class ThatMembers
 	///     Verifies that none of the items in the filtered collection of <typeparamref name="TMember" /> have
 	///     the <paramref name="unexpected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> DoNotHaveName<TMember>(
 		this IThat<IEnumerable<TMember>> subject, string unexpected)
 		where TMember : MemberInfo?
@@ -37,6 +38,7 @@ public static partial class ThatMembers
 	///     Verifies that none of the items in the filtered collection of <typeparamref name="TMember" /> have
 	///     the <paramref name="unexpected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>>
 		DoNotHaveName<TMember>(
 			this IThat<IAsyncEnumerable<TMember>> subject, string unexpected)

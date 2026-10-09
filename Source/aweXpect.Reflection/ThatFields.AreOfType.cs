@@ -22,6 +22,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all fields in the filtered collection are of type <typeparamref name="TField" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static FieldsOfTypeResult<IEnumerable<FieldInfo?>, IThat<IEnumerable<FieldInfo?>>> AreOfType<TField>(
 		this IThat<IEnumerable<FieldInfo?>> subject)
 		=> AreOfType(subject, typeof(TField));
@@ -29,6 +30,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all fields in the filtered collection are of type <paramref name="fieldType" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static FieldsOfTypeResult<IEnumerable<FieldInfo?>, IThat<IEnumerable<FieldInfo?>>> AreOfType(
 		this IThat<IEnumerable<FieldInfo?>> subject, Type fieldType)
 	{
@@ -45,6 +47,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all fields in the filtered collection are of type <typeparamref name="TField" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static FieldsOfTypeResult<IAsyncEnumerable<FieldInfo?>, IThat<IAsyncEnumerable<FieldInfo?>>>
 		AreOfType<TField>(
 			this IThat<IAsyncEnumerable<FieldInfo?>> subject)
@@ -53,6 +56,7 @@ public static partial class ThatFields
 	/// <summary>
 	///     Verifies that all fields in the filtered collection are of type <paramref name="fieldType" /> (or a subtype).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static FieldsOfTypeResult<IAsyncEnumerable<FieldInfo?>, IThat<IAsyncEnumerable<FieldInfo?>>> AreOfType(
 		this IThat<IAsyncEnumerable<FieldInfo?>> subject, Type fieldType)
 	{

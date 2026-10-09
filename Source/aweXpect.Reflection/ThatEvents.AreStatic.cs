@@ -20,6 +20,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are static.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> AreStatic(
 		this IThat<IEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are static.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> AreStatic(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
@@ -40,6 +42,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are not static.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> AreNotStatic(
 		this IThat<IEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
@@ -50,6 +53,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> are not static.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> AreNotStatic(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)

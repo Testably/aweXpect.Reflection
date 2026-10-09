@@ -32,6 +32,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyOnlyOnResult<IEnumerable<Type?>> DependOnlyOn(
 		this IThat<IEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -58,6 +59,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyOnlyOnResult<IAsyncEnumerable<Type?>> DependOnlyOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -90,6 +92,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyOnlyOnResult<IEnumerable<Type?>> DependOnlyOn(
 		this IThat<IEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{
@@ -122,6 +125,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft</c>, so e.g. <c>Microsoft.EntityFrameworkCore</c> is also ignored; forbid such a dependency
 	///     explicitly via <c>DoNotDependOn</c> or customize the prefixes.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyOnlyOnResult<IAsyncEnumerable<Type?>> DependOnlyOn(
 		this IThat<IAsyncEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{

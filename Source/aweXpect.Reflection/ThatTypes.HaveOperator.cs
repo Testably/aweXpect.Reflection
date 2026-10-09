@@ -21,6 +21,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveOperator(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
@@ -33,6 +34,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveOperator(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
@@ -46,6 +48,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> HaveOperator<TOperand>(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
@@ -57,6 +60,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
@@ -69,6 +73,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
@@ -82,6 +87,7 @@ public static partial class ThatTypes
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> HaveOperator<TOperand>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
@@ -93,6 +99,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveOperator(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
@@ -105,6 +112,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveOperator(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
@@ -118,6 +126,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> DoNotHaveOperator<TOperand>(
 		this IThat<IEnumerable<Type?>> subject,
 		Operator @operator,
@@ -129,6 +138,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> (e.g. <see cref="Operator.Addition" /> matches <c>op_Addition</c>).
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveOperator(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
@@ -141,6 +151,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the <paramref name="operand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveOperator(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,
@@ -154,6 +165,7 @@ public static partial class ThatTypes
 	///     Verifies that none of the items in the filtered collection of <see cref="Type" /> declare the
 	///     <paramref name="operator" /> with an overload that takes the operand <typeparamref name="TOperand" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> DoNotHaveOperator<TOperand>(
 		this IThat<IAsyncEnumerable<Type?>> subject,
 		Operator @operator,

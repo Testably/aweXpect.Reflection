@@ -21,6 +21,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are protected.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> AreProtected<TMember>(
 		this IThat<IEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -32,6 +33,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are protected.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>> AreProtected<TMember>(
 		this IThat<IAsyncEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -43,6 +45,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are not protected.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>>> AreNotProtected<TMember>(
 		this IThat<IEnumerable<TMember>> subject)
 		where TMember : MemberInfo?
@@ -54,6 +57,7 @@ public static partial class ThatMembers
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <typeparamref name="TMember" /> are not protected.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>>> AreNotProtected<TMember>(
 		this IThat<IAsyncEnumerable<TMember>> subject)
 		where TMember : MemberInfo?

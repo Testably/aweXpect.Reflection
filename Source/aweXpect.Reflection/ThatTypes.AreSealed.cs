@@ -24,6 +24,7 @@ public static partial class ThatTypes
 	///     Static types are not considered sealed, even though they
 	///     have <see cref="Type.IsSealed" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreSealed(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -38,6 +39,7 @@ public static partial class ThatTypes
 	///     Static types are not considered sealed, even though they
 	///     have <see cref="Type.IsSealed" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreSealed(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
@@ -52,6 +54,7 @@ public static partial class ThatTypes
 	///     Static types are considered not sealed, even though they
 	///     have <see cref="Type.IsSealed" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotSealed(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -66,6 +69,7 @@ public static partial class ThatTypes
 	///     Static types are considered not sealed, even though they
 	///     have <see cref="Type.IsSealed" /> set to <see langword="true" />.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotSealed(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)

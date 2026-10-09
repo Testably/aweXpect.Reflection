@@ -34,6 +34,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft.EntityFrameworkCore</c> is also ignored; customize the prefixes to make such a dependency
 	///     count.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyOutsideResult<IEnumerable<Type?>> HaveDependenciesOutside(
 		this IThat<IEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -62,6 +63,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft.EntityFrameworkCore</c> is also ignored; customize the prefixes to make such a dependency
 	///     count.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static NamespaceDependencyOutsideResult<IAsyncEnumerable<Type?>> HaveDependenciesOutside(
 		this IThat<IAsyncEnumerable<Type?>> subject, params IEnumerable<string> namespaces)
 	{
@@ -97,6 +99,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft.EntityFrameworkCore</c> is also ignored; customize the prefixes to make such a dependency
 	///     count.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyOutsideResult<IEnumerable<Type?>> HaveDependenciesOutside(
 		this IThat<IEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{
@@ -132,6 +135,7 @@ public static partial class ThatTypes
 	///     <c>Microsoft.EntityFrameworkCore</c> is also ignored; customize the prefixes to make such a dependency
 	///     count.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static TypeSetDependencyOutsideResult<IAsyncEnumerable<Type?>> HaveDependenciesOutside(
 		this IThat<IAsyncEnumerable<Type?>> subject, Filtered.Types target, params Filtered.Types[] additional)
 	{

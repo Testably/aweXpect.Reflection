@@ -21,6 +21,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     a dependency on the <paramref name="expected" /> assembly.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> DependOn(
 		this IThat<IEnumerable<Assembly?>> subject, string expected)
 	{
@@ -37,6 +38,7 @@ public static partial class ThatAssemblies
 	///     Verifies that all items in the filtered collection of <see cref="Assembly" /> have
 	///     a dependency on the <paramref name="expected" /> assembly.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>>
 		DependOn(
 			this IThat<IAsyncEnumerable<Assembly?>> subject, string expected)

@@ -20,6 +20,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> are virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<MethodInfo?>, IThat<IEnumerable<MethodInfo?>>> AreVirtual(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<MethodInfo?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> are virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<MethodInfo?>, IThat<IAsyncEnumerable<MethodInfo?>>> AreVirtual(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<MethodInfo?>>((it, grammars)
@@ -40,6 +42,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> are not virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<MethodInfo?>, IThat<IEnumerable<MethodInfo?>>> AreNotVirtual(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<MethodInfo?>>((it, grammars)
@@ -50,6 +53,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> are not virtual.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<MethodInfo?>, IThat<IAsyncEnumerable<MethodInfo?>>> AreNotVirtual(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<MethodInfo?>>((it, grammars)

@@ -20,6 +20,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> override a base class event.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> Override(
 		this IThat<IEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatEvents
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> override a base class event.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> Override(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
@@ -41,6 +43,7 @@ public static partial class ThatEvents
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> do not override a base class
 	///     event.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>>> DoNotOverride(
 		this IThat<IEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
@@ -52,6 +55,7 @@ public static partial class ThatEvents
 	///     Verifies that all items in the filtered collection of <see cref="EventInfo" /> do not override a base class
 	///     event.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>>> DoNotOverride(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)

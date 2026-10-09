@@ -22,6 +22,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all methods in the filtered collection return type <typeparamref name="TReturn" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static MethodsReturnResult<IEnumerable<MethodInfo>, IThat<IEnumerable<MethodInfo>>> Return<TReturn>(
 		this IThat<IEnumerable<MethodInfo>> subject)
 		=> Return(subject, typeof(TReturn));
@@ -29,6 +30,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all methods in the filtered collection return type <paramref name="returnType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static MethodsReturnResult<IEnumerable<MethodInfo>, IThat<IEnumerable<MethodInfo>>> Return(
 		this IThat<IEnumerable<MethodInfo>> subject, Type returnType)
 	{
@@ -45,6 +47,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all methods in the filtered collection return type <typeparamref name="TReturn" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static MethodsReturnResult<IAsyncEnumerable<MethodInfo>, IThat<IAsyncEnumerable<MethodInfo>>>
 		Return<TReturn>(
 			this IThat<IAsyncEnumerable<MethodInfo>> subject)
@@ -55,6 +58,7 @@ public static partial class ThatMethods
 	/// <summary>
 	///     Verifies that all methods in the filtered collection return type <paramref name="returnType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static MethodsReturnResult<IAsyncEnumerable<MethodInfo>, IThat<IAsyncEnumerable<MethodInfo>>> Return(
 		this IThat<IAsyncEnumerable<MethodInfo>> subject, Type returnType)
 	{

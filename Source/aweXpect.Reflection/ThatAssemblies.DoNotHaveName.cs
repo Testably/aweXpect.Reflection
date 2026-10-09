@@ -20,6 +20,7 @@ public static partial class ThatAssemblies
 	///     Verifies that none of the items in the filtered collection of <see cref="Assembly" /> have
 	///     the <paramref name="unexpected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>>> DoNotHaveName(
 		this IThat<IEnumerable<Assembly?>> subject, string unexpected)
 	{
@@ -36,6 +37,7 @@ public static partial class ThatAssemblies
 	///     Verifies that none of the items in the filtered collection of <see cref="Assembly" /> have
 	///     the <paramref name="unexpected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>>>
 		DoNotHaveName(
 			this IThat<IAsyncEnumerable<Assembly?>> subject, string unexpected)

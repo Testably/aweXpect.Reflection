@@ -28,6 +28,7 @@ public static partial class ThatEvents
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<EventInfo?, IEnumerable<EventInfo?>> Have<TAttribute>(
 		this IThat<IEnumerable<EventInfo?>> subject, bool inherit = true)
 		where TAttribute : Attribute
@@ -50,6 +51,7 @@ public static partial class ThatEvents
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<EventInfo?, IEnumerable<EventInfo?>> Have<TAttribute>(
 		this IThat<IEnumerable<EventInfo?>> subject,
 		Func<TAttribute, bool> predicate,
@@ -77,6 +79,7 @@ public static partial class ThatEvents
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<EventInfo?, IAsyncEnumerable<EventInfo?>> Have<TAttribute>(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject, bool inherit = true)
 		where TAttribute : Attribute
@@ -101,6 +104,7 @@ public static partial class ThatEvents
 	///     The optional parameter <paramref name="inherit" /> (default value <see langword="true" /> specifies, if
 	///     the attribute can be inherited from a base type.
 	/// </remarks>
+	[GuaranteesNotNull]
 	public static HaveAttributeResult<EventInfo?, IAsyncEnumerable<EventInfo?>> Have<TAttribute>(
 		this IThat<IAsyncEnumerable<EventInfo?>> subject,
 		Func<TAttribute, bool> predicate,

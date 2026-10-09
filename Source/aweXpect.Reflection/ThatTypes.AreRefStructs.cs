@@ -20,6 +20,7 @@ public static partial class ThatTypes
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> are ref structs.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreRefStructs(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -30,6 +31,7 @@ public static partial class ThatTypes
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> are ref structs.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreRefStructs(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
@@ -40,6 +42,7 @@ public static partial class ThatTypes
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> are not ref structs.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>>> AreNotRefStructs(
 		this IThat<IEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
@@ -50,6 +53,7 @@ public static partial class ThatTypes
 	/// <summary>
 	///     Verifies that all items in the filtered collection of <see cref="Type" /> are not ref structs.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>>> AreNotRefStructs(
 		this IThat<IAsyncEnumerable<Type?>> subject)
 		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)

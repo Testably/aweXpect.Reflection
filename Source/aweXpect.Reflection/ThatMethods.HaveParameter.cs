@@ -23,6 +23,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveParameter<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject)
 	{
@@ -44,6 +45,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType)
 	{
@@ -64,6 +66,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <typeparamref name="TParameter" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, TParameter> HaveParameter<TParameter>(
 		this IThat<IEnumerable<MethodInfo?>> subject, string expected)
 	{
@@ -89,6 +92,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <paramref name="parameterType" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 	{
@@ -113,6 +117,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IEnumerable<MethodInfo?>, object?> HaveParameter(
 		this IThat<IEnumerable<MethodInfo?>> subject, string expected)
 	{
@@ -136,6 +141,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <typeparamref name="TParameter" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveParameter<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject)
 	{
@@ -159,6 +165,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <paramref name="parameterType" />.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static ParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType)
 	{
@@ -181,6 +188,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <typeparamref name="TParameter" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, TParameter> HaveParameter<TParameter>(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, string expected)
 	{
@@ -208,6 +216,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter of type <paramref name="parameterType" /> with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, Type parameterType, string expected)
 	{
@@ -234,6 +243,7 @@ public static partial class ThatMethods
 	///     Verifies that all items in the filtered collection of <see cref="MethodInfo" /> have
 	///     a parameter with the <paramref name="expected" /> name.
 	/// </summary>
+	[GuaranteesNotNull]
 	public static NamedParameterCollectionResult<IAsyncEnumerable<MethodInfo?>, object?> HaveParameter(
 		this IThat<IAsyncEnumerable<MethodInfo?>> subject, string expected)
 	{

@@ -195,7 +195,8 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("not all have dependencies outside ").Append(options.Describe());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-			=> stringBuilder.Append(It).Append(" only contained types with dependencies outside the allowed namespaces");
+			=> stringBuilder.Append(It)
+				.Append(" only contained types with dependencies outside the allowed namespaces");
 		protected override Func<string?> FormatItems(Type?[] items)
 			=> () => DependencyViolationRenderer.FormatItemsWithDisallowedDependencies(items, _violations);
 	}

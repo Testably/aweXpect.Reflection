@@ -208,7 +208,7 @@ internal abstract class CollectionConstraintResult<T>(string it, ExpectationGram
 	{
 		if (_outcome == Outcome.FailureBothWays)
 		{
-			stringBuilder.Append(It).Append(" was <null>");
+			stringBuilder.Append(It).Append(Grammars.IsPlural() && It != "it" ? " were <null>" : " was <null>");
 		}
 		else if (_outcome == Outcome.Undecided)
 		{

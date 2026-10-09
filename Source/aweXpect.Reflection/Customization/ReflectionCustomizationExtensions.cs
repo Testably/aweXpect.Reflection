@@ -112,8 +112,8 @@ public static class ReflectionCustomizationExtensions
 
 		/// <summary>
 		///     Returns the <paramref name="defaultValue" /> for a stored <see langword="null" />, so that setting
-		///     <see langword="null" /> reverts to the default within its scope and <c>Get()</c> always returns the value
-		///     in effect.
+		///     <see langword="null" /> reverts to the default within its scope and <c>Get()</c> always returns the
+		///     value in effect.
 		/// </summary>
 		private sealed class DefaultWhenNull<TValue>(ICustomizationValueSetter<TValue?> inner, TValue defaultValue)
 			: ICustomizationValueSetter<TValue?>

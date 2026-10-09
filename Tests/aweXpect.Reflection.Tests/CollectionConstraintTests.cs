@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
+using Xunit.Sdk;
 
 namespace aweXpect.Reflection.Tests;
 
@@ -17,7 +18,7 @@ public sealed class CollectionConstraintTests
 			await That(subject).HaveNamespace("Foo").WithCancellation(cts.Token);
 		}
 
-		await That(Act).Throws<Exception>()
+		await That(Act).Throws<InconclusiveException>()
 			.WithMessage("""
 			             Expected that subject
 			             all have namespace equal to "Foo",
@@ -54,11 +55,29 @@ public sealed class CollectionConstraintTests
 			await That(subject).AreSealed();
 		}
 
-		await That(Act).Throws<Exception>()
+		await That(Act).Throws<XunitException>()
 			.WithMessage("""
 			             Expected that subject
 			             are all sealed,
 			             but it was <null>
+			             """);
+	}
+
+	[Fact]
+	public async Task WhenMemberIsNull_ShouldUseThePluralVerb()
+	{
+		Holder subject = new(null!);
+
+		async Task Act()
+		{
+			await That(subject).Whose(h => h.Types, t => t.AreSealed());
+		}
+
+		await That(Act).Throws<XunitException>()
+			.WithMessage("""
+			             Expected that subject
+			             whose Types are all sealed,
+			             but Types were <null>
 			             """);
 	}
 
@@ -72,7 +91,7 @@ public sealed class CollectionConstraintTests
 			await That(subject).HaveNoDependencyCycles();
 		}
 
-		await That(Act).Throws<Exception>()
+		await That(Act).Throws<XunitException>()
 			.WithMessage("""
 			             Expected that subject
 			             have no dependency cycles,
@@ -90,7 +109,7 @@ public sealed class CollectionConstraintTests
 			await That(subject).DoesNotComplyWith(they => they.AreSealed());
 		}
 
-		await That(Act).Throws<Exception>()
+		await That(Act).Throws<XunitException>()
 			.WithMessage("""
 			             Expected that subject
 			             are not all sealed,
@@ -111,7 +130,7 @@ public sealed class CollectionConstraintTests
 			await That(subject).AreSealed().WithCancellation(cts.Token);
 		}
 
-		await That(Act).Throws<Exception>()
+		await That(Act).Throws<InconclusiveException>()
 			.WithMessage("""
 			             Expected that subject
 			             are all sealed,
@@ -149,7 +168,7 @@ public sealed class CollectionConstraintTests
 			await That(subject).DoesNotComplyWith(they => they.AreSealed());
 		}
 
-		await That(Act).Throws<Exception>()
+		await That(Act).Throws<XunitException>()
 			.WithMessage("""
 			             Expected that subject
 			             are not all sealed,
@@ -166,4 +185,6 @@ public sealed class CollectionConstraintTests
 		}
 	}
 #endif
+
+	private sealed record Holder(IEnumerable<Type?> Types);
 }

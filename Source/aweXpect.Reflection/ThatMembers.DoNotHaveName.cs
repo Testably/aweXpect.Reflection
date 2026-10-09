@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Options;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
@@ -55,28 +56,31 @@ public static partial class ThatMembers
 		ExpectationGrammars grammars,
 		string unexpected,
 		StringEqualityOptions options)
-		: CollectionConstraintResult<TMember>(grammars),
-			IAsyncConstraint<IEnumerable<TMember>>
+		: CollectionConstraintResult<TMember>(it, grammars),
+			IAsyncContextConstraint<IEnumerable<TMember>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<TMember>>
+			, IAsyncContextConstraint<IAsyncEnumerable<TMember>>
 #endif
 		where TMember : MemberInfo?
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
 				async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected));
 #endif
 
-		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<TMember> actual, CancellationToken cancellationToken)
-			=> await SetValue(actual, async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected));
+		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetValue(actual, context, cancellationToken,
+				async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name ").Append(options.GetExpectation(unexpected, Grammars.Negate()));
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching items ");
+			stringBuilder.Append(It).Append(" contained not matching items ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -85,7 +89,7 @@ public static partial class ThatMembers
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained matching items ");
+			stringBuilder.Append(It).Append(" only contained matching items ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

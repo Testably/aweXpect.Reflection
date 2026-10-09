@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -300,19 +301,20 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		Type type)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, t => t is not null && type.IsAssignableFrom(t));
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, t => t is not null && type.IsAssignableFrom(t));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, t => t is not null && type.IsAssignableFrom(t));
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, t => t is not null && type.IsAssignableFrom(t));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -322,7 +324,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching types ");
+			stringBuilder.Append(It).Append(" contained not matching types ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -334,7 +336,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained matching types ");
+			stringBuilder.Append(It).Append(" only contained matching types ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
@@ -343,19 +345,20 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		Type type)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, t => t is null || !type.IsAssignableFrom(t));
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, t => t is null || !type.IsAssignableFrom(t));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, t => t is null || !type.IsAssignableFrom(t));
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, t => t is null || !type.IsAssignableFrom(t));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -365,7 +368,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching types ");
+			stringBuilder.Append(It).Append(" contained not matching types ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -377,7 +380,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained matching types ");
+			stringBuilder.Append(It).Append(" only contained matching types ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
@@ -386,19 +389,20 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		Type type)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, t => t is not null && t.IsAssignableFrom(type));
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, t => t is not null && t.IsAssignableFrom(type));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, t => t is not null && t.IsAssignableFrom(type));
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, t => t is not null && t.IsAssignableFrom(type));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -408,7 +412,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching types ");
+			stringBuilder.Append(It).Append(" contained not matching types ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -420,7 +424,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained matching types ");
+			stringBuilder.Append(It).Append(" only contained matching types ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
@@ -429,19 +433,20 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		Type type)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, t => t is null || !t.IsAssignableFrom(type));
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, t => t is null || !t.IsAssignableFrom(type));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, t => t is null || !t.IsAssignableFrom(type));
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, t => t is null || !t.IsAssignableFrom(type));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -451,7 +456,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching types ");
+			stringBuilder.Append(It).Append(" contained not matching types ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -463,7 +468,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained matching types ");
+			stringBuilder.Append(It).Append(" only contained matching types ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

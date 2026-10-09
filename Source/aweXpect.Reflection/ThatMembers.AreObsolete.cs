@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -67,28 +68,28 @@ public static partial class ThatMembers
 	private sealed class AreObsoleteConstraint<TMember>(
 		string it,
 		ExpectationGrammars grammars)
-		: CollectionConstraintResult<TMember>(grammars),
-			IValueConstraint<IEnumerable<TMember>>
+		: CollectionConstraintResult<TMember>(it, grammars),
+			IContextConstraint<IEnumerable<TMember>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<TMember>>
+			, IAsyncContextConstraint<IAsyncEnumerable<TMember>>
 #endif
 		where TMember : MemberInfo?
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, member => member.IsObsolete());
+			=> await SetAsyncValue(actual, context, cancellationToken, member => member.IsObsolete());
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<TMember> actual)
-			=> SetValue(actual, member => member.IsObsolete());
+		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)
+			=> SetValue(actual, context, member => member.IsObsolete());
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all obsolete");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained non-obsolete items ");
+			stringBuilder.Append(It).Append(" contained non-obsolete items ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -97,7 +98,7 @@ public static partial class ThatMembers
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained obsolete items ");
+			stringBuilder.Append(It).Append(" only contained obsolete items ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
@@ -105,28 +106,28 @@ public static partial class ThatMembers
 	private sealed class AreNotObsoleteConstraint<TMember>(
 		string it,
 		ExpectationGrammars grammars)
-		: CollectionConstraintResult<TMember>(grammars),
-			IValueConstraint<IEnumerable<TMember>>
+		: CollectionConstraintResult<TMember>(it, grammars),
+			IContextConstraint<IEnumerable<TMember>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<TMember>>
+			, IAsyncContextConstraint<IAsyncEnumerable<TMember>>
 #endif
 		where TMember : MemberInfo?
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, member => !member.IsObsolete());
+			=> await SetAsyncValue(actual, context, cancellationToken, member => !member.IsObsolete());
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<TMember> actual)
-			=> SetValue(actual, member => !member.IsObsolete());
+		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)
+			=> SetValue(actual, context, member => !member.IsObsolete());
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not obsolete");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained obsolete items ");
+			stringBuilder.Append(It).Append(" contained obsolete items ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -135,7 +136,7 @@ public static partial class ThatMembers
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained non-obsolete items ");
+			stringBuilder.Append(It).Append(" only contained non-obsolete items ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

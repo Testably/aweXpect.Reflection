@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
@@ -54,10 +55,10 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		MemberScope memberScope)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 		private readonly Dictionary<Type, MemberInfo[]> _nullableMembers = new();
@@ -79,19 +80,19 @@ public static partial class ThatTypes
 		}
 
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, OnlyHasNonNullableMembers);
+			=> await SetAsyncValue(actual, context, cancellationToken, OnlyHasNonNullableMembers);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, OnlyHasNonNullableMembers);
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, OnlyHasNonNullableMembers);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("only have non-nullable members");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> MemberViolationRenderer.AppendTypesWithViolatingMembers(stringBuilder, it,
+			=> MemberViolationRenderer.AppendTypesWithViolatingMembers(stringBuilder, It,
 				" contained types with nullable members ", NotMatching, _nullableMembers,
 				" with nullable members ", indentation);
 
@@ -100,7 +101,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained types with only non-nullable members ");
+			stringBuilder.Append(It).Append(" only contained types with only non-nullable members ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

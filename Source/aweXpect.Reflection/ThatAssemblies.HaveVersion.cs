@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -181,20 +182,20 @@ public static partial class ThatAssemblies
 		string it,
 		ExpectationGrammars grammars,
 		List<VersionComponentCheck> checks)
-		: CollectionConstraintResult<Assembly?>(grammars),
-			IValueConstraint<IEnumerable<Assembly?>>
+		: CollectionConstraintResult<Assembly?>(it, grammars),
+			IContextConstraint<IEnumerable<Assembly?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Assembly?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Assembly?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, Matches);
+			=> await SetAsyncValue(actual, context, cancellationToken, Matches);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual)
-			=> SetValue(actual, Matches);
+		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, Matches);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -210,7 +211,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained assemblies with a non-matching version ");
+			stringBuilder.Append(It).Append(" contained assemblies with a non-matching version ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -228,7 +229,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained assemblies with a matching version ");
+			stringBuilder.Append(It).Append(" only contained assemblies with a matching version ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -270,27 +271,28 @@ public static partial class ThatAssemblies
 		ExpectationGrammars grammars,
 		Func<Version, bool> predicate,
 		string predicateExpression)
-		: CollectionConstraintResult<Assembly?>(grammars),
-			IValueConstraint<IEnumerable<Assembly?>>
+		: CollectionConstraintResult<Assembly?>(it, grammars),
+			IContextConstraint<IEnumerable<Assembly?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Assembly?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Assembly?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, assembly => assembly?.GetName().Version is { } version && predicate(version));
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				assembly => assembly?.GetName().Version is { } version && predicate(version));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual)
-			=> SetValue(actual, assembly => assembly?.GetName().Version is { } version && predicate(version));
+		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, assembly => assembly?.GetName().Version is { } version && predicate(version));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have version matching ").Append(predicateExpression);
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained assemblies with a non-matching version ");
+			stringBuilder.Append(It).Append(" contained assemblies with a non-matching version ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -299,7 +301,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained assemblies with a matching version ");
+			stringBuilder.Append(It).Append(" only contained assemblies with a matching version ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

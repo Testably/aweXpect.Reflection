@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -57,27 +58,27 @@ public static partial class ThatMethods
 #endif
 
 	private sealed class AreStaticConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<MethodInfo?>(grammars),
-			IValueConstraint<IEnumerable<MethodInfo?>>
+		: CollectionConstraintResult<MethodInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<MethodInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<MethodInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<MethodInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, method => method?.IsStatic == true);
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, method => method?.IsStatic == true);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual)
-			=> SetValue(actual, method => method?.IsStatic == true);
+		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, method => method?.IsStatic == true);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all static");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained non-static methods ");
+			stringBuilder.Append(It).Append(" contained non-static methods ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -86,33 +87,33 @@ public static partial class ThatMethods
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained static methods ");
+			stringBuilder.Append(It).Append(" only contained static methods ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
 
 	private sealed class AreNotStaticConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<MethodInfo?>(grammars),
-			IValueConstraint<IEnumerable<MethodInfo?>>
+		: CollectionConstraintResult<MethodInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<MethodInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<MethodInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<MethodInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, method => method?.IsStatic == false);
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, method => method?.IsStatic == false);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual)
-			=> SetValue(actual, method => method?.IsStatic == false);
+		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, method => method?.IsStatic == false);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not static");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained static methods ");
+			stringBuilder.Append(It).Append(" contained static methods ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -121,7 +122,7 @@ public static partial class ThatMethods
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained non-static methods ");
+			stringBuilder.Append(It).Append(" only contained non-static methods ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

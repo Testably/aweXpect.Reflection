@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Reflection.Options;
 using aweXpect.Results;
@@ -101,20 +102,21 @@ public static partial class ThatMethods
 		string it,
 		ExpectationGrammars grammars,
 		TypeFilterOptions typeFilterOptions)
-		: CollectionConstraintResult<MethodInfo>(grammars),
-			IValueConstraint<IEnumerable<MethodInfo>>
+		: CollectionConstraintResult<MethodInfo>(it, grammars),
+			IContextConstraint<IEnumerable<MethodInfo>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<MethodInfo>>
+			, IAsyncContextConstraint<IAsyncEnumerable<MethodInfo>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, method => typeFilterOptions.Matches(method.ReturnType));
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				method => typeFilterOptions.Matches(method.ReturnType));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<MethodInfo> actual)
-			=> SetValue(actual, method => typeFilterOptions.Matches(method.ReturnType));
+		public ConstraintResult IsMetBy(IEnumerable<MethodInfo> actual, IEvaluationContext context)
+			=> SetValue(actual, context, method => typeFilterOptions.Matches(method.ReturnType));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -124,7 +126,7 @@ public static partial class ThatMethods
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching methods ");
+			stringBuilder.Append(It).Append(" contained not matching methods ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -136,7 +138,7 @@ public static partial class ThatMethods
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained matching methods ");
+			stringBuilder.Append(It).Append(" only contained matching methods ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

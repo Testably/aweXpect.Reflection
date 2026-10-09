@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -57,27 +58,27 @@ public static partial class ThatMethods
 #endif
 
 	private sealed class AreAbstractConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<MethodInfo?>(grammars),
-			IValueConstraint<IEnumerable<MethodInfo?>>
+		: CollectionConstraintResult<MethodInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<MethodInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<MethodInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<MethodInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, method => method?.IsAbstract == true);
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, method => method?.IsAbstract == true);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual)
-			=> SetValue(actual, method => method?.IsAbstract == true);
+		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, method => method?.IsAbstract == true);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all abstract");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained non-abstract methods ");
+			stringBuilder.Append(It).Append(" contained non-abstract methods ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -86,33 +87,33 @@ public static partial class ThatMethods
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained abstract methods ");
+			stringBuilder.Append(It).Append(" only contained abstract methods ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
 
 	private sealed class AreNotAbstractConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<MethodInfo?>(grammars),
-			IValueConstraint<IEnumerable<MethodInfo?>>
+		: CollectionConstraintResult<MethodInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<MethodInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<MethodInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<MethodInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, method => method?.IsAbstract == false);
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, method => method?.IsAbstract == false);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual)
-			=> SetValue(actual, method => method?.IsAbstract == false);
+		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, method => method?.IsAbstract == false);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not abstract");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained abstract methods ");
+			stringBuilder.Append(It).Append(" contained abstract methods ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -121,7 +122,7 @@ public static partial class ThatMethods
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained non-abstract methods ");
+			stringBuilder.Append(It).Append(" only contained non-abstract methods ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

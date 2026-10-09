@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -57,27 +58,27 @@ public static partial class ThatAssemblies
 #endif
 
 	private sealed class AreStrongNamedConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<Assembly?>(grammars),
-			IValueConstraint<IEnumerable<Assembly?>>
+		: CollectionConstraintResult<Assembly?>(it, grammars),
+			IContextConstraint<IEnumerable<Assembly?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Assembly?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Assembly?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, assembly => assembly.IsStrongNamed());
+			=> await SetAsyncValue(actual, context, cancellationToken, assembly => assembly.IsStrongNamed());
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual)
-			=> SetValue(actual, assembly => assembly.IsStrongNamed());
+		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, assembly => assembly.IsStrongNamed());
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all strong named");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not strong named assemblies ");
+			stringBuilder.Append(It).Append(" contained not strong named assemblies ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -86,33 +87,33 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained strong named assemblies ");
+			stringBuilder.Append(It).Append(" only contained strong named assemblies ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
 
 	private sealed class AreNotStrongNamedConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<Assembly?>(grammars),
-			IValueConstraint<IEnumerable<Assembly?>>
+		: CollectionConstraintResult<Assembly?>(it, grammars),
+			IContextConstraint<IEnumerable<Assembly?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Assembly?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Assembly?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, assembly => !assembly.IsStrongNamed());
+			=> await SetAsyncValue(actual, context, cancellationToken, assembly => !assembly.IsStrongNamed());
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual)
-			=> SetValue(actual, assembly => !assembly.IsStrongNamed());
+		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, assembly => !assembly.IsStrongNamed());
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not strong named");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained strong named assemblies ");
+			stringBuilder.Append(It).Append(" contained strong named assemblies ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -121,7 +122,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained not strong named assemblies ");
+			stringBuilder.Append(It).Append(" only contained not strong named assemblies ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Customization;
 using aweXpect.Options;
 using aweXpect.Reflection.Helpers;
@@ -70,22 +71,23 @@ public static partial class ThatAssemblies
 		ExpectationGrammars grammars,
 		string[] allowed,
 		StringEqualityOptions options)
-		: CollectionConstraintResult<Assembly?>(grammars),
-			IAsyncConstraint<IEnumerable<Assembly?>>
+		: CollectionConstraintResult<Assembly?>(it, grammars),
+			IAsyncContextConstraint<IEnumerable<Assembly?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Assembly?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Assembly?>>
 #endif
 	{
 		private readonly Dictionary<Assembly, string?[]> _disallowedDependencies = new();
 
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, DependsOnlyOnAllowed);
+			=> await SetAsyncValue(actual, context, cancellationToken, DependsOnlyOnAllowed);
 #endif
 
-		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Assembly?> actual, CancellationToken cancellationToken)
-			=> await SetValue(actual, DependsOnlyOnAllowed);
+		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetValue(actual, context, cancellationToken, DependsOnlyOnAllowed);
 
 		private async ValueTask<bool> DependsOnlyOnAllowed(Assembly? assembly)
 		{
@@ -107,7 +109,7 @@ public static partial class ThatAssemblies
 			=> stringBuilder.Append("all have dependencies only on ").Append(DescribeAllowed());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, it,
+			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
 				" contained assemblies with disallowed dependencies ", NotMatching, _disallowedDependencies,
 				indentation);
 
@@ -116,7 +118,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained assemblies depending only on the allowed assemblies ");
+			stringBuilder.Append(It).Append(" only contained assemblies depending only on the allowed assemblies ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -225,19 +226,21 @@ public static partial class ThatTypes
 		ExpectationGrammars grammars,
 		Type interfaceType,
 		bool forceDirect)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, type => type?.Implements(interfaceType, forceDirect) == true);
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				type => type?.Implements(interfaceType, forceDirect) == true);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, type => type?.Implements(interfaceType, forceDirect) == true);
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, type => type?.Implements(interfaceType, forceDirect) == true);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -247,7 +250,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(forceDirect
+			stringBuilder.Append(It).Append(forceDirect
 				? " contained types that do not directly implement "
 				: " contained types that do not implement ");
 			Formatter.Format(stringBuilder, interfaceType);
@@ -263,7 +266,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(forceDirect
+			stringBuilder.Append(It).Append(forceDirect
 				? " only contained types that directly implement "
 				: " only contained types that implement ");
 			Formatter.Format(stringBuilder, interfaceType);
@@ -277,19 +280,21 @@ public static partial class ThatTypes
 		ExpectationGrammars grammars,
 		Type interfaceType,
 		bool forceDirect)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, type => type?.Implements(interfaceType, forceDirect) != true);
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				type => type?.Implements(interfaceType, forceDirect) != true);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, type => type?.Implements(interfaceType, forceDirect) != true);
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, type => type?.Implements(interfaceType, forceDirect) != true);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -299,7 +304,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(forceDirect
+			stringBuilder.Append(It).Append(forceDirect
 				? " contained types that directly implement "
 				: " contained types that implement ");
 			Formatter.Format(stringBuilder, interfaceType);
@@ -315,7 +320,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(forceDirect
+			stringBuilder.Append(It).Append(forceDirect
 				? " only contained types that do not directly implement "
 				: " only contained types that do not implement ");
 			Formatter.Format(stringBuilder, interfaceType);

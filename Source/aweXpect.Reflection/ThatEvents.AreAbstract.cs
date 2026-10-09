@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -57,27 +58,27 @@ public static partial class ThatEvents
 #endif
 
 	private sealed class AreAbstractConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<EventInfo?>(grammars),
-			IValueConstraint<IEnumerable<EventInfo?>>
+		: CollectionConstraintResult<EventInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<EventInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<EventInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<EventInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<EventInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, @event => @event.IsReallyAbstract());
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, @event => @event.IsReallyAbstract());
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<EventInfo?> actual)
-			=> SetValue(actual, @event => @event.IsReallyAbstract());
+		public ConstraintResult IsMetBy(IEnumerable<EventInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, @event => @event.IsReallyAbstract());
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all abstract");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained non-abstract events ");
+			stringBuilder.Append(It).Append(" contained non-abstract events ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -86,33 +87,33 @@ public static partial class ThatEvents
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained abstract events ");
+			stringBuilder.Append(It).Append(" only contained abstract events ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
 
 	private sealed class AreNotAbstractConstraint(string it, ExpectationGrammars grammars)
-		: CollectionConstraintResult<EventInfo?>(grammars),
-			IValueConstraint<IEnumerable<EventInfo?>>
+		: CollectionConstraintResult<EventInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<EventInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<EventInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<EventInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<EventInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, @event => !@event.IsReallyAbstract());
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, @event => !@event.IsReallyAbstract());
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<EventInfo?> actual)
-			=> SetValue(actual, @event => !@event.IsReallyAbstract());
+		public ConstraintResult IsMetBy(IEnumerable<EventInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, @event => !@event.IsReallyAbstract());
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("are all not abstract");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained abstract events ");
+			stringBuilder.Append(It).Append(" contained abstract events ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -121,7 +122,7 @@ public static partial class ThatEvents
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained non-abstract events ");
+			stringBuilder.Append(It).Append(" only contained non-abstract events ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

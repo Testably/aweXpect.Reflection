@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Customization;
 using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Helpers;
@@ -137,10 +138,10 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		NamespaceDependencyOptions options)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 		private readonly Dictionary<Type, IReadOnlyList<string>> _violations = new();
@@ -162,18 +163,19 @@ public static partial class ThatTypes
 		}
 
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, DependsOnlyOnAllowed);
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, DependsOnlyOnAllowed);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, DependsOnlyOnAllowed);
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, DependsOnlyOnAllowed);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all depend only on ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, it,
+			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
 				" contained types with disallowed dependencies ", NotMatching, _violations, indentation);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -181,7 +183,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained types depending only on the allowed namespaces ");
+			stringBuilder.Append(It).Append(" only contained types depending only on the allowed namespaces ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
@@ -190,10 +192,10 @@ public static partial class ThatTypes
 		string it,
 		ExpectationGrammars grammars,
 		TypeSetDependencyOptions options)
-		: CollectionConstraintResult<Type?>(grammars),
-			IAsyncConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IAsyncContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 		private readonly Dictionary<Type, IReadOnlyList<string>> _violations = new();
@@ -215,24 +217,26 @@ public static partial class ThatTypes
 		}
 
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
 		{
 			ResolvedTypeSet allowed = await options.Resolve(cancellationToken);
-			return await SetAsyncValue(actual, type => DependsOnlyOnAllowed(type, allowed));
+			return await SetAsyncValue(actual, context, cancellationToken, type => DependsOnlyOnAllowed(type, allowed));
 		}
 #endif
 
-		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Type?> actual, CancellationToken cancellationToken)
+		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
 		{
 			ResolvedTypeSet allowed = await options.Resolve(cancellationToken);
-			return SetValue(actual, type => DependsOnlyOnAllowed(type, allowed));
+			return SetValue(actual, context, type => DependsOnlyOnAllowed(type, allowed));
 		}
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all depend only on ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, it,
+			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
 				" contained types with disallowed dependencies ", NotMatching, _violations, indentation);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -240,7 +244,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained types depending only on the allowed types ");
+			stringBuilder.Append(It).Append(" only contained types depending only on the allowed types ");
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}

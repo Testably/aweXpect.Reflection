@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -225,19 +226,21 @@ public static partial class ThatTypes
 		ExpectationGrammars grammars,
 		Type baseType,
 		bool forceDirect)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, type => type?.InheritsFromClass(baseType, forceDirect) == true);
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				type => type?.InheritsFromClass(baseType, forceDirect) == true);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, type => type?.InheritsFromClass(baseType, forceDirect) == true);
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, type => type?.InheritsFromClass(baseType, forceDirect) == true);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -248,7 +251,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained types that do not inherit ");
+			stringBuilder.Append(It).Append(" contained types that do not inherit ");
 			AppendDirectlyFrom(stringBuilder, forceDirect);
 			Formatter.Format(stringBuilder, baseType);
 
@@ -265,7 +268,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained types that inherit ");
+			stringBuilder.Append(It).Append(" only contained types that inherit ");
 			AppendDirectlyFrom(stringBuilder, forceDirect);
 			Formatter.Format(stringBuilder, baseType);
 			stringBuilder.Append(' ');
@@ -288,19 +291,21 @@ public static partial class ThatTypes
 		ExpectationGrammars grammars,
 		Type baseType,
 		bool forceDirect)
-		: CollectionConstraintResult<Type?>(grammars),
-			IValueConstraint<IEnumerable<Type?>>
+		: CollectionConstraintResult<Type?>(it, grammars),
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, type => type?.InheritsFromClass(baseType, forceDirect) != true);
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				type => type?.InheritsFromClass(baseType, forceDirect) != true);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
-			=> SetValue(actual, type => type?.InheritsFromClass(baseType, forceDirect) != true);
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, type => type?.InheritsFromClass(baseType, forceDirect) != true);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{
@@ -311,7 +316,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained types that inherit ");
+			stringBuilder.Append(It).Append(" contained types that inherit ");
 			AppendDirectlyFrom(stringBuilder, forceDirect);
 			Formatter.Format(stringBuilder, baseType);
 
@@ -328,7 +333,7 @@ public static partial class ThatTypes
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained types that do not inherit ");
+			stringBuilder.Append(It).Append(" only contained types that do not inherit ");
 			AppendDirectlyFrom(stringBuilder, forceDirect);
 			Formatter.Format(stringBuilder, baseType);
 

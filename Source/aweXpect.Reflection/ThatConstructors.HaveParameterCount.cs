@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -47,27 +48,28 @@ public static partial class ThatConstructors
 		};
 
 	private sealed class HaveParameterCountConstraint(string it, ExpectationGrammars grammars, int expected)
-		: CollectionConstraintResult<ConstructorInfo?>(grammars),
-			IValueConstraint<IEnumerable<ConstructorInfo?>>
+		: CollectionConstraintResult<ConstructorInfo?>(it, grammars),
+			IContextConstraint<IEnumerable<ConstructorInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<ConstructorInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<ConstructorInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<ConstructorInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, constructor => constructor?.GetParameters().Length == expected);
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				constructor => constructor?.GetParameters().Length == expected);
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<ConstructorInfo?> actual)
-			=> SetValue(actual, constructor => constructor?.GetParameters().Length == expected);
+		public ConstraintResult IsMetBy(IEnumerable<ConstructorInfo?> actual, IEvaluationContext context)
+			=> SetValue(actual, context, constructor => constructor?.GetParameters().Length == expected);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have ").Append(ParameterCountDescription(expected));
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained constructors with a different number of parameters ");
+			stringBuilder.Append(It).Append(" contained constructors with a different number of parameters ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -76,7 +78,7 @@ public static partial class ThatConstructors
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" only contained constructors with ")
+			stringBuilder.Append(It).Append(" only contained constructors with ")
 				.Append(ParameterCountDescription(expected)).Append(' ');
 			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}

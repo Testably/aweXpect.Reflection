@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Options;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Reflection.Options;
@@ -30,8 +31,8 @@ public static partial class ThatConstructors
 		ParameterFilterOptions parameterFilterOptions =
 			new(p => p.GetUnderlyingType().IsOrInheritsFrom(parameterType));
 		return new ParameterCollectionResult<IEnumerable<ConstructorInfo?>, TParameter>(subject.Get().ExpectationBuilder
-				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, null,
+				.AddConstraint<IEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, null,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -50,8 +51,8 @@ public static partial class ThatConstructors
 		ParameterFilterOptions parameterFilterOptions =
 			new(p => p.GetUnderlyingType().IsOrInheritsFrom(parameterType));
 		return new ParameterCollectionResult<IEnumerable<ConstructorInfo?>, object?>(subject.Get().ExpectationBuilder
-				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, null,
+				.AddConstraint<IEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, null,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -74,8 +75,8 @@ public static partial class ThatConstructors
 		parameterFilterOptions.AddPredicate(p => stringEqualityOptions.AreConsideredEqual(p.Name, expected));
 		return new NamedParameterCollectionResult<IEnumerable<ConstructorInfo?>, TParameter>(subject.Get()
 				.ExpectationBuilder
-				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, expected,
+				.AddConstraint<IEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -98,8 +99,8 @@ public static partial class ThatConstructors
 		parameterFilterOptions.AddPredicate(p => stringEqualityOptions.AreConsideredEqual(p.Name, expected));
 		return new NamedParameterCollectionResult<IEnumerable<ConstructorInfo?>, object?>(subject.Get()
 				.ExpectationBuilder
-				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, expected,
+				.AddConstraint<IEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -120,8 +121,8 @@ public static partial class ThatConstructors
 		ParameterFilterOptions parameterFilterOptions = new(p => stringEqualityOptions.AreConsideredEqual(p.Name, expected));
 		return new NamedParameterCollectionResult<IEnumerable<ConstructorInfo?>, object?>(subject.Get()
 				.ExpectationBuilder
-				.AddConstraint<IEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, null, expected,
+				.AddConstraint<IEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, null, expected,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -143,8 +144,8 @@ public static partial class ThatConstructors
 		ParameterFilterOptions parameterFilterOptions =
 			new(p => p.GetUnderlyingType().IsOrInheritsFrom(parameterType));
 		return new ParameterCollectionResult<IAsyncEnumerable<ConstructorInfo?>, TParameter>(subject.Get().ExpectationBuilder
-				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, null,
+				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, null,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -165,8 +166,8 @@ public static partial class ThatConstructors
 		ParameterFilterOptions parameterFilterOptions =
 			new(p => p.GetUnderlyingType().IsOrInheritsFrom(parameterType));
 		return new ParameterCollectionResult<IAsyncEnumerable<ConstructorInfo?>, object?>(subject.Get().ExpectationBuilder
-				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, null,
+				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, null,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -191,8 +192,8 @@ public static partial class ThatConstructors
 		parameterFilterOptions.AddPredicate(p => stringEqualityOptions.AreConsideredEqual(p.Name, expected));
 		return new NamedParameterCollectionResult<IAsyncEnumerable<ConstructorInfo?>, TParameter>(subject.Get()
 				.ExpectationBuilder
-				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, expected,
+				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -217,8 +218,8 @@ public static partial class ThatConstructors
 		parameterFilterOptions.AddPredicate(p => stringEqualityOptions.AreConsideredEqual(p.Name, expected));
 		return new NamedParameterCollectionResult<IAsyncEnumerable<ConstructorInfo?>, object?>(subject.Get()
 				.ExpectationBuilder
-				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, parameterType, expected,
+				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, parameterType, expected,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -242,8 +243,8 @@ public static partial class ThatConstructors
 			p => stringEqualityOptions.AreConsideredEqual(p.Name, expected));
 		return new NamedParameterCollectionResult<IAsyncEnumerable<ConstructorInfo?>, object?>(subject.Get()
 				.ExpectationBuilder
-				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((_, grammars)
-					=> new HaveParameterConstraint(grammars, null, expected,
+				.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((it, grammars)
+					=> new HaveParameterConstraint(it, grammars, null, expected,
 						collectionIndexOptions,
 						parameterFilterOptions)),
 			subject,
@@ -254,22 +255,23 @@ public static partial class ThatConstructors
 #endif
 
 	private sealed class HaveParameterConstraint(
+		string it,
 		ExpectationGrammars grammars,
 		Type? parameterType,
 		string? expectedName,
 		CollectionIndexOptions collectionIndexOptions,
 		ParameterFilterOptions parameterFilterOptions,
 		bool exactType = false)
-		: CollectionConstraintResult<ConstructorInfo?>(grammars),
-			IAsyncConstraint<IEnumerable<ConstructorInfo?>>
+		: CollectionConstraintResult<ConstructorInfo?>(it, grammars),
+			IAsyncContextConstraint<IEnumerable<ConstructorInfo?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<ConstructorInfo?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<ConstructorInfo?>>
 #endif
 	{
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<ConstructorInfo?> actual,
-			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, async constructor =>
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetAsyncValue(actual, context, cancellationToken, async constructor =>
 			{
 				if (constructor == null)
 				{
@@ -291,8 +293,9 @@ public static partial class ThatConstructors
 			});
 #endif
 
-		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<ConstructorInfo?> actual, CancellationToken cancellationToken)
-			=> await SetValue(actual, async constructor =>
+		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<ConstructorInfo?> actual,
+			IEvaluationContext context, CancellationToken cancellationToken)
+			=> await SetValue(actual, context, cancellationToken, async constructor =>
 			{
 				if (constructor == null)
 				{

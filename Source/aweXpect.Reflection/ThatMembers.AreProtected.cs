@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Collections;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
@@ -64,28 +65,29 @@ public static partial class ThatMembers
 	private sealed class AreProtectedConstraint<TMember>(
 		string it,
 		ExpectationGrammars grammars)
-		: CollectionConstraintResult<TMember>(grammars),
-			IValueConstraint<IEnumerable<TMember>>
+		: CollectionConstraintResult<TMember>(it, grammars),
+			IContextConstraint<IEnumerable<TMember>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<TMember>>
+			, IAsyncContextConstraint<IAsyncEnumerable<TMember>>
 #endif
 		where TMember : MemberInfo?
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, member => member.HasAccessModifier(AccessModifiers.Protected));
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				member => member.HasAccessModifier(AccessModifiers.Protected));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<TMember> actual)
-			=> SetValue(actual, member => member.HasAccessModifier(AccessModifiers.Protected));
+		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)
+			=> SetValue(actual, context, member => member.HasAccessModifier(AccessModifiers.Protected));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all are protected");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained not matching items ");
+			stringBuilder.Append(It).Append(" contained not matching items ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
@@ -99,28 +101,29 @@ public static partial class ThatMembers
 	private sealed class AreNotProtectedConstraint<TMember>(
 		string it,
 		ExpectationGrammars grammars)
-		: CollectionConstraintResult<TMember>(grammars),
-			IValueConstraint<IEnumerable<TMember>>
+		: CollectionConstraintResult<TMember>(it, grammars),
+			IContextConstraint<IEnumerable<TMember>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<TMember>>
+			, IAsyncContextConstraint<IAsyncEnumerable<TMember>>
 #endif
 		where TMember : MemberInfo?
 	{
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual,
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, member => !member.HasAccessModifier(AccessModifiers.Protected));
+			=> await SetAsyncValue(actual, context, cancellationToken,
+				member => !member.HasAccessModifier(AccessModifiers.Protected));
 #endif
 
-		public ConstraintResult IsMetBy(IEnumerable<TMember> actual)
-			=> SetValue(actual, member => !member.HasAccessModifier(AccessModifiers.Protected));
+		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)
+			=> SetValue(actual, context, member => !member.HasAccessModifier(AccessModifiers.Protected));
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all are not protected");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 		{
-			stringBuilder.Append(it).Append(" contained protected items ");
+			stringBuilder.Append(It).Append(" contained protected items ");
 			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.EvaluationContext;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Reflection.Options;
 using aweXpect.Reflection.Results;
@@ -99,32 +100,49 @@ public static partial class ThatTypes
 		ExpectationGrammars grammars,
 		DependencyCyclesOptions options)
 		: ConstraintResult.WithNotNullValue<IEnumerable<Type?>>(it, grammars),
-			IValueConstraint<IEnumerable<Type?>>
+			IContextConstraint<IEnumerable<Type?>>
 #if NET8_0_OR_GREATER
-			, IAsyncConstraint<IAsyncEnumerable<Type?>>
+			, IAsyncContextConstraint<IAsyncEnumerable<Type?>>
 #endif
 	{
 		private List<string> _cycles = [];
 
-		public ConstraintResult IsMetBy(IEnumerable<Type?> actual)
+		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
 		{
-			// Materialize once: the source (e.g. Types.InNamespace(...)) may be lazy and re-scan assemblies on every
-			// enumeration, while both the cycle detection and the later result formatting read Actual.
-			List<Type?> materialized = [.. actual,];
-			Actual = materialized;
-			return SetResult(materialized);
+			Actual = actual;
+			if (actual is null)
+			{
+				return this;
+			}
+
+			return SetResult(context.UseMaterializedEnumerable(actual));
 		}
 
 #if NET8_0_OR_GREATER
-		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, CancellationToken cancellationToken)
+		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
+			CancellationToken cancellationToken)
 		{
-			List<Type?> materialized = [];
-			await foreach (Type? type in actual.WithCancellation(cancellationToken))
+			if (actual is null)
 			{
-				materialized.Add(type);
+				Actual = null;
+				return this;
 			}
 
+			List<Type?> materialized = [];
 			Actual = materialized;
+			try
+			{
+				await foreach (Type? type in context.UseMaterializedAsyncEnumerable(actual, cancellationToken))
+				{
+					materialized.Add(type);
+				}
+			}
+			catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+			{
+				Outcome = Outcome.Undecided;
+				return this;
+			}
+
 			return SetResult(materialized);
 		}
 #endif

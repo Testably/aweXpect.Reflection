@@ -84,6 +84,30 @@ public sealed partial class ThatMethods
 			}
 
 			[Fact]
+			public async Task HaveParameterByName_WhenNameContainsAQuote_ShouldEscapeIt()
+			{
+				IEnumerable<MethodInfo> methods = [typeof(TestClass).GetMethod(nameof(TestClass.MethodWithString))!,];
+
+				async Task Act()
+				{
+					await That(methods).HaveParameter("na\"me");
+				}
+
+				await That(Act).Throws<XunitException>()
+					.WithMessage("""
+					             Expected that methods
+					             all have parameter with name "na\"me",
+					             but at least one did not
+
+					             Not matching items:
+					             [
+					               void ThatMethods.HaveParameter.Tests.TestClass.MethodWithString(string name)
+					             ]
+					             """)
+					.Because("the name is formatted like every other string value");
+			}
+
+			[Fact]
 			public async Task HaveParameterByType_WhenAllHaveParameter_ShouldSucceed()
 			{
 				IEnumerable<MethodInfo> methods = new[]

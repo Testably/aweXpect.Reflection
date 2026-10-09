@@ -336,7 +336,7 @@ public static partial class ThatConstructors
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ").Append(Formatter.Format(expectedName));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());
@@ -361,7 +361,7 @@ public static partial class ThatConstructors
 
 			if (expectedName != null)
 			{
-				stringBuilder.Append(" with name \"").Append(expectedName).Append('"');
+				stringBuilder.Append(" with name ").Append(Formatter.Format(expectedName));
 			}
 
 			stringBuilder.Append(parameterFilterOptions.GetModifierDescription());

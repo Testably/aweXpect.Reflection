@@ -39,7 +39,10 @@ public sealed partial class ThatFields
 					.WithMessage("""
 					             Expected that *
 					             all are internal,
-					             but it contained not matching items [
+					             but it contained not matching items
+
+					             Not matching items:
+					             [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -63,6 +66,12 @@ public sealed partial class ThatFields
 					             Expected that *
 					             not all are internal,
 					             but all were
+
+					             Collection:
+					             [
+					               int ThatFields.ClassWithFields.InternalField1,
+					               int ThatFields.ClassWithFields.InternalField2
+					             ]
 					             """).AsWildcard();
 			}
 

@@ -119,19 +119,13 @@ public static partial class ThatAssemblies
 			=> stringBuilder.Append("all have name ").Append(options.GetExpectation(expected, Grammars));
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" contained not matching types ");
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" contained not matching assemblies");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have name ").Append(options.GetExpectation(expected, Grammars));
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained matching types ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained matching assemblies");
 	}
 
 	private sealed class HaveNameFromSelectorConstraint(
@@ -163,10 +157,17 @@ public static partial class ThatAssemblies
 				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
+			=> stringBuilder.Append(It).Append(" contained not matching assemblies");
+
+		protected override Func<string?> FormatItems(Assembly?[] items)
+			=> IsNegated ? base.FormatItems(items) : () => FormatMismatches(items);
+
+		private string FormatMismatches(Assembly?[] items)
 		{
-			stringBuilder.Append(It).Append(" contained not matching types [");
+			StringBuilder stringBuilder = new();
+			stringBuilder.Append('[');
 			bool isFirst = true;
-			foreach (Assembly? assembly in NotMatching)
+			foreach (Assembly? assembly in items)
 			{
 				if (!isFirst)
 				{
@@ -174,13 +175,13 @@ public static partial class ThatAssemblies
 				}
 
 				isFirst = false;
-				stringBuilder.AppendLine().Append(indentation).Append("  ")
+				stringBuilder.AppendLine().Append("  ")
 					.Append(Formatter.Format(assembly))
 					.Append(" with name ").Append(Formatter.Format(assembly?.GetName().Name))
 					.Append(" instead of ").Append(Formatter.Format(expectedNameSelector(assembly)));
 			}
 
-			stringBuilder.AppendLine().Append(indentation).Append(']');
+			return stringBuilder.AppendLine().Append(']').ToString();
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -188,9 +189,6 @@ public static partial class ThatAssemblies
 				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained matching types ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained matching assemblies");
 	}
 }

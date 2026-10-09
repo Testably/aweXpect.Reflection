@@ -224,6 +224,39 @@ internal abstract class CollectionConstraintResult<T>(string it, ExpectationGram
 		}
 	}
 
+	/// <inheritdoc />
+	/// <remarks>
+	///     Adds the not matching items, which explain the failure. A negated expectation only fails when all items
+	///     match, so it adds the whole collection instead.
+	/// </remarks>
+	public override void AppendContexts(ResultContextCollector contexts)
+	{
+		if (Outcome != Outcome.Failure)
+		{
+			return;
+		}
+
+		if (IsNegated)
+		{
+			contexts.Add(new ResultContext.SyncCallback("Collection", FormatItems(Matching), -1));
+		}
+		else
+		{
+			contexts.Add(new ResultContext.SyncCallback("Not matching items", FormatItems(NotMatching),
+				int.MaxValue));
+		}
+	}
+
+	/// <summary>
+	///     Returns the callback that formats the <paramref name="items" /> for the context.
+	/// </summary>
+	/// <remarks>
+	///     The constraint can be evaluated again before the callback is invoked, so the callback must only use the
+	///     state that is captured when this method is called.
+	/// </remarks>
+	protected virtual Func<string?> FormatItems(T[] items)
+		=> () => Formatter.Format(items, FormattingOptions.MultipleLines);
+
 	/// <inheritdoc cref="ConstraintResult.TryGetStoredValue{TValue}(out TValue)" />
 	public override bool TryGetStoredValue<TValue>(out TValue? value) where TValue : default
 	{

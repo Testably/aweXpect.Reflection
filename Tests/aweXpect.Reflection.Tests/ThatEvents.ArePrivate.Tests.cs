@@ -26,7 +26,10 @@ public sealed partial class ThatEvents
 					.WithMessage("""
 					             Expected that *
 					             all are private,
-					             but it contained not matching items [
+					             but it contained not matching items
+
+					             Not matching items:
+					             [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -79,6 +82,12 @@ public sealed partial class ThatEvents
 					             Expected that *
 					             not all are private,
 					             but all were
+
+					             Collection:
+					             [
+					               event EventHandler ThatEvents.ClassWithEvents.PrivateEvent1,
+					               event EventHandler ThatEvents.ClassWithEvents.PrivateEvent2
+					             ]
 					             """).AsWildcard();
 			}
 		}

@@ -39,7 +39,10 @@ public sealed partial class ThatProperties
 					.WithMessage("""
 					             Expected that *
 					             all are internal,
-					             but it contained not matching items [
+					             but it contained not matching items
+
+					             Not matching items:
+					             [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -63,6 +66,12 @@ public sealed partial class ThatProperties
 					             Expected that *
 					             not all are internal,
 					             but all were
+
+					             Collection:
+					             [
+					               internal int ThatProperties.ClassWithProperties.InternalProperty1 { get; set; },
+					               internal int ThatProperties.ClassWithProperties.InternalProperty2 { get; set; }
+					             ]
 					             """).AsWildcard();
 			}
 

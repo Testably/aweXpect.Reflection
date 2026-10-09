@@ -124,19 +124,13 @@ public static partial class ThatMembers
 			=> stringBuilder.Append("all have name ").Append(options.GetExpectation(expected, Grammars));
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" contained not matching items ");
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" contained not matching items");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have name ").Append(options.GetExpectation(expected, Grammars));
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained matching items ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained matching items");
 	}
 
 	private sealed class HaveNameFromSelectorConstraint<TMember>(
@@ -169,23 +163,24 @@ public static partial class ThatMembers
 				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> AppendMismatches(stringBuilder, indentation);
+			=> stringBuilder.Append(It).Append(" contained not matching items");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have name matching ")
 				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained matching items ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained matching items");
 
-		private void AppendMismatches(StringBuilder stringBuilder, string? indentation)
+		protected override Func<string?> FormatItems(TMember[] items)
+			=> IsNegated ? base.FormatItems(items) : () => FormatMismatches(items);
+
+		private string FormatMismatches(TMember[] items)
 		{
-			stringBuilder.Append(It).Append(" contained not matching items [");
+			StringBuilder stringBuilder = new();
+			stringBuilder.Append('[');
 			bool isFirst = true;
-			foreach (TMember memberInfo in NotMatching)
+			foreach (TMember memberInfo in items)
 			{
 				if (!isFirst)
 				{
@@ -193,13 +188,13 @@ public static partial class ThatMembers
 				}
 
 				isFirst = false;
-				stringBuilder.AppendLine().Append(indentation).Append("  ")
+				stringBuilder.AppendLine().Append("  ")
 					.Append(Formatter.Format(memberInfo))
 					.Append(" with name ").Append(Formatter.Format(memberInfo?.Name))
 					.Append(" instead of ").Append(Formatter.Format(expectedNameSelector(memberInfo)));
 			}
 
-			stringBuilder.AppendLine().Append(indentation).Append(']');
+			return stringBuilder.AppendLine().Append(']').ToString();
 		}
 	}
 }

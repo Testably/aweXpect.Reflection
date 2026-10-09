@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -109,18 +110,16 @@ public static partial class ThatAssemblies
 			=> stringBuilder.Append("all have dependencies only on ").Append(DescribeAllowed());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
-				" contained assemblies with disallowed dependencies ", NotMatching, _disallowedDependencies,
-				indentation);
+			=> stringBuilder.Append(It).Append(" contained assemblies with disallowed dependencies");
+
+		protected override Func<string?> FormatItems(Assembly?[] items)
+			=> () => DependencyViolationRenderer.FormatItemsWithDisallowedDependencies(items, _disallowedDependencies);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have dependencies only on ").Append(DescribeAllowed());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained assemblies depending only on the allowed assemblies ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained assemblies depending only on the allowed assemblies");
 
 		private string DescribeAllowed()
 			=> allowed.Length == 0

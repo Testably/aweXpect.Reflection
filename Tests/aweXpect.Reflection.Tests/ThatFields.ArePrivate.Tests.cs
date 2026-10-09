@@ -26,7 +26,10 @@ public sealed partial class ThatFields
 					.WithMessage("""
 					             Expected that *
 					             all are private,
-					             but it contained not matching items [
+					             but it contained not matching items
+
+					             Not matching items:
+					             [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -79,6 +82,12 @@ public sealed partial class ThatFields
 					             Expected that *
 					             not all are private,
 					             but all were
+
+					             Collection:
+					             [
+					               int ThatFields.ClassWithFields.PrivateField1,
+					               int ThatFields.ClassWithFields.PrivateField2
+					             ]
 					             """).AsWildcard();
 			}
 		}

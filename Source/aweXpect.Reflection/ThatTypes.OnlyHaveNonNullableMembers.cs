@@ -92,17 +92,16 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("only have non-nullable members");
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> MemberViolationRenderer.AppendTypesWithViolatingMembers(stringBuilder, It,
-				" contained types with nullable members ", NotMatching, _nullableMembers,
-				" with nullable members ", indentation);
+			=> stringBuilder.Append(It).Append(" contained types with nullable members");
+
+		protected override Func<string?> FormatItems(Type?[] items)
+			=> () => MemberViolationRenderer.FormatTypesWithViolatingMembers(items, _nullableMembers,
+				" with nullable members ");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all only have non-nullable members");
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained types with only non-nullable members ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained types with only non-nullable members");
 	}
 }

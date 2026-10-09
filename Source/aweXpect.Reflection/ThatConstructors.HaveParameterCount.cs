@@ -68,10 +68,7 @@ public static partial class ThatConstructors
 			=> stringBuilder.Append("all have ").Append(ParameterCountDescription(expected));
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" contained constructors with a different number of parameters ");
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" contained constructors with a different number of parameters");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have ").Append(ParameterCountDescription(expected));
@@ -79,8 +76,7 @@ public static partial class ThatConstructors
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 		{
 			stringBuilder.Append(It).Append(" only contained constructors with ")
-				.Append(ParameterCountDescription(expected)).Append(' ');
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
+				.Append(ParameterCountDescription(expected));
 		}
 	}
 }

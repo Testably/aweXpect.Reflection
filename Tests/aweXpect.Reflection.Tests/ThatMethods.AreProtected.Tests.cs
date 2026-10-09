@@ -26,7 +26,10 @@ public sealed partial class ThatMethods
 					.WithMessage("""
 					             Expected that *
 					             all are protected,
-					             but it contained not matching items [
+					             but it contained not matching items
+
+					             Not matching items:
+					             [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -79,6 +82,12 @@ public sealed partial class ThatMethods
 					             Expected that *
 					             not all are protected,
 					             but all were
+
+					             Collection:
+					             [
+					               int ThatMethods.ClassWithMethods.ProtectedMethod1(),
+					               int ThatMethods.ClassWithMethods.ProtectedMethod2()
+					             ]
 					             """).AsWildcard();
 			}
 		}

@@ -254,8 +254,6 @@ public static partial class ThatTypes
 				? " contained types that do not directly implement "
 				: " contained types that do not implement ");
 			Formatter.Format(stringBuilder, interfaceType);
-			stringBuilder.Append(' ');
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -270,8 +268,6 @@ public static partial class ThatTypes
 				? " only contained types that directly implement "
 				: " only contained types that implement ");
 			Formatter.Format(stringBuilder, interfaceType);
-			stringBuilder.Append(' ');
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
 
@@ -308,8 +304,6 @@ public static partial class ThatTypes
 				? " contained types that directly implement "
 				: " contained types that implement ");
 			Formatter.Format(stringBuilder, interfaceType);
-			stringBuilder.Append(' ');
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
 		}
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
@@ -324,8 +318,6 @@ public static partial class ThatTypes
 				? " only contained types that do not directly implement "
 				: " only contained types that do not implement ");
 			Formatter.Format(stringBuilder, interfaceType);
-			stringBuilder.Append(' ');
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
 		}
 	}
 }

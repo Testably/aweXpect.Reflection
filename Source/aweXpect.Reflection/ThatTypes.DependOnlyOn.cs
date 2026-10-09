@@ -175,17 +175,15 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("all depend only on ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
-				" contained types with disallowed dependencies ", NotMatching, _violations, indentation);
+			=> stringBuilder.Append(It).Append(" contained types with disallowed dependencies");
+		protected override Func<string?> FormatItems(Type?[] items)
+			=> () => DependencyViolationRenderer.FormatItemsWithDisallowedDependencies(items, _violations);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all depend only on ").Append(options.Describe());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained types depending only on the allowed namespaces ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained types depending only on the allowed namespaces");
 	}
 
 	private sealed class DependOnlyOnTypeSetConstraint(
@@ -236,16 +234,14 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("all depend only on ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
-				" contained types with disallowed dependencies ", NotMatching, _violations, indentation);
+			=> stringBuilder.Append(It).Append(" contained types with disallowed dependencies");
+		protected override Func<string?> FormatItems(Type?[] items)
+			=> () => DependencyViolationRenderer.FormatItemsWithDisallowedDependencies(items, _violations);
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all depend only on ").Append(options.Describe());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" only contained types depending only on the allowed types ");
-			Formatter.Format(stringBuilder, Matching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" only contained types depending only on the allowed types");
 	}
 }

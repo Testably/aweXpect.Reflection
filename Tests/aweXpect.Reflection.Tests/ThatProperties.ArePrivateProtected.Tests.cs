@@ -26,7 +26,10 @@ public sealed partial class ThatProperties
 					.WithMessage("""
 					             Expected that *
 					             all are private protected,
-					             but it contained not matching items [
+					             but it contained not matching items
+
+					             Not matching items:
+					             [
 					               *
 					             ]
 					             """).AsWildcard();
@@ -79,6 +82,12 @@ public sealed partial class ThatProperties
 					             Expected that *
 					             not all are private protected,
 					             but all were
+
+					             Collection:
+					             [
+					               private protected int ThatProperties.ClassWithProperties.PrivateProtectedProperty1 { get; set; },
+					               private protected int ThatProperties.ClassWithProperties.PrivateProtectedProperty2 { get; set; }
+					             ]
 					             """).AsWildcard();
 			}
 		}

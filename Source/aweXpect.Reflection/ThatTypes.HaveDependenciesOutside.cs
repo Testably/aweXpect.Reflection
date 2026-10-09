@@ -185,18 +185,15 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("all have dependencies outside ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" contained types depending only on the allowed namespaces ");
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" contained types depending only on the allowed namespaces");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have dependencies outside ").Append(options.Describe());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
-				" only contained types with dependencies outside the allowed namespaces ", Matching, _violations,
-				indentation);
+			=> stringBuilder.Append(It).Append(" only contained types with dependencies outside the allowed namespaces");
+		protected override Func<string?> FormatItems(Type?[] items)
+			=> () => DependencyViolationRenderer.FormatItemsWithDisallowedDependencies(items, _violations);
 	}
 
 	private sealed class HaveDependenciesOutsideTypeSetConstraint(
@@ -248,17 +245,14 @@ public static partial class ThatTypes
 			=> stringBuilder.Append("all have dependencies outside ").Append(options.Describe());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
-		{
-			stringBuilder.Append(It).Append(" contained types depending only on the allowed types ");
-			Formatter.Format(stringBuilder, NotMatching, FormattingOptions.Indented(indentation ?? ""));
-		}
+			=> stringBuilder.Append(It).Append(" contained types depending only on the allowed types");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have dependencies outside ").Append(options.Describe());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
-			=> DependencyViolationRenderer.AppendItemsWithDisallowedDependencies(stringBuilder, It,
-				" only contained types with dependencies outside the allowed types ", Matching, _violations,
-				indentation);
+			=> stringBuilder.Append(It).Append(" only contained types with dependencies outside the allowed types");
+		protected override Func<string?> FormatItems(Type?[] items)
+			=> () => DependencyViolationRenderer.FormatItemsWithDisallowedDependencies(items, _violations);
 	}
 }

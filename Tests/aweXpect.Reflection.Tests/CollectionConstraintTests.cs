@@ -70,7 +70,10 @@ public sealed class CollectionConstraintTests
 
 		async Task Act()
 		{
+			// The collection expectations take a non-nullable subject, while Whose hands out a nullable one.
+#pragma warning disable CS8620
 			await That(subject).Whose(h => h.Types, t => t.AreSealed());
+#pragma warning restore CS8620
 		}
 
 		await That(Act).Throws<XunitException>()

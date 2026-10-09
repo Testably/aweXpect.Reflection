@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
@@ -123,7 +124,7 @@ public sealed class CollectionConstraintResultTests
 		{
 		}
 
-		public bool TryReceive<T>(string key, out T? value)
+		public bool TryReceive<T>(string key, [NotNullWhen(true)] out T? value)
 		{
 			value = default;
 			return false;

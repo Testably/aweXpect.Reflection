@@ -175,7 +175,7 @@ public static partial class ThatType
 		{
 			if (Actual is not null)
 			{
-				contexts.Add(new ResultContext.Fixed("Actual", Formatter.Format(Actual)));
+				contexts.Add(new ResultContext.Fixed("Actual", Actual.ToString()));
 			}
 		}
 
@@ -222,7 +222,7 @@ public static partial class ThatType
 		{
 			if (Actual is not null)
 			{
-				contexts.Add(new ResultContext.Fixed("Actual", Formatter.Format(Actual)));
+				contexts.Add(new ResultContext.Fixed("Actual", Actual.ToString()));
 			}
 		}
 

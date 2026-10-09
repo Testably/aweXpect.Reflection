@@ -266,7 +266,7 @@ public sealed partial class ThatTypes
 				];
 
 				ICustomizationValueSetter<Func<Type, IEnumerable<Type>>?> resolver =
-					Customize.aweXpect.ReflectionSettings().DependencyResolver;
+					Customize.aweXpect.Reflection().DependencyResolver();
 				Func<Type, IEnumerable<Type>> builtin = resolver.Get()!;
 
 				// Simulate a body-only reference from B back to A, which the signature resolver cannot see.

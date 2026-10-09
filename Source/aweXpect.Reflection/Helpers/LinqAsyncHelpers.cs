@@ -53,7 +53,7 @@ internal static class LinqAsyncHelpers
 		return false;
 	}
 
-	public static async Task<(TSource[], TSource[])> SplitWhereAnyAsync<TSource, TTarget>(
+	public static async ValueTask<(TSource[], TSource[])> SplitWhereAnyAsync<TSource, TTarget>(
 		this IEnumerable<TSource> source,
 		Func<TSource, IEnumerable<TTarget>?> generator,
 		Func<TTarget, ValueTask<bool>> predicate)

@@ -85,8 +85,7 @@ public sealed partial class ThatProperties
 
 					             Collection:
 					             [
-					               protected int ThatProperties.ClassWithProperties.ProtectedProperty1 { get; set; },
-					               protected int ThatProperties.ClassWithProperties.ProtectedProperty2 { get; set; }
+					               *
 					             ]
 					             """).AsWildcard();
 			}

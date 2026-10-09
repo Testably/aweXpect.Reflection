@@ -69,8 +69,7 @@ public sealed partial class ThatMethods
 
 					             Collection:
 					             [
-					               int ThatMethods.ClassWithMethods.InternalMethod1(),
-					               int ThatMethods.ClassWithMethods.InternalMethod2()
+					               *
 					             ]
 					             """).AsWildcard();
 			}

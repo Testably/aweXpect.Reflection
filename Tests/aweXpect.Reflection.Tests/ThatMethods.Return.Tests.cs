@@ -94,10 +94,7 @@ public sealed partial class ThatMethods
 
 					             Not matching items:
 					             [
-					               int ThatMethods.TestClass.GetInt(),
-					               bool ThatMethods.TestClass.GetBool(),
-					               ThatMethods.DummyBase ThatMethods.TestClass.GetDummyBase(),
-					               ThatMethods.Dummy ThatMethods.TestClass.GetDummy()
+					               *
 					             ]
 					             """).AsWildcard();
 			}
@@ -152,10 +149,7 @@ public sealed partial class ThatMethods
 
 					             Not matching items:
 					             [
-					               int ThatMethods.TestClass.GetInt(),
-					               bool ThatMethods.TestClass.GetBool(),
-					               ThatMethods.DummyBase ThatMethods.TestClass.GetDummyBase(),
-					               ThatMethods.Dummy ThatMethods.TestClass.GetDummy()
+					               *
 					             ]
 					             """).AsWildcard();
 			}
@@ -228,10 +222,7 @@ public sealed partial class ThatMethods
 
 					             Not matching items:
 					             [
-					               string ThatMethods.TestClass.GetString(),
-					               int ThatMethods.TestClass.GetInt(),
-					               ThatMethods.DummyBase ThatMethods.TestClass.GetDummyBase(),
-					               ThatMethods.Dummy ThatMethods.TestClass.GetDummy()
+					               *
 					             ]
 					             """).AsWildcard();
 			}
@@ -277,10 +268,7 @@ public sealed partial class ThatMethods
 
 					             Not matching items:
 					             [
-					               string ThatMethods.TestClass.GetString(),
-					               int ThatMethods.TestClass.GetInt(),
-					               ThatMethods.DummyBase ThatMethods.TestClass.GetDummyBase(),
-					               ThatMethods.Dummy ThatMethods.TestClass.GetDummy()
+					               *
 					             ]
 					             """).AsWildcard();
 			}

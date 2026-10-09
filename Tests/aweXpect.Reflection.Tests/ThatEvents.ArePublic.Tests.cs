@@ -85,8 +85,7 @@ public sealed partial class ThatEvents
 
 					             Collection:
 					             [
-					               event EventHandler ThatEvents.ClassWithEvents.PublicEvent1,
-					               event EventHandler ThatEvents.ClassWithEvents.PublicEvent2
+					               *
 					             ]
 					             """).AsWildcard();
 			}

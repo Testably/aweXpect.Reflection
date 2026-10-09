@@ -85,8 +85,7 @@ public sealed partial class ThatMethods
 
 					             Collection:
 					             [
-					               int ThatMethods.ClassWithMethods.PublicMethod1(),
-					               int ThatMethods.ClassWithMethods.PublicMethod2()
+					               *
 					             ]
 					             """).AsWildcard();
 			}

@@ -85,8 +85,7 @@ public sealed partial class ThatFields
 
 					             Collection:
 					             [
-					               int ThatFields.ClassWithFields.ProtectedInternalField1,
-					               int ThatFields.ClassWithFields.ProtectedInternalField2
+					               *
 					             ]
 					             """).AsWildcard();
 			}

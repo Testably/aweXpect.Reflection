@@ -65,14 +65,14 @@ public static partial class ThatAssemblies
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				assembly => options.AreConsideredEqual(assembly?.GetTargetFramework(), expected));
+			=> await SetAsyncValue(actual, context,
+				assembly => options.AreConsideredEqual(assembly?.GetTargetFramework(), expected), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken,
-				assembly => options.AreConsideredEqual(assembly?.GetTargetFramework(), expected));
+			=> await SetValue(actual, context,
+				assembly => options.AreConsideredEqual(assembly?.GetTargetFramework(), expected), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all target ").Append(options.GetExpectation(expected, Grammars));

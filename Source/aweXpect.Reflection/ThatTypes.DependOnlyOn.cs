@@ -169,7 +169,7 @@ public static partial class ThatTypes
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, DependsOnlyOnAllowed);
+			=> await SetAsyncValue(actual, context, DependsOnlyOnAllowed, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
@@ -223,7 +223,7 @@ public static partial class ThatTypes
 			CancellationToken cancellationToken)
 		{
 			ResolvedTypeSet allowed = await options.Resolve(cancellationToken);
-			return await SetAsyncValue(actual, context, cancellationToken, type => DependsOnlyOnAllowed(type, allowed));
+			return await SetAsyncValue(actual, context, type => DependsOnlyOnAllowed(type, allowed), cancellationToken);
 		}
 #endif
 

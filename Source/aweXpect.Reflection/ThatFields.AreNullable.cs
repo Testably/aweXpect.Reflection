@@ -71,7 +71,7 @@ public static partial class ThatFields
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<FieldInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, field => field.IsNullable());
+			=> await SetAsyncValue(actual, context, field => field.IsNullable(), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<FieldInfo?> actual, IEvaluationContext context)
@@ -100,7 +100,7 @@ public static partial class ThatFields
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<FieldInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, field => field?.IsNullable() == false);
+			=> await SetAsyncValue(actual, context, field => field?.IsNullable() == false, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<FieldInfo?> actual, IEvaluationContext context)

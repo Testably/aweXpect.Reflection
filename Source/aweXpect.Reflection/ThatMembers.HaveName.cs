@@ -115,14 +115,14 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expected));
+			=> await SetAsyncValue(actual, context,
+				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expected), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken,
-				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expected));
+			=> await SetValue(actual, context,
+				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expected), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name ").Append(options.GetExpectation(expected, Grammars));
@@ -153,14 +153,14 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expectedNameSelector(memberInfo)));
+			=> await SetAsyncValue(actual, context,
+				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expectedNameSelector(memberInfo)), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken,
-				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expectedNameSelector(memberInfo)));
+			=> await SetValue(actual, context,
+				memberInfo => options.AreConsideredEqual(memberInfo?.Name, expectedNameSelector(memberInfo)), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name matching ")

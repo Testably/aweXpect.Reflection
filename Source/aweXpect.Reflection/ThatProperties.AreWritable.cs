@@ -51,7 +51,7 @@ public static partial class ThatProperties
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<PropertyInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, property => property.IsWritable());
+			=> await SetAsyncValue(actual, context, property => property.IsWritable(), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<PropertyInfo?> actual, IEvaluationContext context)

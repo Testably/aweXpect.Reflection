@@ -119,7 +119,7 @@ public static partial class ThatFields
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<FieldInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, attributeFilterOptions.Matches);
+			=> await SetAsyncValue(actual, context, attributeFilterOptions.Matches, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<FieldInfo?> actual, IEvaluationContext context)

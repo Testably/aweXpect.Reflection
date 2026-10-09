@@ -119,8 +119,8 @@ public static partial class ThatEvents
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<EventInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				@event => typeFilterOptions.Matches(@event?.EventHandlerType));
+			=> await SetAsyncValue(actual, context,
+				@event => typeFilterOptions.Matches(@event?.EventHandlerType), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<EventInfo?> actual, IEvaluationContext context)

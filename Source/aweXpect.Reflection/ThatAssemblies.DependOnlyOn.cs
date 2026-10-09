@@ -85,12 +85,12 @@ public static partial class ThatAssemblies
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, DependsOnlyOnAllowed);
+			=> await SetAsyncValue(actual, context, DependsOnlyOnAllowed, cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken, DependsOnlyOnAllowed);
+			=> await SetValue(actual, context, DependsOnlyOnAllowed, cancellationToken);
 
 		private async ValueTask<bool> DependsOnlyOnAllowed(Assembly? assembly)
 		{

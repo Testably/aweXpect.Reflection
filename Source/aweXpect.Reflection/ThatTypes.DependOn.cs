@@ -206,7 +206,7 @@ public static partial class ThatTypes
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, type => DependsOnNamespace(type, options));
+			=> await SetAsyncValue(actual, context, type => DependsOnNamespace(type, options), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
@@ -238,7 +238,7 @@ public static partial class ThatTypes
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, type => DoesNotDependOnNamespace(type, options));
+			=> await SetAsyncValue(actual, context, type => DoesNotDependOnNamespace(type, options), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context)
@@ -272,7 +272,7 @@ public static partial class ThatTypes
 			CancellationToken cancellationToken)
 		{
 			ResolvedTypeSet targetSet = await options.Resolve(cancellationToken);
-			return await SetAsyncValue(actual, context, cancellationToken, type => DependsOnTypeSet(type, targetSet));
+			return await SetAsyncValue(actual, context, type => DependsOnTypeSet(type, targetSet), cancellationToken);
 		}
 #endif
 
@@ -311,8 +311,8 @@ public static partial class ThatTypes
 			CancellationToken cancellationToken)
 		{
 			ResolvedTypeSet targetSet = await options.Resolve(cancellationToken);
-			return await SetAsyncValue(actual, context, cancellationToken,
-				type => DoesNotDependOnTypeSet(type, targetSet));
+			return await SetAsyncValue(actual, context,
+				type => DoesNotDependOnTypeSet(type, targetSet), cancellationToken);
 		}
 #endif
 

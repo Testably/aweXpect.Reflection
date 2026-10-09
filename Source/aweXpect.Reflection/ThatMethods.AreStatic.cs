@@ -71,7 +71,7 @@ public static partial class ThatMethods
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, method => method?.IsStatic == true);
+			=> await SetAsyncValue(actual, context, method => method?.IsStatic == true, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context)
@@ -100,7 +100,7 @@ public static partial class ThatMethods
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, method => method?.IsStatic == false);
+			=> await SetAsyncValue(actual, context, method => method?.IsStatic == false, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context)

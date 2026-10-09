@@ -71,7 +71,7 @@ public static partial class ThatConstructors
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<ConstructorInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, constructor => constructor?.IsStatic == true);
+			=> await SetAsyncValue(actual, context, constructor => constructor?.IsStatic == true, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<ConstructorInfo?> actual, IEvaluationContext context)
@@ -100,7 +100,7 @@ public static partial class ThatConstructors
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<ConstructorInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, constructor => constructor?.IsStatic == false);
+			=> await SetAsyncValue(actual, context, constructor => constructor?.IsStatic == false, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<ConstructorInfo?> actual, IEvaluationContext context)

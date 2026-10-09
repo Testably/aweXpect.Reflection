@@ -68,14 +68,14 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected));
+			=> await SetAsyncValue(actual, context,
+				async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken,
-				async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected));
+			=> await SetValue(actual, context,
+				async memberInfo => !await options.AreConsideredEqual(memberInfo?.Name, unexpected), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name ").Append(options.GetExpectation(unexpected, Grammars.Negate()));

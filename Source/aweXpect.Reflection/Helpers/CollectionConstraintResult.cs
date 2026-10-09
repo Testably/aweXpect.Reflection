@@ -88,7 +88,7 @@ internal abstract class CollectionConstraintResult<T>(string it, ExpectationGram
 	///     Stops at a cancellation of the <paramref name="cancellationToken" /> and leaves the outcome undecided.
 	/// </remarks>
 	protected async ValueTask<ConstraintResult> SetValue(IEnumerable<T>? elements, IEvaluationContext context,
-		CancellationToken cancellationToken, Func<T, ValueTask<bool>> predicate)
+		Func<T, ValueTask<bool>> predicate, CancellationToken cancellationToken)
 	{
 		if (!StartEvaluation(elements, typeof(IEnumerable<T>)))
 		{
@@ -119,8 +119,8 @@ internal abstract class CollectionConstraintResult<T>(string it, ExpectationGram
 	///     Stops at a cancellation of the <paramref name="cancellationToken" /> and leaves the outcome undecided.
 	/// </remarks>
 	protected ValueTask<ConstraintResult> SetAsyncValue(IAsyncEnumerable<T>? elements, IEvaluationContext context,
-		CancellationToken cancellationToken, Func<T, bool> predicate)
-		=> SetAsyncValue(elements, context, cancellationToken, item => new ValueTask<bool>(predicate(item)));
+		Func<T, bool> predicate, CancellationToken cancellationToken)
+		=> SetAsyncValue(elements, context, item => new ValueTask<bool>(predicate(item)), cancellationToken);
 
 	/// <summary>
 	///     Splits the <paramref name="elements" /> according to the <paramref name="predicate" /> into
@@ -130,7 +130,7 @@ internal abstract class CollectionConstraintResult<T>(string it, ExpectationGram
 	///     Stops at a cancellation of the <paramref name="cancellationToken" /> and leaves the outcome undecided.
 	/// </remarks>
 	protected async ValueTask<ConstraintResult> SetAsyncValue(IAsyncEnumerable<T>? elements,
-		IEvaluationContext context, CancellationToken cancellationToken, Func<T, ValueTask<bool>> predicate)
+		IEvaluationContext context, Func<T, ValueTask<bool>> predicate, CancellationToken cancellationToken)
 	{
 		if (!StartEvaluation(elements, typeof(IAsyncEnumerable<T>)))
 		{
@@ -287,7 +287,7 @@ internal abstract class CollectionConstraintResult<T>(string it, ExpectationGram
 		return elements is not null;
 	}
 
-	private ConstraintResult Complete(List<T> matching, List<T> notMatching)
+	private CollectionConstraintResult<T> Complete(List<T> matching, List<T> notMatching)
 	{
 		Matching = matching.ToArray();
 		NotMatching = notMatching.ToArray();

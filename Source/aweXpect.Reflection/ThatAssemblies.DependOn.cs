@@ -67,18 +67,18 @@ public static partial class ThatAssemblies
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, async assembly =>
+			=> await SetAsyncValue(actual, context, async assembly =>
 				assembly != null &&
 				await assembly.GetReferencedAssemblies().AnyAsync(dep =>
-					options.AreConsideredEqual(dep.Name, expected)));
+					options.AreConsideredEqual(dep.Name, expected)), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken, async assembly =>
+			=> await SetValue(actual, context, async assembly =>
 				assembly != null &&
 				await assembly.GetReferencedAssemblies().AnyAsync(dep =>
-					options.AreConsideredEqual(dep.Name, expected)));
+					options.AreConsideredEqual(dep.Name, expected)), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have dependency on assembly ")

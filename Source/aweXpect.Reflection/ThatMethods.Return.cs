@@ -115,8 +115,8 @@ public static partial class ThatMethods
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				method => typeFilterOptions.Matches(method.ReturnType));
+			=> await SetAsyncValue(actual, context,
+				method => typeFilterOptions.Matches(method.ReturnType), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<MethodInfo> actual, IEvaluationContext context)

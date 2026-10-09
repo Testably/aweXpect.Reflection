@@ -281,7 +281,7 @@ public static partial class ThatMethods
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<MethodInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, async method =>
+			=> await SetAsyncValue(actual, context, async method =>
 			{
 				if (method == null)
 				{
@@ -299,12 +299,12 @@ public static partial class ThatMethods
 					};
 					return isIndexInRange != false && await parameterFilterOptions.Matches(p);
 				});
-			});
+			}, cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<MethodInfo?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken, async method =>
+			=> await SetValue(actual, context, async method =>
 			{
 				if (method == null)
 				{
@@ -322,7 +322,7 @@ public static partial class ThatMethods
 					};
 					return isIndexInRange != false && await parameterFilterOptions.Matches(p);
 				});
-			});
+			}, cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{

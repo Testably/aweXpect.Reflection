@@ -71,7 +71,7 @@ public static partial class ThatProperties
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<PropertyInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, property => property.IsReallySealed());
+			=> await SetAsyncValue(actual, context, property => property.IsReallySealed(), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<PropertyInfo?> actual, IEvaluationContext context)
@@ -101,7 +101,7 @@ public static partial class ThatProperties
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<PropertyInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, property => !property.IsReallySealed());
+			=> await SetAsyncValue(actual, context, property => !property.IsReallySealed(), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<PropertyInfo?> actual, IEvaluationContext context)

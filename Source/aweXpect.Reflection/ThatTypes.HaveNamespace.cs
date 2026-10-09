@@ -64,14 +64,14 @@ public static partial class ThatTypes
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Type?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				type => options.AreConsideredEqual(type?.Namespace, expected));
+			=> await SetAsyncValue(actual, context,
+				type => options.AreConsideredEqual(type?.Namespace, expected), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Type?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken,
-				type => options.AreConsideredEqual(type?.Namespace, expected));
+			=> await SetValue(actual, context,
+				type => options.AreConsideredEqual(type?.Namespace, expected), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have namespace ").Append(options.GetExpectation(expected, Grammars));

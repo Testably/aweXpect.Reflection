@@ -82,7 +82,7 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, member => member.IsObsolete());
+			=> await SetAsyncValue(actual, context, member => member.IsObsolete(), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)
@@ -114,7 +114,7 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, member => !member.IsObsolete());
+			=> await SetAsyncValue(actual, context, member => !member.IsObsolete(), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)

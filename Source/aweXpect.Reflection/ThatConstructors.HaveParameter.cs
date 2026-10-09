@@ -281,7 +281,7 @@ public static partial class ThatConstructors
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<ConstructorInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, async constructor =>
+			=> await SetAsyncValue(actual, context, async constructor =>
 			{
 				if (constructor == null)
 				{
@@ -300,12 +300,12 @@ public static partial class ThatConstructors
 					return isIndexInRange != false && await parameterFilterOptions.Matches(p);
 				});
 				return hasParameter;
-			});
+			}, cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<ConstructorInfo?> actual,
 			IEvaluationContext context, CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken, async constructor =>
+			=> await SetValue(actual, context, async constructor =>
 			{
 				if (constructor == null)
 				{
@@ -324,7 +324,7 @@ public static partial class ThatConstructors
 					return isIndexInRange != false && await parameterFilterOptions.Matches(p);
 				});
 				return hasParameter;
-			});
+			}, cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 		{

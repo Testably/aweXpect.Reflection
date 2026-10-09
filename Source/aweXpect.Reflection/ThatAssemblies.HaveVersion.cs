@@ -195,7 +195,7 @@ public static partial class ThatAssemblies
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken, Matches);
+			=> await SetAsyncValue(actual, context, Matches, cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context)
@@ -278,8 +278,8 @@ public static partial class ThatAssemblies
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				assembly => assembly?.GetName().Version is { } version && predicate(version));
+			=> await SetAsyncValue(actual, context,
+				assembly => assembly?.GetName().Version is { } version && predicate(version), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context)

@@ -66,14 +66,14 @@ public static partial class ThatAssemblies
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				async assembly => !await options.AreConsideredEqual(assembly?.GetName().Name, unexpected));
+			=> await SetAsyncValue(actual, context,
+				async assembly => !await options.AreConsideredEqual(assembly?.GetName().Name, unexpected), cancellationToken);
 #endif
 
 		public async ValueTask<ConstraintResult> IsMetBy(IEnumerable<Assembly?> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetValue(actual, context, cancellationToken,
-				async assembly => !await options.AreConsideredEqual(assembly?.GetName().Name, unexpected));
+			=> await SetValue(actual, context,
+				async assembly => !await options.AreConsideredEqual(assembly?.GetName().Name, unexpected), cancellationToken);
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name ").Append(options.GetExpectation(unexpected, Grammars.Negate()));

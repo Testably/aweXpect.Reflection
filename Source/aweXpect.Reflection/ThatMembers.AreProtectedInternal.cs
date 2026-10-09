@@ -81,8 +81,8 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				member => member.HasAccessModifier(AccessModifiers.ProtectedInternal));
+			=> await SetAsyncValue(actual, context,
+				member => member.HasAccessModifier(AccessModifiers.ProtectedInternal), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)
@@ -114,8 +114,8 @@ public static partial class ThatMembers
 #if NET8_0_OR_GREATER
 		public async ValueTask<ConstraintResult> IsMetBy(IAsyncEnumerable<TMember> actual, IEvaluationContext context,
 			CancellationToken cancellationToken)
-			=> await SetAsyncValue(actual, context, cancellationToken,
-				member => !member.HasAccessModifier(AccessModifiers.ProtectedInternal));
+			=> await SetAsyncValue(actual, context,
+				member => !member.HasAccessModifier(AccessModifiers.ProtectedInternal), cancellationToken);
 #endif
 
 		public ConstraintResult IsMetBy(IEnumerable<TMember> actual, IEvaluationContext context)

@@ -141,7 +141,7 @@ jobs:
                 with:
                     path: artifacts
             -   name: Publish Test Results
-                uses: EnricoMi/publish-unit-test-result-action@v2
+                uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
                 with:
                     comment_mode: always
                     files: "artifacts/**/**/*.trx"
@@ -191,7 +191,7 @@ jobs:
                 uses: actions/setup-dotnet@v6
             -   name: NuGet login
                 id: login
-                uses: NuGet/login@v1
+                uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
                 with:
                     user: ${{ secrets.NUGET_USER }}
             -   name: Publish
@@ -215,7 +215,7 @@ jobs:
             -   name: Create GitHub release
                 if: steps.check-pre-release.outputs.release == 'true'
                 continue-on-error: true
-                uses: softprops/action-gh-release@v3
+                uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
                 with:
                     name: ${{ steps.tag.outputs.release_version }}
                     tag_name: ${{ steps.tag.outputs.release_version }}
@@ -241,7 +241,7 @@ jobs:
             -   name: Comment relevant issues and pull requests
                 if: steps.check-pre-release.outputs.release == 'true'
                 continue-on-error: true
-                uses: apexskier/github-release-commenter@v1.4.1
+                uses: apexskier/github-release-commenter@e7813a9625eabd79a875b4bc4046cfcae377ab34 # v1.4.1
                 with:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                     comment-template: |

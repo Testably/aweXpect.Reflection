@@ -6,6 +6,7 @@ using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
 using aweXpect.Core.EvaluationContext;
+using aweXpect.Core.Extending;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 #if NET8_0_OR_GREATER
@@ -32,7 +33,7 @@ public static partial class ThatAssemblies
 	{
 		ThrowHelper.ThrowIfNull(predicate, nameof(predicate));
 		return new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
-				=> new HaveVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimCommonWhiteSpace())),
+				=> new HaveVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimExpression())),
 			subject);
 	}
 
@@ -50,7 +51,7 @@ public static partial class ThatAssemblies
 	{
 		ThrowHelper.ThrowIfNull(predicate, nameof(predicate));
 		return new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
-				=> new HaveVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimCommonWhiteSpace())),
+				=> new HaveVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimExpression())),
 			subject);
 	}
 #endif

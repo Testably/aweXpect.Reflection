@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.Extending;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 
@@ -25,7 +26,7 @@ public static partial class ThatAssembly
 	{
 		ThrowHelper.ThrowIfNull(predicate, nameof(predicate));
 		return new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new HasVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimCommonWhiteSpace())),
+				=> new HasVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimExpression())),
 			subject);
 	}
 

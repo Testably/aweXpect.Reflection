@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
 using aweXpect.Core.EvaluationContext;
+using aweXpect.Core.Extending;
 using aweXpect.Options;
 using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
@@ -162,7 +163,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name matching ")
-				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
+				.Append(expectedNameSelectorExpression.TrimExpression());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append(It).Append(" contained not matching assemblies");
@@ -194,7 +195,7 @@ public static partial class ThatAssemblies
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have name matching ")
-				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
+				.Append(expectedNameSelectorExpression.TrimExpression());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append(It).Append(" only contained matching assemblies");

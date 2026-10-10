@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
+using aweXpect.Core.Extending;
 using aweXpect.Options;
-using aweXpect.Reflection.Helpers;
 using aweXpect.Results;
 
 // ReSharper disable PossibleMultipleEnumeration

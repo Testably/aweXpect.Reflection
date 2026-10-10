@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using aweXpect.Core;
-using aweXpect.Reflection.Helpers;
+using aweXpect.Core.Extending;
 using aweXpect.Reflection.Options;
 
 // ReSharper disable PossibleMultipleEnumeration

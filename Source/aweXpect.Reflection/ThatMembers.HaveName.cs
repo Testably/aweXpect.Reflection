@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using aweXpect.Core;
 using aweXpect.Core.Constraints;
 using aweXpect.Core.EvaluationContext;
+using aweXpect.Core.Extending;
 using aweXpect.Options;
 using aweXpect.Reflection.Formatting;
 using aweXpect.Reflection.Helpers;
@@ -169,14 +170,14 @@ public static partial class ThatMembers
 
 		protected override void AppendNormalExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("all have name matching ")
-				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
+				.Append(expectedNameSelectorExpression.TrimExpression());
 
 		protected override void AppendNormalResult(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append(It).Append(" contained not matching items");
 
 		protected override void AppendNegatedExpectation(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append("not all have name matching ")
-				.Append(expectedNameSelectorExpression.TrimCommonWhiteSpace());
+				.Append(expectedNameSelectorExpression.TrimExpression());
 
 		protected override void AppendNegatedResult(StringBuilder stringBuilder, string? indentation = null)
 			=> stringBuilder.Append(It).Append(" only contained matching items");

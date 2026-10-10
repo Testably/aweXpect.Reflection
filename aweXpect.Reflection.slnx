@@ -12,6 +12,9 @@
     <Project Path="Tests/aweXpect.Reflection.Internal.Tests/aweXpect.Reflection.Internal.Tests.csproj" />
     <Project Path="Tests/aweXpect.Reflection.Tests/aweXpect.Reflection.Tests.csproj" />
   </Folder>
+  <Folder Name="/Tests/Aot/">
+    <Project Path="Tests/Aot/aweXpect.Reflection.Aot/aweXpect.Reflection.Aot.csproj" />
+  </Folder>
   <Folder Name="/_/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
@@ -41,6 +44,9 @@
   </Folder>
   <Folder Name="/_/Tests/">
     <File Path="Tests/Directory.Build.props" />
+  </Folder>
+  <Folder Name="/_/Tests/Aot/">
+    <File Path="Tests/Aot/Directory.Build.props" />
   </Folder>
   <Project Path="Source/aweXpect.Reflection/aweXpect.Reflection.csproj" />
 </Solution>

@@ -38,6 +38,21 @@
 		<Nullable>annotations</Nullable>
 	</PropertyGroup>
 
+	<!--
+	    The library reflects over the members and types of a subject only behind a feature guard that a trimmer treats
+	    as unavailable, so it can be trimmed and published with Native AOT. The analyzers of .NET 8 predate feature
+	    guards and would report the guarded reflection, so only the newer analyzers verify the shared code.
+	-->
+	<PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">
+		<IsTrimmable>true</IsTrimmable>
+		<IsAotCompatible>true</IsAotCompatible>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+		<EnableAotAnalyzer>false</EnableAotAnalyzer>
+		<EnableSingleFileAnalyzer>false</EnableSingleFileAnalyzer>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Nullable">
 			<PrivateAssets>all</PrivateAssets>

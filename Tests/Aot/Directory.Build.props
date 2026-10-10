@@ -1,0 +1,47 @@
+<Project>
+
+	<Import Project="$(MSBuildThisFileDirectory)/../../Directory.Build.props"
+			Condition="Exists('$(MSBuildThisFileDirectory)/../../Directory.Build.props')"/>
+
+	<!--
+	    The smoke tests are console applications published with Native AOT, so that every expectation is exercised
+	    the way a consumer's trimmed application exercises it. They report their own result through the exit code
+	    instead of a test framework.
+	-->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<PublishAot>true</PublishAot>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
+
+	<!--
+	    A warning from the trimmer or the AOT compiler means that reflection escaped its guard, so it fails the
+	    publish, and the site is named instead of being rolled up per assembly.
+	-->
+	<PropertyGroup>
+		<ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+		<IlcTreatWarningsAsErrors>true</IlcTreatWarningsAsErrors>
+		<TrimmerSingleWarn>false</TrimmerSingleWarn>
+	</PropertyGroup>
+
+	<!--
+	    The compiled output stands for an application that is not trimmed, so it reflects like one and shows the
+	    result that the published executable has to reproduce or replace with a failure naming the switch.
+	-->
+	<PropertyGroup Condition="'$(_IsPublishing)' != 'true'">
+		<AweXpectReflectionFallback>true</AweXpectReflectionFallback>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>false</IsTestProject>
+		<SonarQubeExclude>true</SonarQubeExclude>
+		<SignAssembly>False</SignAssembly>
+		<NoWarn>701;1702;CA1845</NoWarn>
+	</PropertyGroup>
+
+</Project>

@@ -17,7 +17,7 @@ public static partial class ThatMethod
 	[GuaranteesNotNull]
 	public static AndOrResult<MethodInfo, IThat<MethodInfo?>> IsSealed(
 		this IThat<MethodInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsSealedConstraint(it, grammars)),
 			subject);
 
@@ -27,7 +27,7 @@ public static partial class ThatMethod
 	[GuaranteesNotNull]
 	public static AndOrResult<MethodInfo, IThat<MethodInfo?>> IsNotSealed(
 		this IThat<MethodInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsSealedConstraint(it, grammars).Invert()),
 			subject);
 

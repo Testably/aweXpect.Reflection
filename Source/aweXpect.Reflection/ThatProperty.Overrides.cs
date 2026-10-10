@@ -17,7 +17,7 @@ public static partial class ThatProperty
 	[GuaranteesNotNull]
 	public static AndOrResult<PropertyInfo, IThat<PropertyInfo?>> Overrides(
 		this IThat<PropertyInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new OverridesConstraint(it, grammars)),
 			subject);
 
@@ -27,7 +27,7 @@ public static partial class ThatProperty
 	[GuaranteesNotNull]
 	public static AndOrResult<PropertyInfo, IThat<PropertyInfo?>> DoesNotOverride(
 		this IThat<PropertyInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new OverridesConstraint(it, grammars).Invert()),
 			subject);
 

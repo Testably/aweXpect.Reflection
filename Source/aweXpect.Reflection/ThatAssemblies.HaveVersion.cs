@@ -32,8 +32,9 @@ public static partial class ThatAssemblies
 		string doNotPopulateThisValue = "")
 	{
 		ThrowHelper.ThrowIfNull(predicate, nameof(predicate));
-		return new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
-				=> new HaveVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimExpression())),
+		return new(subject.Get().ExpectationBuilder.AddConstraint<(Func<Version, bool> Predicate, string DoNotPopulateThisValue), IEnumerable<Assembly?>>((predicate, doNotPopulateThisValue),
+				static (s, it, grammars)
+				=> new HaveVersionConstraint(it, grammars, s.Predicate, s.DoNotPopulateThisValue.TrimExpression())),
 			subject);
 	}
 
@@ -50,8 +51,9 @@ public static partial class ThatAssemblies
 		string doNotPopulateThisValue = "")
 	{
 		ThrowHelper.ThrowIfNull(predicate, nameof(predicate));
-		return new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
-				=> new HaveVersionConstraint(it, grammars, predicate, doNotPopulateThisValue.TrimExpression())),
+		return new(subject.Get().ExpectationBuilder.AddConstraint<(Func<Version, bool> Predicate, string DoNotPopulateThisValue), IAsyncEnumerable<Assembly?>>((predicate, doNotPopulateThisValue),
+				static (s, it, grammars)
+				=> new HaveVersionConstraint(it, grammars, s.Predicate, s.DoNotPopulateThisValue.TrimExpression())),
 			subject);
 	}
 #endif
@@ -63,7 +65,8 @@ public static partial class ThatAssemblies
 	[GuaranteesNotNull]
 	public static HaveVersionResult<IEnumerable<Assembly?>?> HaveVersion(this IThat<IEnumerable<Assembly?>?> subject)
 		=> new(subject, (expectationBuilder, checks)
-			=> expectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
+			=> expectationBuilder.AddConstraint<List<VersionComponentCheck>, IEnumerable<Assembly?>>(checks,
+				static (checks, it, grammars)
 				=> new HaveVersionComponentsConstraint(it, grammars, checks)));
 
 #if NET8_0_OR_GREATER
@@ -75,7 +78,8 @@ public static partial class ThatAssemblies
 	public static HaveVersionResult<IAsyncEnumerable<Assembly?>?> HaveVersion(
 		this IThat<IAsyncEnumerable<Assembly?>?> subject)
 		=> new(subject, (expectationBuilder, checks)
-			=> expectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
+			=> expectationBuilder.AddConstraint<List<VersionComponentCheck>, IAsyncEnumerable<Assembly?>>(checks,
+				static (checks, it, grammars)
 				=> new HaveVersionComponentsConstraint(it, grammars, checks)));
 #endif
 

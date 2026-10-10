@@ -24,7 +24,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>?>> AreStatic(
 		this IThat<IEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreStaticConstraint(it, grammars)),
 			subject);
 
@@ -35,7 +35,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>?>> AreStatic(
 		this IThat<IAsyncEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreStaticConstraint(it, grammars)),
 			subject);
 #endif
@@ -46,7 +46,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>?>> AreNotStatic(
 		this IThat<IEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreNotStaticConstraint(it, grammars)),
 			subject);
 
@@ -57,7 +57,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>?>> AreNotStatic(
 		this IThat<IAsyncEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreNotStaticConstraint(it, grammars)),
 			subject);
 #endif

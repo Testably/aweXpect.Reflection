@@ -64,8 +64,9 @@ public static partial class ThatTypes
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>>(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new ImplementConstraint(it, grammars | ExpectationGrammars.Plural, interfaceType, forceDirect)),
+		return new AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>>(subject.Get().ExpectationBuilder.AddConstraint<(Type InterfaceType, bool ForceDirect), IEnumerable<Type?>>((interfaceType, forceDirect),
+				static (s, it, grammars)
+				=> new ImplementConstraint(it, grammars | ExpectationGrammars.Plural, s.InterfaceType, s.ForceDirect)),
 			subject);
 	}
 
@@ -118,8 +119,9 @@ public static partial class ThatTypes
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new ImplementConstraint(it, grammars | ExpectationGrammars.Plural, interfaceType, forceDirect)),
+		return new(subject.Get().ExpectationBuilder.AddConstraint<(Type InterfaceType, bool ForceDirect), IAsyncEnumerable<Type?>>((interfaceType, forceDirect),
+				static (s, it, grammars)
+				=> new ImplementConstraint(it, grammars | ExpectationGrammars.Plural, s.InterfaceType, s.ForceDirect)),
 			subject);
 	}
 #endif
@@ -170,8 +172,9 @@ public static partial class ThatTypes
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>>(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
-				=> new DoNotImplementConstraint(it, grammars | ExpectationGrammars.Plural, interfaceType, forceDirect)),
+		return new AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>>(subject.Get().ExpectationBuilder.AddConstraint<(Type InterfaceType, bool ForceDirect), IEnumerable<Type?>>((interfaceType, forceDirect),
+				static (s, it, grammars)
+				=> new DoNotImplementConstraint(it, grammars | ExpectationGrammars.Plural, s.InterfaceType, s.ForceDirect)),
 			subject);
 	}
 
@@ -224,8 +227,9 @@ public static partial class ThatTypes
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
-				=> new DoNotImplementConstraint(it, grammars | ExpectationGrammars.Plural, interfaceType, forceDirect)),
+		return new(subject.Get().ExpectationBuilder.AddConstraint<(Type InterfaceType, bool ForceDirect), IAsyncEnumerable<Type?>>((interfaceType, forceDirect),
+				static (s, it, grammars)
+				=> new DoNotImplementConstraint(it, grammars | ExpectationGrammars.Plural, s.InterfaceType, s.ForceDirect)),
 			subject);
 	}
 #endif

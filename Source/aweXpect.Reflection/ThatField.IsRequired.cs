@@ -17,7 +17,7 @@ public static partial class ThatField
 	[GuaranteesNotNull]
 	public static AndOrResult<FieldInfo, IThat<FieldInfo?>> IsRequired(
 		this IThat<FieldInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsRequiredConstraint(it, grammars)),
 			subject);
 
@@ -27,7 +27,7 @@ public static partial class ThatField
 	[GuaranteesNotNull]
 	public static AndOrResult<FieldInfo, IThat<FieldInfo?>> IsNotRequired(
 		this IThat<FieldInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsRequiredConstraint(it, grammars).Invert()),
 			subject);
 

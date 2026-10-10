@@ -15,7 +15,8 @@ public static partial class ThatMethod
 	[GuaranteesNotNull]
 	public static AndOrResult<MethodInfo, IThat<MethodInfo?>> HasParameterCount(
 		this IThat<MethodInfo?> subject, int expected)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(expected,
+				static (expected, it, grammars)
 				=> new HasParameterCountConstraint(it, grammars, expected)),
 			subject);
 

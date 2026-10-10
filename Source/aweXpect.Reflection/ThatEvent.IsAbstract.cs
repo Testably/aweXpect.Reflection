@@ -17,7 +17,7 @@ public static partial class ThatEvent
 	[GuaranteesNotNull]
 	public static AndOrResult<EventInfo, IThat<EventInfo?>> IsAbstract(
 		this IThat<EventInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsAbstractConstraint(it, grammars)),
 			subject);
 
@@ -27,7 +27,7 @@ public static partial class ThatEvent
 	[GuaranteesNotNull]
 	public static AndOrResult<EventInfo, IThat<EventInfo?>> IsNotAbstract(
 		this IThat<EventInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsAbstractConstraint(it, grammars).Invert()),
 			subject);
 

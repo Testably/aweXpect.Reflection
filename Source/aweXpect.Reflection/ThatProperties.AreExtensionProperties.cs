@@ -25,7 +25,7 @@ public static partial class ThatProperties
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>?>> AreExtensionProperties(
 		this IThat<IEnumerable<PropertyInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>(static (it, grammars)
 				=> new AreExtensionPropertiesConstraint(it, grammars)),
 			subject);
 
@@ -38,7 +38,7 @@ public static partial class ThatProperties
 	public static AndOrResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>?>>
 		AreExtensionProperties(
 			this IThat<IAsyncEnumerable<PropertyInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>(static (it, grammars)
 				=> new AreExtensionPropertiesConstraint(it, grammars)),
 			subject);
 #endif
@@ -50,7 +50,7 @@ public static partial class ThatProperties
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>?>> AreNotExtensionProperties(
 		this IThat<IEnumerable<PropertyInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>(static (it, grammars)
 				=> new AreNotExtensionPropertiesConstraint(it, grammars)),
 			subject);
 
@@ -63,7 +63,7 @@ public static partial class ThatProperties
 	public static AndOrResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>?>>
 		AreNotExtensionProperties(
 			this IThat<IAsyncEnumerable<PropertyInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>(static (it, grammars)
 				=> new AreNotExtensionPropertiesConstraint(it, grammars)),
 			subject);
 #endif

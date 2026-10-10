@@ -20,7 +20,7 @@ public static partial class ThatMember
 	public static AndOrResult<TMember, IThat<TMember?>> IsPrivateProtected<TMember>(
 		this IThat<TMember?> subject)
 		where TMember : MemberInfo
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsPrivateProtectedConstraint<TMember?>(it, grammars)),
 			subject);
 
@@ -31,7 +31,7 @@ public static partial class ThatMember
 	public static AndOrResult<TMember, IThat<TMember?>> IsNotPrivateProtected<TMember>(
 		this IThat<TMember?> subject)
 		where TMember : MemberInfo
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsPrivateProtectedConstraint<TMember?>(it, grammars).Invert()),
 			subject);
 

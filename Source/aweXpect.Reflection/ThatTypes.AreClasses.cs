@@ -24,7 +24,7 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>> AreClasses(
 		this IThat<IEnumerable<Type?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>(static (it, grammars)
 				=> new AreClassesConstraint(it, grammars)),
 			subject);
 
@@ -35,7 +35,7 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>?>> AreClasses(
 		this IThat<IAsyncEnumerable<Type?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>(static (it, grammars)
 				=> new AreClassesConstraint(it, grammars)),
 			subject);
 #endif
@@ -46,7 +46,7 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>> AreNotClasses(
 		this IThat<IEnumerable<Type?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>(static (it, grammars)
 				=> new AreNotClassesConstraint(it, grammars)),
 			subject);
 
@@ -57,7 +57,7 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>?>> AreNotClasses(
 		this IThat<IAsyncEnumerable<Type?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>(static (it, grammars)
 				=> new AreNotClassesConstraint(it, grammars)),
 			subject);
 #endif

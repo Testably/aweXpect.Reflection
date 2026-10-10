@@ -24,7 +24,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>?>> AreVirtual(
 		this IThat<IEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreVirtualConstraint(it, grammars)),
 			subject);
 
@@ -35,7 +35,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>?>> AreVirtual(
 		this IThat<IAsyncEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreVirtualConstraint(it, grammars)),
 			subject);
 #endif
@@ -46,7 +46,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<EventInfo?>, IThat<IEnumerable<EventInfo?>?>> AreNotVirtual(
 		this IThat<IEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreNotVirtualConstraint(it, grammars)),
 			subject);
 
@@ -57,7 +57,7 @@ public static partial class ThatEvents
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<EventInfo?>, IThat<IAsyncEnumerable<EventInfo?>?>> AreNotVirtual(
 		this IThat<IAsyncEnumerable<EventInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<EventInfo?>>(static (it, grammars)
 				=> new AreNotVirtualConstraint(it, grammars)),
 			subject);
 #endif

@@ -24,7 +24,7 @@ public static partial class ThatAssemblies
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>?>> AreStrongNamed(
 		this IThat<IEnumerable<Assembly?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>(static (it, grammars)
 				=> new AreStrongNamedConstraint(it, grammars)),
 			subject);
 
@@ -35,7 +35,7 @@ public static partial class ThatAssemblies
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>?>> AreStrongNamed(
 		this IThat<IAsyncEnumerable<Assembly?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>(static (it, grammars)
 				=> new AreStrongNamedConstraint(it, grammars)),
 			subject);
 #endif
@@ -46,7 +46,7 @@ public static partial class ThatAssemblies
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>?>> AreNotStrongNamed(
 		this IThat<IEnumerable<Assembly?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>(static (it, grammars)
 				=> new AreNotStrongNamedConstraint(it, grammars)),
 			subject);
 
@@ -57,7 +57,7 @@ public static partial class ThatAssemblies
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>?>> AreNotStrongNamed(
 		this IThat<IAsyncEnumerable<Assembly?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>(static (it, grammars)
 				=> new AreNotStrongNamedConstraint(it, grammars)),
 			subject);
 #endif

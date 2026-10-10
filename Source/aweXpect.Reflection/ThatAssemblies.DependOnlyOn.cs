@@ -37,8 +37,9 @@ public static partial class ThatAssemblies
 	{
 		StringEqualityOptions options = new(nameof(allowed));
 		return new StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>?>>(subject.Get()
-				.ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
-					=> new DependOnlyOnConstraint(it, grammars, allowed, options)),
+				.ExpectationBuilder.AddConstraint<(string[] Allowed, StringEqualityOptions Options), IEnumerable<Assembly?>>((allowed, options),
+					static (s, it, grammars)
+					=> new DependOnlyOnConstraint(it, grammars, s.Allowed, s.Options)),
 			subject,
 			options);
 	}
@@ -63,8 +64,9 @@ public static partial class ThatAssemblies
 		StringEqualityOptions options = new(nameof(allowed));
 		return new StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>?>>(subject
 				.Get()
-				.ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
-					=> new DependOnlyOnConstraint(it, grammars, allowed, options)),
+				.ExpectationBuilder.AddConstraint<(string[] Allowed, StringEqualityOptions Options), IAsyncEnumerable<Assembly?>>((allowed, options),
+					static (s, it, grammars)
+					=> new DependOnlyOnConstraint(it, grammars, s.Allowed, s.Options)),
 			subject,
 			options);
 	}

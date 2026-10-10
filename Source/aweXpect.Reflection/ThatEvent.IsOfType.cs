@@ -29,7 +29,8 @@ public static partial class ThatEvent
 		TypeFilterOptions typeFilterOptions = new();
 		typeFilterOptions.RegisterType(handlerType, false);
 		return new EventOfTypeResult<EventInfo, IThat<EventInfo?>>(
-			subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+			subject.Get().ExpectationBuilder.AddConstraint(typeFilterOptions,
+				static (typeFilterOptions, it, grammars)
 				=> new IsOfTypeConstraint(it, grammars, typeFilterOptions)),
 			subject,
 			typeFilterOptions);

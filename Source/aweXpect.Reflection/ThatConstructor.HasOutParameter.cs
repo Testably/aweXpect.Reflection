@@ -19,7 +19,7 @@ public static partial class ThatConstructor
 	[GuaranteesNotNull]
 	public static AndOrResult<ConstructorInfo, IThat<ConstructorInfo?>> HasOutParameter(
 		this IThat<ConstructorInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new HasOutParameterConstraint(it, grammars)),
 			subject);
 

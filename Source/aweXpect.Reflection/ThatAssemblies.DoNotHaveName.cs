@@ -27,8 +27,9 @@ public static partial class ThatAssemblies
 	{
 		StringEqualityOptions options = new(nameof(unexpected));
 		return new StringEqualityTypeResult<IEnumerable<Assembly?>, IThat<IEnumerable<Assembly?>?>>(subject.Get()
-				.ExpectationBuilder.AddConstraint<IEnumerable<Assembly?>>((it, grammars)
-					=> new DoNotHaveNameConstraint(it, grammars, unexpected, options)),
+				.ExpectationBuilder.AddConstraint<(string Unexpected, StringEqualityOptions Options), IEnumerable<Assembly?>>((unexpected, options),
+					static (s, it, grammars)
+					=> new DoNotHaveNameConstraint(it, grammars, s.Unexpected, s.Options)),
 			subject,
 			options);
 	}
@@ -46,8 +47,9 @@ public static partial class ThatAssemblies
 		StringEqualityOptions options = new(nameof(unexpected));
 		return new StringEqualityTypeResult<IAsyncEnumerable<Assembly?>, IThat<IAsyncEnumerable<Assembly?>?>>(subject
 				.Get()
-				.ExpectationBuilder.AddConstraint<IAsyncEnumerable<Assembly?>>((it, grammars)
-					=> new DoNotHaveNameConstraint(it, grammars, unexpected, options)),
+				.ExpectationBuilder.AddConstraint<(string Unexpected, StringEqualityOptions Options), IAsyncEnumerable<Assembly?>>((unexpected, options),
+					static (s, it, grammars)
+					=> new DoNotHaveNameConstraint(it, grammars, s.Unexpected, s.Options)),
 			subject,
 			options);
 	}

@@ -26,7 +26,8 @@ public static partial class ThatMethod
 		TypeFilterOptions typeFilterOptions = new();
 		typeFilterOptions.RegisterType(returnType, true);
 		return new MethodReturnResult<MethodInfo, IThat<MethodInfo?>>(
-			subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+			subject.Get().ExpectationBuilder.AddConstraint(typeFilterOptions,
+				static (typeFilterOptions, it, grammars)
 				=> new ReturnsConstraint(it, grammars, typeFilterOptions)),
 			subject,
 			typeFilterOptions);

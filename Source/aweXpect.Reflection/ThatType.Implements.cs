@@ -56,8 +56,9 @@ public static partial class ThatType
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new ImplementsConstraint(it, grammars, interfaceType, forceDirect)),
+		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((InterfaceType: interfaceType, ForceDirect: forceDirect),
+				static (s, it, grammars)
+				=> new ImplementsConstraint(it, grammars, s.InterfaceType, s.ForceDirect)),
 			subject);
 	}
 
@@ -103,8 +104,9 @@ public static partial class ThatType
 		bool forceDirect = false)
 	{
 		interfaceType.EnsureIsInterface();
-		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new ImplementsConstraint(it, grammars, interfaceType, forceDirect).Invert()),
+		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((InterfaceType: interfaceType, ForceDirect: forceDirect),
+				static (s, it, grammars)
+				=> new ImplementsConstraint(it, grammars, s.InterfaceType, s.ForceDirect).Invert()),
 			subject);
 	}
 

@@ -28,7 +28,7 @@ public static partial class ThatConstructors
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<ConstructorInfo?>, IThat<IEnumerable<ConstructorInfo?>?>> HaveInParameter(
 		this IThat<IEnumerable<ConstructorInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<ConstructorInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<ConstructorInfo?>>(static (it, grammars)
 				=> new HaveInParameterConstraint(it, grammars)),
 			subject);
 
@@ -40,7 +40,7 @@ public static partial class ThatConstructors
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<ConstructorInfo?>, IThat<IAsyncEnumerable<ConstructorInfo?>?>> HaveInParameter(
 		this IThat<IAsyncEnumerable<ConstructorInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<ConstructorInfo?>>(static (it, grammars)
 				=> new HaveInParameterConstraint(it, grammars)),
 			subject);
 #endif

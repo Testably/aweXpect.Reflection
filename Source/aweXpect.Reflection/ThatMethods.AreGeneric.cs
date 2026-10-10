@@ -28,7 +28,8 @@ public static partial class ThatMethods
 		GenericArgumentsFilterOptions genericFilterOptions = new();
 		return new GenericArgumentCollectionResult<IEnumerable<MethodInfo?>, IEnumerable<MethodInfo?>?>(
 			subject.Get().ExpectationBuilder
-				.AddConstraint<IEnumerable<MethodInfo?>>((it, grammars)
+				.AddConstraint<GenericArgumentsFilterOptions, IEnumerable<MethodInfo?>>(genericFilterOptions,
+					static (genericFilterOptions, it, grammars)
 					=> new AreGenericConstraint(it, grammars, genericFilterOptions)),
 			subject,
 			genericFilterOptions);
@@ -45,7 +46,8 @@ public static partial class ThatMethods
 		GenericArgumentsFilterOptions genericFilterOptions = new();
 		return new GenericArgumentCollectionResult<IAsyncEnumerable<MethodInfo?>, IAsyncEnumerable<MethodInfo?>?>(
 			subject.Get().ExpectationBuilder
-				.AddConstraint<IAsyncEnumerable<MethodInfo?>>((it, grammars)
+				.AddConstraint<GenericArgumentsFilterOptions, IAsyncEnumerable<MethodInfo?>>(genericFilterOptions,
+					static (genericFilterOptions, it, grammars)
 					=> new AreGenericConstraint(it, grammars, genericFilterOptions)),
 			subject,
 			genericFilterOptions);
@@ -58,7 +60,7 @@ public static partial class ThatMethods
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<MethodInfo?>, IThat<IEnumerable<MethodInfo?>?>> AreNotGeneric(
 		this IThat<IEnumerable<MethodInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<MethodInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<MethodInfo?>>(static (it, grammars)
 				=> new AreNotGenericConstraint(it, grammars)),
 			subject);
 
@@ -69,7 +71,7 @@ public static partial class ThatMethods
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<MethodInfo?>, IThat<IAsyncEnumerable<MethodInfo?>?>> AreNotGeneric(
 		this IThat<IAsyncEnumerable<MethodInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<MethodInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<MethodInfo?>>(static (it, grammars)
 				=> new AreNotGenericConstraint(it, grammars)),
 			subject);
 #endif

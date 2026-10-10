@@ -33,8 +33,9 @@ public static partial class ThatAssembly
 	{
 		StringEqualityOptions options = new(nameof(allowed));
 		return new StringEqualityTypeResult<Assembly, IThat<Assembly?>>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
-					=> new DependsOnlyOnConstraint(it, grammars, allowed, options)),
+				.AddConstraint((Allowed: allowed, Options: options),
+					static (s, it, grammars)
+					=> new DependsOnlyOnConstraint(it, grammars, s.Allowed, s.Options)),
 			subject,
 			options);
 	}

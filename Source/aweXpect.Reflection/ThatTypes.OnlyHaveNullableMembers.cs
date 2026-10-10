@@ -32,7 +32,8 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>> OnlyHaveNullableMembers(
 		this IThat<IEnumerable<Type?>?> subject, MemberScope memberScope = MemberScope.DeclaredOnly)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<MemberScope, IEnumerable<Type?>>(memberScope,
+				static (memberScope, it, grammars)
 				=> new OnlyHaveNullableMembersConstraint(it, grammars, memberScope)),
 			subject);
 
@@ -49,7 +50,8 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>?>> OnlyHaveNullableMembers(
 		this IThat<IAsyncEnumerable<Type?>?> subject, MemberScope memberScope = MemberScope.DeclaredOnly)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<MemberScope, IAsyncEnumerable<Type?>>(memberScope,
+				static (memberScope, it, grammars)
 				=> new OnlyHaveNullableMembersConstraint(it, grammars, memberScope)),
 			subject);
 #endif

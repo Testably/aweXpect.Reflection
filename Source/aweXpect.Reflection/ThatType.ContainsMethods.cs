@@ -41,8 +41,9 @@ public static partial class ThatType
 		IContainedMembersFilter memberFilter =
 			TypeFilters.ContainedMembers<TMember, TFiltered>(navigate, filter, quantifier);
 		return new TypeContainingMembersResult<Type, Type?>(
-			subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new ContainsMembersConstraint(it, grammars, memberFilter, quantifier)),
+			subject.Get().ExpectationBuilder.AddConstraint((MemberFilter: memberFilter, Quantifier: quantifier),
+				static (s, it, grammars)
+				=> new ContainsMembersConstraint(it, grammars, s.MemberFilter, s.Quantifier)),
 			subject,
 			quantifier);
 	}

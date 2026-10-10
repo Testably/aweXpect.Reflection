@@ -20,8 +20,9 @@ public static partial class ThatAssembly
 	{
 		StringEqualityOptions options = new(nameof(unexpected));
 		return new StringEqualityTypeResult<Assembly, IThat<Assembly?>>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
-					=> new DependsOnConstraint(it, grammars, unexpected, options).Invert()),
+				.AddConstraint((Unexpected: unexpected, Options: options),
+					static (s, it, grammars)
+					=> new DependsOnConstraint(it, grammars, s.Unexpected, s.Options).Invert()),
 			subject,
 			options);
 	}

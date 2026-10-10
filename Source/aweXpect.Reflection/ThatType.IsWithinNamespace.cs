@@ -17,7 +17,8 @@ public static partial class ThatType
 	[GuaranteesNotNull]
 	public static AndOrResult<Type, IThat<Type?>> IsWithinNamespace(
 		this IThat<Type?> subject, string expected)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(expected,
+				static (expected, it, grammars)
 				=> new IsWithinNamespaceConstraint(it, grammars, expected)),
 			subject);
 
@@ -28,7 +29,8 @@ public static partial class ThatType
 	[GuaranteesNotNull]
 	public static AndOrResult<Type, IThat<Type?>> IsNotWithinNamespace(
 		this IThat<Type?> subject, string expected)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(expected,
+				static (expected, it, grammars)
 				=> new IsWithinNamespaceConstraint(it, grammars, expected).Invert()),
 			subject);
 

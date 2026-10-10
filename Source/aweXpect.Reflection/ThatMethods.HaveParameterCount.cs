@@ -25,7 +25,8 @@ public static partial class ThatMethods
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<MethodInfo?>, IThat<IEnumerable<MethodInfo?>?>> HaveParameterCount(
 		this IThat<IEnumerable<MethodInfo?>?> subject, int expected)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<MethodInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<int, IEnumerable<MethodInfo?>>(expected,
+				static (expected, it, grammars)
 				=> new HaveParameterCountConstraint(it, grammars, expected)),
 			subject);
 
@@ -37,7 +38,8 @@ public static partial class ThatMethods
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<MethodInfo?>, IThat<IAsyncEnumerable<MethodInfo?>?>> HaveParameterCount(
 		this IThat<IAsyncEnumerable<MethodInfo?>?> subject, int expected)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<MethodInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<int, IAsyncEnumerable<MethodInfo?>>(expected,
+				static (expected, it, grammars)
 				=> new HaveParameterCountConstraint(it, grammars, expected)),
 			subject);
 #endif

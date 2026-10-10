@@ -25,8 +25,9 @@ public static partial class ThatType
 		this IThat<Type?> subject,
 		Operator @operator,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new HasOperatorConstraint(it, grammars, @operator, null, inherit)),
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((Operator: @operator, Inherit: inherit),
+				static (s, it, grammars)
+				=> new HasOperatorConstraint(it, grammars, s.Operator, null, s.Inherit)),
 			subject);
 
 	/// <summary>
@@ -64,8 +65,9 @@ public static partial class ThatType
 		Operator @operator,
 		Type operand,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new HasOperatorConstraint(it, grammars, @operator, operand, inherit)),
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((Operator: @operator, Operand: operand, Inherit: inherit),
+				static (s, it, grammars)
+				=> new HasOperatorConstraint(it, grammars, s.Operator, s.Operand, s.Inherit)),
 			subject);
 
 	/// <summary>
@@ -83,8 +85,9 @@ public static partial class ThatType
 		this IThat<Type?> subject,
 		Operator @operator,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new HasOperatorConstraint(it, grammars, @operator, null, inherit).Invert()),
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((Operator: @operator, Inherit: inherit),
+				static (s, it, grammars)
+				=> new HasOperatorConstraint(it, grammars, s.Operator, null, s.Inherit).Invert()),
 			subject);
 
 	/// <summary>
@@ -122,8 +125,9 @@ public static partial class ThatType
 		Operator @operator,
 		Type operand,
 		bool inherit = false)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new HasOperatorConstraint(it, grammars, @operator, operand, inherit).Invert()),
+		=> new(subject.Get().ExpectationBuilder.AddConstraint((Operator: @operator, Operand: operand, Inherit: inherit),
+				static (s, it, grammars)
+				=> new HasOperatorConstraint(it, grammars, s.Operator, s.Operand, s.Inherit).Invert()),
 			subject);
 
 	private sealed class HasOperatorConstraint(

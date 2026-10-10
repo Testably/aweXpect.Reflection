@@ -23,7 +23,8 @@ public static partial class ThatMethod
 	{
 		GenericArgumentsFilterOptions genericFilterOptions = new();
 		return new GenericArgumentCollectionResult<MethodInfo, MethodInfo?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(genericFilterOptions,
+					static (genericFilterOptions, it, grammars)
 					=> new IsGenericConstraint(it, grammars,
 						genericFilterOptions)),
 			subject,
@@ -39,7 +40,8 @@ public static partial class ThatMethod
 	{
 		GenericArgumentsFilterOptions genericFilterOptions = new();
 		return new AndOrResult<MethodInfo, IThat<MethodInfo?>>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(genericFilterOptions,
+					static (genericFilterOptions, it, grammars)
 					=> new IsGenericConstraint(it, grammars, genericFilterOptions).Invert()),
 			subject);
 	}

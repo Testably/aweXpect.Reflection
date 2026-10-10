@@ -26,7 +26,7 @@ public static partial class ThatMembers
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>?>> ArePublic<TMember>(
 		this IThat<IEnumerable<TMember>?> subject)
 		where TMember : MemberInfo?
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<TMember>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<TMember>>(static (it, grammars)
 				=> new ArePublicConstraint<TMember>(it, grammars)),
 			subject);
 
@@ -38,7 +38,7 @@ public static partial class ThatMembers
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>?>> ArePublic<TMember>(
 		this IThat<IAsyncEnumerable<TMember>?> subject)
 		where TMember : MemberInfo?
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<TMember>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<TMember>>(static (it, grammars)
 				=> new ArePublicConstraint<TMember>(it, grammars)),
 			subject);
 #endif
@@ -50,7 +50,7 @@ public static partial class ThatMembers
 	public static AndOrResult<IEnumerable<TMember>, IThat<IEnumerable<TMember>?>> AreNotPublic<TMember>(
 		this IThat<IEnumerable<TMember>?> subject)
 		where TMember : MemberInfo?
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<TMember>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<TMember>>(static (it, grammars)
 				=> new AreNotPublicConstraint<TMember>(it, grammars)),
 			subject);
 
@@ -62,7 +62,7 @@ public static partial class ThatMembers
 	public static AndOrResult<IAsyncEnumerable<TMember>, IThat<IAsyncEnumerable<TMember>?>> AreNotPublic<TMember>(
 		this IThat<IAsyncEnumerable<TMember>?> subject)
 		where TMember : MemberInfo?
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<TMember>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<TMember>>(static (it, grammars)
 				=> new AreNotPublicConstraint<TMember>(it, grammars)),
 			subject);
 #endif

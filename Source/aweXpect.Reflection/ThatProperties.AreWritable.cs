@@ -25,7 +25,7 @@ public static partial class ThatProperties
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<PropertyInfo?>, IThat<IEnumerable<PropertyInfo?>?>> AreWritable(
 		this IThat<IEnumerable<PropertyInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<PropertyInfo?>>(static (it, grammars)
 				=> new AreWritableConstraint(it, grammars)),
 			subject);
 
@@ -37,7 +37,7 @@ public static partial class ThatProperties
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<PropertyInfo?>, IThat<IAsyncEnumerable<PropertyInfo?>?>> AreWritable(
 		this IThat<IAsyncEnumerable<PropertyInfo?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<PropertyInfo?>>(static (it, grammars)
 				=> new AreWritableConstraint(it, grammars)),
 			subject);
 #endif

@@ -54,8 +54,9 @@ public static partial class ThatType
 		bool forceDirect = false)
 	{
 		baseType.EnsureIsClass();
-		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new InheritsFromConstraint(it, grammars, baseType, forceDirect)),
+		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((BaseType: baseType, ForceDirect: forceDirect),
+				static (s, it, grammars)
+				=> new InheritsFromConstraint(it, grammars, s.BaseType, s.ForceDirect)),
 			subject);
 	}
 
@@ -101,8 +102,9 @@ public static partial class ThatType
 		bool forceDirect = false)
 	{
 		baseType.EnsureIsClass();
-		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
-				=> new InheritsFromConstraint(it, grammars, baseType, forceDirect).Invert()),
+		return new AndOrResult<Type, IThat<Type?>>(subject.Get().ExpectationBuilder.AddConstraint((BaseType: baseType, ForceDirect: forceDirect),
+				static (s, it, grammars)
+				=> new InheritsFromConstraint(it, grammars, s.BaseType, s.ForceDirect).Invert()),
 			subject);
 	}
 

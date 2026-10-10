@@ -37,7 +37,8 @@ public static partial class ThatType
 	{
 		NamespaceDependencyOptions options = new(namespaces);
 		return new NamespaceDependencyOutsideResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new HasDependenciesOutsideConstraint(it, grammars, options)),
 			subject,
 			options);
@@ -71,7 +72,8 @@ public static partial class ThatType
 	{
 		TypeSetDependencyOptions options = new(target, additional);
 		return new TypeSetDependencyOutsideResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new HasDependenciesOutsideTypeSetConstraint(it, grammars, options)),
 			subject,
 			options);

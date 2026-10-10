@@ -17,7 +17,7 @@ public static partial class ThatProperty
 	[GuaranteesNotNull]
 	public static AndOrResult<PropertyInfo, IThat<PropertyInfo?>> IsWritable(
 		this IThat<PropertyInfo?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsWritableConstraint(it, grammars)),
 			subject);
 

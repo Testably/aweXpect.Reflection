@@ -20,7 +20,7 @@ public static partial class ThatMember
 	public static AndOrResult<TMember, IThat<TMember?>> IsInternal<TMember>(
 		this IThat<TMember?> subject)
 		where TMember : MemberInfo
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsInternalConstraint<TMember?>(it, grammars)),
 			subject);
 
@@ -31,7 +31,7 @@ public static partial class ThatMember
 	public static AndOrResult<TMember, IThat<TMember?>> IsNotInternal<TMember>(
 		this IThat<TMember?> subject)
 		where TMember : MemberInfo
-		=> new(subject.Get().ExpectationBuilder.AddConstraint((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint(static (it, grammars)
 				=> new IsInternalConstraint<TMember?>(it, grammars).Invert()),
 			subject);
 

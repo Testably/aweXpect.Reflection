@@ -26,7 +26,8 @@ public static partial class ThatType
 	{
 		NamespaceDependencyOptions options = new(namespaces);
 		return new NamespaceDependencyResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new DependsOnNamespaceConstraint(it, grammars, options)),
 			subject,
 			options);
@@ -49,7 +50,8 @@ public static partial class ThatType
 	{
 		TypeDependencyOptions options = new(type);
 		return new TypeDependencyResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new DependsOnTypeConstraint(it, grammars, options)),
 			subject,
 			options);
@@ -70,7 +72,8 @@ public static partial class ThatType
 	{
 		TypeSetDependencyOptions options = new(target, additional);
 		return new TypeSetDependencyResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new DependsOnTypeSetConstraint(it, grammars, options)),
 			subject,
 			options);
@@ -86,7 +89,8 @@ public static partial class ThatType
 	{
 		NamespaceDependencyOptions options = new(namespaces);
 		return new NamespaceDependencyResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new DependsOnNamespaceConstraint(it, grammars, options).Invert()),
 			subject,
 			options);
@@ -111,7 +115,8 @@ public static partial class ThatType
 	{
 		TypeDependencyOptions options = new(type);
 		return new TypeDependencyResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new DependsOnTypeConstraint(it, grammars, options).Invert()),
 			subject,
 			options);
@@ -132,7 +137,8 @@ public static partial class ThatType
 	{
 		TypeSetDependencyOptions options = new(target, additional);
 		return new TypeSetDependencyResult<Type, Type?>(subject.Get().ExpectationBuilder
-				.AddConstraint((it, grammars)
+				.AddConstraint(options,
+					static (options, it, grammars)
 					=> new DependsOnTypeSetConstraint(it, grammars, options).Invert()),
 			subject,
 			options);

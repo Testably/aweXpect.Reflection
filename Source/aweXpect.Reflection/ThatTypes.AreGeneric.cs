@@ -27,7 +27,8 @@ public static partial class ThatTypes
 	{
 		GenericArgumentsFilterOptions genericFilterOptions = new();
 		return new GenericArgumentCollectionResult<IEnumerable<Type?>, IEnumerable<Type?>?>(
-			subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+			subject.Get().ExpectationBuilder.AddConstraint<GenericArgumentsFilterOptions, IEnumerable<Type?>>(genericFilterOptions,
+				static (genericFilterOptions, it, grammars)
 				=> new AreGenericConstraint(it, grammars, genericFilterOptions)),
 			subject,
 			genericFilterOptions);
@@ -43,7 +44,8 @@ public static partial class ThatTypes
 	{
 		GenericArgumentsFilterOptions genericFilterOptions = new();
 		return new GenericArgumentCollectionResult<IAsyncEnumerable<Type?>, IAsyncEnumerable<Type?>?>(
-			subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+			subject.Get().ExpectationBuilder.AddConstraint<GenericArgumentsFilterOptions, IAsyncEnumerable<Type?>>(genericFilterOptions,
+				static (genericFilterOptions, it, grammars)
 				=> new AreGenericConstraint(it, grammars, genericFilterOptions)),
 			subject,
 			genericFilterOptions);
@@ -56,7 +58,7 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IEnumerable<Type?>, IThat<IEnumerable<Type?>?>> AreNotGeneric(
 		this IThat<IEnumerable<Type?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IEnumerable<Type?>>(static (it, grammars)
 				=> new AreNotGenericConstraint(it, grammars)),
 			subject);
 
@@ -67,7 +69,7 @@ public static partial class ThatTypes
 	[GuaranteesNotNull]
 	public static AndOrResult<IAsyncEnumerable<Type?>, IThat<IAsyncEnumerable<Type?>?>> AreNotGeneric(
 		this IThat<IAsyncEnumerable<Type?>?> subject)
-		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>((it, grammars)
+		=> new(subject.Get().ExpectationBuilder.AddConstraint<IAsyncEnumerable<Type?>>(static (it, grammars)
 				=> new AreNotGenericConstraint(it, grammars)),
 			subject);
 #endif

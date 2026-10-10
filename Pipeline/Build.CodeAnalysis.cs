@@ -20,6 +20,7 @@ partial class Build
 				.SetProjectKey("Testably_aweXpect.Reflection")
 				.AddVSTestReports(TestResultsDirectory / "*.trx")
 				.AddOpenCoverPaths(TestResultsDirectory / "reports" / "OpenCover.xml")
+				.SetSourceExclusions("build.ps1", "build.sh", "Pipeline/**", "Benchmarks/**")
 				.SetPullRequestOrBranchName(GitHubActions, GitVersion)
 				.SetVersion(GitVersion.SemVer)
 				.SetToken(SonarToken));

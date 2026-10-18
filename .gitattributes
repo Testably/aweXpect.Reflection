@@ -7,7 +7,7 @@
 
 # ReSharper DotSettings files are in Unix Format
 *.DotSettings text eol=lf
-*.sln   text eol=crlf
+*.slnx  text eol=crlf
 # .cs files use native line endings (CRLF on Windows, LF on Linux/macOS):
 # tests compare raw string literals against messages built with Environment.NewLine,
 # so the checkout eol must match the platform. Do not force eol=crlf here.

@@ -43,6 +43,8 @@ Correctness is a must. The other goals are strong defaults and win in this order
 
 - Before pushing, build without warnings and run the affected tests in `Tests/aweXpect.Reflection.Tests` and
   `Tests/aweXpect.Reflection.Internal.Tests`. `net48` only runs on Windows; use `--framework net10.0` for a quick run.
+  The tests use TUnit on the Microsoft.Testing.Platform: `dotnet test` runs all test projects, `dotnet test --project
+  <project> --treenode-filter "/*/*/<class>/<test>"` selects tests (see [workflows](Docs/agents/workflows.md#test)).
 - Public API changes: run `Tests/aweXpect.Reflection.Api.Tests`. It compares the public API of every library target
   framework with the `ApiApprovalTests.*.awexpect-snapshot.txt` files. Accept an intentional change with the
   explicit `AcceptApiChanges` test, by renaming the `*.awexpect-snapshot.pending.txt` file, or by running the tests

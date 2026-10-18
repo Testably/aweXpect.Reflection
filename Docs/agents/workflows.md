@@ -15,33 +15,42 @@ is listed but not built with the solution. Building the library also packs it (`
 ## Test
 
 ```powershell
-# One test project, one framework
-dotnet test Tests/aweXpect.Reflection.Tests/aweXpect.Reflection.Tests.csproj --framework net10.0
+# All test projects on all target frameworks
+dotnet test
 
-# Filter to a class or method (xunit v2 on VSTest, so --filter, not --treenode-filter)
-dotnet test Tests/aweXpect.Reflection.Tests/aweXpect.Reflection.Tests.csproj --framework net10.0 `
-    --filter "FullyQualifiedName~aweXpect.Reflection.Tests.ThatAssemblies+AreStrongNamed"
+# One test project, one framework
+dotnet test --project Tests/aweXpect.Reflection.Tests --framework net10.0
+
+# Filter to a class or method
+dotnet test --project Tests/aweXpect.Reflection.Tests --framework net10.0 `
+    --treenode-filter "/*/*/ThatAssemblies+AreStrongNamed*/*"
 
 # Tests of internal helpers (the library grants InternalsVisibleTo to this project)
-dotnet test Tests/aweXpect.Reflection.Internal.Tests/aweXpect.Reflection.Internal.Tests.csproj --framework net10.0
+dotnet test --project Tests/aweXpect.Reflection.Internal.Tests --framework net10.0
 ```
 
+- All tests use TUnit and are executables of the Microsoft.Testing.Platform, which `global.json` selects for
+  `dotnet test`. A single project can also be started with `dotnet run --project <project> -f <framework>`.
+- `--treenode-filter "/<assembly>/<namespace>/<class>/<test>"` selects tests, with `*` as wildcard.
 - `net48` runs only on Windows. The pipeline skips it elsewhere.
-- Tests nest the expectation in classes: `ThatAssemblies.AreStrongNamed.Tests`, so the fully qualified name uses `+`
-  between nested classes.
+- Tests nest the expectation in classes: `ThatAssemblies.AreStrongNamed.Tests`, so the class in the filter uses `+`
+  between nested classes (`ThatAssemblies+AreStrongNamed+Tests`).
+- TUnit runs the tests of a class in parallel. A class whose tests share state, e.g. a global customization, is
+  marked `[NotInParallel]`.
 
 ## Public API
 
 ```powershell
-dotnet test Tests/aweXpect.Reflection.Api.Tests/aweXpect.Reflection.Api.Tests.csproj
+dotnet test --project Tests/aweXpect.Reflection.Api.Tests
 ```
 
-The project (NUnit, `net8.0`) builds every target framework of the library and compares its public API with
+The project (TUnit, `net8.0`) builds every target framework of the library and compares its public API with
 `ApiApprovalTests.aweXpect%2EReflection.<framework>.awexpect-snapshot.txt` using `aweXpect.Snapshots.PublicApi`.
 A mismatch writes a `*.awexpect-snapshot.pending.txt` file next to the snapshot. To accept an intentional change:
 
 - rename the pending file to replace the snapshot, or
-- run the explicit `AcceptApiChanges` test, or
+- run the explicit `AcceptApiChanges` test, which a run without this filter skips:
+  `dotnet test --project Tests/aweXpect.Reflection.Api.Tests --treenode-filter "/*/*/ApiApprovalTests/AcceptApiChanges"`, or
 - run the tests with the environment variable `AWEXPECT_ACCEPT_SNAPSHOTS` set to `all`.
 
 The tests read the build output of the same configuration (`Debug` or `Release`) as their own.
@@ -72,9 +81,10 @@ prints the report of `HappyCaseBenchmarks`. Compare before and after a change on
 
 ## Mutation tests
 
-`.\build.ps1 MutationTests` installs `dotnet-stryker` into `TestResults/dotnet-stryker`, mutates
-`Source/aweXpect.Reflection` against `aweXpect.Reflection.Tests` and `aweXpect.Reflection.Internal.Tests` on `net10.0`
-with mutation level `Advanced`, and writes reports to `Artifacts/Stryker`. Off `main` it only mutates code changed
+`.\build.ps1 MutationTests` installs `dotnet-stryker` (the version of the `PackageDownload` in `Pipeline/Build.csproj`)
+into `TestResults/dotnet-stryker`, mutates `Source/aweXpect.Reflection` against `aweXpect.Reflection.Tests` and
+`aweXpect.Reflection.Internal.Tests` on `net10.0` with mutation level `Advanced` and the runner for the
+Microsoft.Testing.Platform (`--test-runner mtp`), and writes reports to `Artifacts/Stryker`. Off `main` it only mutates code changed
 since `main`. It takes long; run it only when asked.
 
 ## Documentation
@@ -95,15 +105,16 @@ on a server (`--configuration`).
 | Target | Depends on | Does |
 |---|---|---|
 | `Compile` | `Restore` (cleans `Artifacts/` and `TestResults/`), `CalculateNugetVersion` | builds the solution with the GitVersion version |
-| `UnitTests` | `Compile` | runs `aweXpect.Reflection.Tests` and `aweXpect.Reflection.Internal.Tests` for each framework with coverage and `.trx` logs in `TestResults/` |
-| `CodeCoverage` | `UnitTests` | merges the coverage into `TestResults/reports/OpenCover.xml` |
-| `ApiChecks` | `Compile` | runs `aweXpect.Reflection.Api.Tests` |
+| `UnitTests` | `Compile` | runs `aweXpect.Reflection.Tests` and `aweXpect.Reflection.Internal.Tests` with `dotnet run` for each framework (`net48` only on Windows) and writes `TestResults/<project>_<framework>.trx` and `.cobertura.xml` |
+| `CodeCoverage` | `UnitTests` | merges the coverage into `TestResults/reports/SonarQube.xml` |
+| `ApiChecks` | `Compile` | runs `aweXpect.Reflection.Api.Tests` with `dotnet run` and writes `TestResults/aweXpect.Reflection.Api.Tests.trx` |
 | `AotSmokeTests` | `Compile` | runs and publishes the AOT smoke test |
 | `CodeAnalysis` | `Compile`, `CodeCoverage` | SonarCloud analysis; needs `SonarToken` |
 | `Benchmarks` | `BenchmarkDotNet`, `BenchmarkResult` | runs the benchmarks into `Artifacts/Benchmarks` |
 | `BenchmarkComment` | | CI only: posts the benchmark report on the pull request |
-| `MutationTests` | `MutationTestExecution`, `MutationComment` | runs Stryker and prepares the pull request comment |
-| `MutationTestDashboard` | | CI only: uploads the report to the Stryker dashboard and comments on the pull request |
+| `MutationTests` | `Compile` | runs Stryker and prepares the pull request comment in `Artifacts/` |
+| `MutationTestsDashboard` | | CI only: uploads the report to the Stryker dashboard |
+| `MutationTestsComment` | `MutationTestsDashboard` | CI only: comments the mutation result on the pull request |
 | `Pack` | `UpdateReadme`, `Compile` | moves the `.nupkg` and `.snupkg` files to `Artifacts/Packages` |
 
 ## CI workflows

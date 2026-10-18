@@ -16,13 +16,16 @@ partial class Build
 		{
 			Project project = Solution.Tests.aweXpect_Reflection_Api_Tests;
 
-			DotNetTest(s => s
-				.SetConfiguration(Configuration == Configuration.Debug ? "Debug" : "Release")
+			DotNetRun(s => s
+				.SetConfiguration(Configuration)
 				.SetProcessEnvironmentVariable("DOTNET_CLI_UI_LANGUAGE", "en-US")
 				.EnableNoBuild()
-				.SetResultsDirectory(TestResultsDirectory)
-				.CombineWith(cc => cc
-					.SetProjectFile(project)
-					.AddLoggers($"trx;LogFileName={project.Name}.trx")), completeOnFailure: true);
+				.SetProjectFile(project)
+				.SetProcessAdditionalArguments(
+					"--",
+					"--disable-logo",
+					$"--results-directory \"{TestResultsDirectory}\"",
+					"--report-trx",
+					$"--report-trx-filename {project.Name}.trx"));
 		});
 }

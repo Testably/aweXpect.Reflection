@@ -17,20 +17,24 @@
 		<WarningsAsErrors>$(WarningsAsErrors);CS8620</WarningsAsErrors>
 	</PropertyGroup>
 
+	<!--
+	    The tests run on TUnit as executables of the Microsoft.Testing.Platform. TUnit discovers them through
+	    reflection instead of its source generator, so that test arguments can refer to private nested types.
+	-->
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<EnableTUnitSourceGeneration>false</EnableTUnitSourceGeneration>
+		<!-- The implicit usings of TUnit import `HookType` statically, whose `Assembly` clashes with `System.Reflection`. -->
+		<TUnitImplicitUsings>false</TUnitImplicitUsings>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="xunit"/>
-		<PackageReference Include="xunit.runner.visualstudio">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk"/>
+		<PackageReference Include="TUnit.Engine"/>
+		<PackageReference Include="Microsoft.Testing.Extensions.TrxReport"/>
+		<PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
 		<PackageReference Include="Nullable">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="coverlet.collector">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="aweXpect"/>
 	</ItemGroup>

@@ -1,41 +1,61 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
+using System.Linq;
+using aweXpect.Core;
+using aweXpect.Results;
+using aweXpect.Snapshots;
+using aweXpect.Snapshots.PublicApi;
 using NUnit.Framework;
+// ReSharper disable ExplicitCallerInfoArgument
 
 namespace aweXpect.Reflection.Api.Tests;
 
 /// <summary>
 ///     Whenever a test fails, this means that the public API surface changed.
-///     If the change was intentional, execute the <see cref="ApiAcceptance.AcceptApiChanges()" /> test to take over the
-///     current public API surface. The changes will become part of the pull request and will be reviewed accordingly.
+///     If the change was intentional, execute <see cref="AcceptApiChanges" />, rename the pending snapshot next to this
+///     file or run the tests with the environment variable <c>AWEXPECT_ACCEPT_SNAPSHOTS</c> set to <c>all</c> to take
+///     over the current public API surface. The changes will become part of the pull request and will be reviewed
+///     accordingly.
 /// </summary>
 public sealed class ApiApprovalTests
 {
-	[TestCaseSource(typeof(TargetFrameworksTheoryData))]
-	public async Task VerifyPublicApiForAweXpectReflection(string framework)
+	private static readonly string[] AssemblyNames =
+	[
+		"aweXpect.Reflection",
+	];
+
+	[TestCaseSource(nameof(Builds))]
+	public async Task VerifyPublicApi((string assemblyName, string framework) build)
+		=> await MatchesPublicApiSnapshot(build.assemblyName, build.framework);
+
+	/// <summary>
+	///     Execute this test to update the expected public API to the current API surface.
+	/// </summary>
+	[Test]
+	[Explicit]
+	public async Task AcceptApiChanges()
 	{
-		const string assemblyName = "aweXpect.Reflection";
-
-		string publicApi = Helper.CreatePublicApi(framework, assemblyName);
-		string expectedApi = Helper.GetExpectedApi(framework, assemblyName);
-
-		await That(publicApi).IsEqualTo(expectedApi);
-	}
-
-	private sealed class TargetFrameworksTheoryData : IEnumerable
-	{
-		#region IEnumerable Members
-
-		public IEnumerator GetEnumerator()
+		foreach ((string assemblyName, string framework) build in Builds())
 		{
-			foreach (string targetFramework in Helper.GetTargetFrameworks())
+			try
 			{
-				yield return new object[]
-				{
-					targetFramework,
-				};
+				await MatchesPublicApiSnapshot(build.assemblyName, build.framework).Accepting(SnapshotAcceptance.All);
+			}
+			catch (Exception exception) when (exception.Message.Contains("Accepted snapshot"))
+			{
+				// An accepted snapshot still fails the expectation.
 			}
 		}
-
-		#endregion
 	}
+
+	/// <summary>
+	///     The snapshot is named after the assembly and the target framework, so that both tests use the same one.
+	/// </summary>
+	private static SnapshotResult<string?, IThat<string?>> MatchesPublicApiSnapshot(string assemblyName,
+		string framework)
+		=> That(Helper.GetAssemblyFile(framework, assemblyName))
+			.MatchesPublicApiSnapshot(callerMemberName: assemblyName).Named(framework);
+
+	private static IEnumerable<(string, string)> Builds()
+		=> AssemblyNames.SelectMany(assemblyName => Helper.GetTargetFrameworks()
+			.Select(framework => (assemblyName, framework)));
 }

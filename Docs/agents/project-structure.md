@@ -5,9 +5,9 @@
 | Path | Contents |
 |---|---|
 | `Source/aweXpect.Reflection/` | the library, the only shipped package |
-| `Tests/aweXpect.Reflection.Tests/` | xunit tests of the public behaviour |
-| `Tests/aweXpect.Reflection.Internal.Tests/` | xunit tests of internal helpers and formatters (strong-named for `InternalsVisibleTo`) |
-| `Tests/aweXpect.Reflection.Api.Tests/` | NUnit public API snapshot tests |
+| `Tests/aweXpect.Reflection.Tests/` | TUnit tests of the public behaviour |
+| `Tests/aweXpect.Reflection.Internal.Tests/` | TUnit tests of internal helpers and formatters (strong-named for `InternalsVisibleTo`) |
+| `Tests/aweXpect.Reflection.Api.Tests/` | TUnit public API snapshot tests |
 | `Tests/Aot/aweXpect.Reflection.Aot/` | console application published with Native AOT as a smoke test |
 | `Benchmarks/aweXpect.Reflection.Benchmarks/` | BenchmarkDotNet benchmarks |
 | `Pipeline/` | Fallout build targets (`Build.<Area>.cs`), run through `build.ps1`, `build.sh` or `build.cmd` |
@@ -64,7 +64,10 @@ await Expect.That(In.AssemblyContaining<MyClass>().Methods().WhichAreAsync())
   `ThatType.IsNotSealed.Tests.cs` for the negation), filters in `Filters/`, collections in `Collections/`. Test
   classes nest like `ThatType.IsSealed.Tests`. Expectation tests are usually named `When<Condition>_Should<Outcome>`,
   filter tests `Should<Behaviour>`.
+- Tests use TUnit (`[Test]`, `[Arguments(...)]`, `[MethodDataSource(...)]`). A failed expectation throws
+  `FailException`, an inconclusive one TUnit's `InconclusiveTestException`. In files that declare their own nested
+  `TestAttribute`, the test methods use `[TUnit.Core.Test]`, because `[Test]` would bind to the nested attribute.
 - Failure messages are pinned with raw string literals in `.WithMessage(...)`.
 - Sample types live in `TestHelpers/Types/`, dependency layers for the architecture-rule tests in
-  `TestHelpers/Dependencies/`. `Examples/` contains usage examples (skipped) and a tested Mono.Cecil dependency resolver.
+  `TestHelpers/Dependencies/`. `Examples/` contains usage examples (two of them skipped) and a tested Mono.Cecil dependency resolver.
 - `net48` needs polyfills for newer language features, e.g. `TestHelpers/IsExternalInit.cs` for records and `init`.

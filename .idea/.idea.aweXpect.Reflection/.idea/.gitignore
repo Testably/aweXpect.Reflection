@@ -2,10 +2,12 @@
 /shelf/
 /workspace.xml
 # Rider ignored files
+/.idea.aweXpect.Reflection.iml
 /modules.xml
-/.idea.aweXpect.T6e.iml
 /contentModel.xml
 /projectSettingsUpdater.xml
+/copilot.data.migration.*.xml
+/.name
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files

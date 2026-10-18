@@ -29,7 +29,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of exact type *DummyBase,
+					             are all of exact type *DummyBase,
 					             but it contained not matching properties
 
 					             Not matching items:
@@ -91,7 +91,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of exact type int or of exact type *DummyBase,
+					             are all of exact type int or of exact type *DummyBase,
 					             but it contained not matching properties
 
 					             Not matching items:
@@ -121,7 +121,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of exact type *DummyBase,
+					             are all of exact type *DummyBase,
 					             but it contained not matching properties
 
 					             Not matching items:

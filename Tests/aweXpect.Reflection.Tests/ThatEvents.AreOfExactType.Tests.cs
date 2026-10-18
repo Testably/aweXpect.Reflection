@@ -31,7 +31,7 @@ public sealed partial class ThatEvents
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of exact type MulticastDelegate,
+					             are all of exact type MulticastDelegate,
 					             but it contained not matching events
 
 					             Not matching items:
@@ -94,7 +94,7 @@ public sealed partial class ThatEvents
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of exact type Action or of exact type MulticastDelegate,
+					             are all of exact type Action or of exact type MulticastDelegate,
 					             but it contained not matching events
 
 					             Not matching items:
@@ -124,7 +124,7 @@ public sealed partial class ThatEvents
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of exact type MulticastDelegate,
+					             are all of exact type MulticastDelegate,
 					             but it contained not matching events
 
 					             Not matching items:

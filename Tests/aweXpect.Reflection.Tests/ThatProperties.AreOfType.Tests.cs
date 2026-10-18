@@ -30,7 +30,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of type int,
+					             are all of type int,
 					             but it contained not matching properties
 
 					             Not matching items:
@@ -93,7 +93,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             not all are of type int,
+					             are not all of type int,
 					             but it only contained matching properties
 
 					             Collection:
@@ -140,7 +140,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of type int,
+					             are all of type int,
 					             but it contained not matching properties
 
 					             Not matching items:
@@ -259,7 +259,7 @@ public sealed partial class ThatProperties
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that subject
-					             all are of type bool or of type long,
+					             are all of type bool or of type long,
 					             but it contained not matching properties
 
 					             Not matching items:

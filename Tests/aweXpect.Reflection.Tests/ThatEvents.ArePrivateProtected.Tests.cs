@@ -25,7 +25,7 @@ public sealed partial class ThatEvents
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that *
-					             all are private protected,
+					             are all private protected,
 					             but it contained not matching items
 
 					             Not matching items:
@@ -80,7 +80,7 @@ public sealed partial class ThatEvents
 				await That(Act).Throws<XunitException>()
 					.WithMessage("""
 					             Expected that *
-					             not all are private protected,
+					             are not all private protected,
 					             but it only contained private protected items
 
 					             Collection:

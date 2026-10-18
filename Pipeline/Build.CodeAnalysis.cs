@@ -19,7 +19,7 @@ partial class Build
 				.SetOrganization("testably")
 				.SetProjectKey("Testably_aweXpect.Reflection")
 				.AddVSTestReports(TestResultsDirectory / "*.trx")
-				.AddOpenCoverPaths(TestResultsDirectory / "reports" / "OpenCover.xml")
+				.AddGenericCoveragePaths(TestResultsDirectory / "reports" / "SonarQube.xml")
 				.SetSourceExclusions("build.ps1", "build.sh", "Pipeline/**", "Benchmarks/**")
 				.SetPullRequestOrBranchName(GitHubActions, GitVersion)
 				.SetVersion(GitVersion.SemVer)

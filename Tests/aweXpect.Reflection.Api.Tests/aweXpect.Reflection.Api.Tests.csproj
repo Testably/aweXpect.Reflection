@@ -11,14 +11,18 @@
 	<ItemGroup>
 		<PackageReference Remove="xunit"/>
 		<PackageReference Remove="xunit.runner.visualstudio"/>
-		<PackageReference Include="aweXpect.Core"/>
+		<PackageReference Include="aweXpect.Snapshots.PublicApi"/>
 		<PackageReference Include="NUnit"/>
 		<PackageReference Include="NUnit.Analyzers"/>
 		<PackageReference Include="NUnit3TestAdapter"/>
-		<PackageReference Include="PublicApiGenerator"/>
 	</ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Expected\"/>
-	</ItemGroup>
+	<!--
+	    The tests read the builds of all target frameworks of the referenced projects, but a project reference only
+	    builds the one that matches the tests. Without the target framework, the same builds as in the solution are
+	    requested, which MSBuild runs only once; DispatchToInnerBuilds builds them without packing.
+	-->
+	<Target Name="BuildAllTargetFrameworksOfReferencedProjects" AfterTargets="Build">
+		<MSBuild Projects="@(ProjectReference)" Targets="DispatchToInnerBuilds" RemoveProperties="TargetFramework"/>
+	</Target>
 </Project>
